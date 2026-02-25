@@ -184,6 +184,11 @@ app.get('/api/activities', checkAdmin, (req, res) => {
     res.json(activityLog);
 });
 
+// API: Genel Sağlık Kontrolü (Uptime servisleri için)
+app.get('/ping', (req, res) => {
+    res.status(200).send('OK');
+});
+
 // API: Sistem Sağlığı (Sadece Admin)
 app.get('/api/health', checkAdmin, (req, res) => {
     const totalMem = os.totalmem();
