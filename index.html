@@ -1,0 +1,2490 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraveBOT - Discord'un En Güçlü Botu</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        :root {
+            --swiper-theme-color: #a855f7 !important;
+            --swiper-navigation-size: 24px !important;
+        }
+
+        .swiper-button-next, .swiper-button-prev {
+            color: #a855f7 !important;
+            background: rgba(255, 255, 255, 0.05);
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .swiper-button-next:hover, .swiper-button-prev:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .swiper-button-next::after, .swiper-button-prev::after {
+            font-size: 18px !important;
+            font-weight: bold;
+        }
+        
+        .swiper-pagination-bullet {
+            background: rgba(255, 255, 255, 0.5) !important;
+            opacity: 1 !important;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: #a855f7 !important;
+            width: 24px !important;
+            border-radius: 8px !important;
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Marquee Animation */
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            animation: marquee 25s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f0f13;
+            cursor: default;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f0f13;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3b3b4f;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a855f7;
+        }
+
+        /* Orbital Eclipse Preloader (Glassmorphism + Circular Progress) */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #131318 0%, #000000 100%);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s cubic-bezier(0.65, 0, 0.35, 1), visibility 0.8s;
+            overflow: hidden;
+        }
+
+        .loader-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Glassmorphism Logo Wrapper */
+        .loader-logo-wrapper {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            z-index: 2;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        .loader-logo {
+            width: 70%;
+            height: 70%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4));
+            animation: pulse-logo-soft 3s ease-in-out infinite;
+        }
+
+        /* Circular Progress Ring */
+        .loader-ring {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 2;
+        }
+
+        .ring-progress {
+            fill: none;
+            stroke: url(#gradient); /* Fallback */
+            stroke: #a855f7; /* Main Color */
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 339.292; /* 2 * PI * 54 */
+            stroke-dashoffset: 339.292;
+            filter: drop-shadow(0 0 8px #a855f7);
+            transition: stroke-dashoffset 0.1s linear;
+        }
+
+        /* Animated Background Particles */
+        .particles-bg {
+            position: absolute;
+            inset: -100px;
+            z-index: 1;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 10%),
+                radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.15) 0%, transparent 10%);
+            animation: particle-move 10s linear infinite alternate;
+            filter: blur(20px);
+        }
+
+        .loader-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: fade-in-up 1s ease-out forwards 0.5s;
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .status-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #6b7280;
+            opacity: 0;
+            letter-spacing: 0.2em;
+            animation: fade-in-up 1s ease-out forwards 0.8s;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.02); }
+            50% { transform: scale(1.02); box-shadow: 0 0 50px rgba(168, 85, 247, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.05); }
+        }
+
+        @keyframes pulse-logo-soft {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.6)); }
+        }
+
+        @keyframes particle-move {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(20px, -20px) scale(1.1); }
+        }
+
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .loader-brand { font-size: 3rem; }
+        }
+
+        /* Mouse Glow Effect */
+        #cursor-glow {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15), transparent 70%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Particles Container */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0f13;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8b5cf6;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #7c3aed;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #a855f7, #ec4899, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 3s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 3D Card Effect Base */
+        .card-3d {
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+        }
+
+        /* Glitch Effect */
+        .glitch-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .glitch {
+            position: relative;
+            color: white;
+            font-weight: 900;
+        }
+        
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0f13;
+        }
+        
+        .glitch::before {
+            left: 2px;
+            text-shadow: -1px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        
+        .glitch::after {
+            left: -2px;
+            text-shadow: -1px 0 #00fff9;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+        
+        @keyframes glitch-anim {
+            0% { clip: rect(30px, 9999px, 10px, 0); }
+            5% { clip: rect(70px, 9999px, 90px, 0); }
+            10% { clip: rect(45px, 9999px, 20px, 0); }
+            15% { clip: rect(5px, 9999px, 40px, 0); }
+            20% { clip: rect(80px, 9999px, 5px, 0); }
+            25% { clip: rect(20px, 9999px, 60px, 0); }
+            30% { clip: rect(60px, 9999px, 30px, 0); }
+            35% { clip: rect(10px, 9999px, 85px, 0); }
+            40% { clip: rect(90px, 9999px, 45px, 0); }
+            45% { clip: rect(50px, 9999px, 15px, 0); }
+            50% { clip: rect(25px, 9999px, 75px, 0); }
+            55% { clip: rect(65px, 9999px, 35px, 0); }
+            60% { clip: rect(15px, 9999px, 95px, 0); }
+            65% { clip: rect(85px, 9999px, 25px, 0); }
+            70% { clip: rect(35px, 9999px, 55px, 0); }
+            75% { clip: rect(95px, 9999px, 10px, 0); }
+            80% { clip: rect(5px, 9999px, 65px, 0); }
+            85% { clip: rect(75px, 9999px, 20px, 0); }
+            90% { clip: rect(40px, 9999px, 80px, 0); }
+            95% { clip: rect(100px, 9999px, 5px, 0); }
+            100% { clip: rect(55px, 9999px, 30px, 0); }
+        }
+        
+        @keyframes glitch-anim2 {
+            0% { clip: rect(15px, 9999px, 95px, 0); }
+            5% { clip: rect(85px, 9999px, 25px, 0); }
+            10% { clip: rect(35px, 9999px, 55px, 0); }
+            15% { clip: rect(95px, 9999px, 10px, 0); }
+            20% { clip: rect(5px, 9999px, 65px, 0); }
+            25% { clip: rect(75px, 9999px, 20px, 0); }
+            30% { clip: rect(40px, 9999px, 80px, 0); }
+            35% { clip: rect(100px, 9999px, 5px, 0); }
+            40% { clip: rect(55px, 9999px, 30px, 0); }
+            45% { clip: rect(30px, 9999px, 10px, 0); }
+            50% { clip: rect(70px, 9999px, 90px, 0); }
+            55% { clip: rect(45px, 9999px, 20px, 0); }
+            60% { clip: rect(5px, 9999px, 40px, 0); }
+            65% { clip: rect(80px, 9999px, 5px, 0); }
+            70% { clip: rect(20px, 9999px, 60px, 0); }
+            75% { clip: rect(60px, 9999px, 30px, 0); }
+            80% { clip: rect(10px, 9999px, 85px, 0); }
+            85% { clip: rect(90px, 9999px, 45px, 0); }
+            90% { clip: rect(50px, 9999px, 15px, 0); }
+            95% { clip: rect(25px, 9999px, 75px, 0); }
+            100% { clip: rect(65px, 9999px, 35px, 0); }
+        }
+
+        /* Floating Animation */
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Background Grid */
+        .bg-grid {
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        /* Terminal Cursor */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background-color: #a855f7;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Marquee Animation */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+        .marquee-content {
+            display: inline-flex;
+            animation: marquee 30s linear infinite;
+        }
+        .marquee-content:hover {
+            animation-play-state: paused;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Spotlight Effect */
+        .card-spotlight {
+            position: relative;
+            overflow: hidden;
+            background: rgba(26, 26, 32, 0.6); /* Slightly more transparent */
+            backdrop-filter: blur(10px);
+        }
+        
+        .card-spotlight::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(139, 92, 246, 0.1), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .card-spotlight:hover::before {
+            opacity: 1;
+        }
+
+        .card-spotlight::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(139, 92, 246, 0.4), transparent 40%);
+            opacity: 0;
+            z-index: 1;
+            pointer-events: none;
+            border-radius: inherit;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            -webkit-mask-composite: xor;
+            padding: 1px; /* Border width */
+        }
+
+        .card-spotlight:hover::after {
+            opacity: 1;
+        }
+
+        /* Accordion */
+        .accordion-item[open] .accordion-icon {
+            transform: rotate(180deg);
+        }
+        .accordion-content {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        .accordion-item[open] .accordion-content {
+            max-height: 200px;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="text-white selection:bg-purple-500 selection:text-white">
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-500" id="login-modal-overlay"></div>
+        
+        <div class="relative w-full max-w-md mx-4 transform transition-all duration-500 scale-95 opacity-0 translate-y-8" id="login-modal-content">
+            <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur opacity-30"></div>
+            
+            <div class="relative bg-[#16161d] rounded-3xl p-8 shadow-2xl border border-white/10 overflow-hidden">
+                <!-- Background Decoration -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-purple-600/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-32 h-32 bg-pink-600/10 rounded-full blur-3xl -ml-16 -mb-16"></div>
+
+                <div class="text-center relative z-10">
+                    <div class="w-20 h-20 bg-gradient-to-tr from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-purple-500/20 transform hover:rotate-12 transition-transform">
+                        <img src="logo.png" alt="GraveBOT" class="w-12 h-12 object-contain filter drop-shadow-lg">
+                    </div>
+                    
+                    <h2 class="text-3xl font-black text-white mb-2 tracking-tight">GraveBOT <span class="text-purple-500">Panel</span></h2>
+                    <p class="text-gray-400 text-sm mb-10 px-4 leading-relaxed">
+                        Sunucularınızı yönetmek için Discord hesabınızla güvenli bir şekilde giriş yapın.
+                    </p>
+
+                    <a href="/auth/discord" class="flex items-center justify-center gap-3 w-full py-4 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-500/20 transition-all transform hover:scale-[1.02] active:scale-95 group">
+                        <i class="fa-brands fa-discord text-2xl group-hover:animate-bounce"></i>
+                        <span>Discord ile Giriş Yap</span>
+                    </a>
+
+                    <div class="mt-8 pt-6 border-t border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+                            Giriş yaparak <a href="#" class="text-purple-400 hover:underline">Hizmet Şartları</a>'nı kabul etmiş olursunuz.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Close Button -->
+            <button onclick="closeLoginModal()" class="absolute -top-12 right-0 text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium group">
+                Kapat <i class="fa-solid fa-xmark text-lg group-hover:rotate-90 transition-transform"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Feature Modal -->
+    <div id="feature-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="feature-modal-overlay"></div>
+        <div class="relative w-full max-w-2xl mx-4 transform transition-all duration-500 scale-95 opacity-0 translate-y-8" id="feature-modal-content">
+            <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur opacity-30"></div>
+            <div class="relative bg-[#16161d] rounded-3xl p-8 shadow-2xl border border-white/10 overflow-hidden">
+                <div id="feature-modal-body" class="relative z-10">
+                    <!-- Dynamic content will be injected here -->
+                </div>
+            </div>
+            <button onclick="closeFeatureModal()" class="absolute -top-12 right-0 text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium group">
+                Kapat <i class="fa-solid fa-xmark text-lg group-hover:rotate-90 transition-transform"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-container">
+            <svg class="loader-ring" viewBox="0 0 120 120">
+                <circle class="ring-bg" cx="60" cy="60" r="54"></circle>
+                <circle class="ring-progress" id="progress-ring" cx="60" cy="60" r="54"></circle>
+            </svg>
+            <div class="loader-logo-wrapper">
+                <img src="logo.png" alt="GraveBOT" class="loader-logo">
+            </div>
+            <div class="particles-bg"></div>
+        </div>
+        <div class="loader-text">GRAVEBOT</div>
+        <div class="status-text">YÜKLENİYOR...</div>
+    </div>
+
+    <!-- Mouse Glow -->
+    <div id="cursor-glow"></div>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 bg-[#0f0f13]/80 backdrop-blur-md border-b border-white/10" data-aos="fade-down" data-aos-duration="1000">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-3 group cursor-pointer">
+                    <div class="w-10 h-10 rounded-full bg-purple-600/20 flex items-center justify-center group-hover:bg-purple-600/40 transition-colors overflow-hidden">
+                        <img src="logo.png" alt="GraveBOT Logo" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                    </div>
+                    <span class="font-bold text-xl tracking-wide group-hover:text-purple-400 transition-colors">GraveBOT</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#home" class="hover:text-purple-400 px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">
+                            Ana Sayfa
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500 transition-all group-hover:w-full"></span>
+                        </a>
+                        <a href="#features" class="hover:text-purple-400 px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">
+                            Özellikler
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500 transition-all group-hover:w-full"></span>
+                        </a>
+                        <a href="#stats" class="hover:text-purple-400 px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">
+                            İstatistikler
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500 transition-all group-hover:w-full"></span>
+                        </a>
+                        <a href="#faq" class="hover:text-purple-400 px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">
+                            SSS
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500 transition-all group-hover:w-full"></span>
+                        </a>
+                        <a href="javascript:void(0)" onclick="openLoginModal()" class="hover:text-purple-400 px-3 py-2 rounded-md text-sm font-medium transition-colors relative group">
+                            Panel
+                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500 transition-all group-hover:w-full"></span>
+                        </a>
+                        <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-lg shadow-purple-500/25">
+                            Discord'a Ekle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden min-h-screen flex items-center">
+        <!-- Particles Background -->
+        <div id="particles-js"></div>
+
+        <!-- Animated Background Elements (Blobs) -->
+        <div class="absolute inset-0 bg-grid z-0 pointer-events-none"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full z-0 opacity-20 pointer-events-none overflow-hidden">
+            <div class="absolute top-20 left-10 w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[100px] animate-blob opacity-50"></div>
+            <div class="absolute top-40 right-10 w-96 h-96 bg-pink-600 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000 opacity-50"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+            <!-- Left Column: Text -->
+            <div class="text-center lg:text-left">
+                <div data-aos="zoom-in" data-aos-duration="1000">
+                    <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-purple-300 font-medium mb-8 inline-block backdrop-blur-sm">
+                        ✨ Discord Sunucunuz İçin En İyisi!
+                    </span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8" data-aos="fade-up" data-aos-delay="200">
+                    Sunucunu <br>
+                    <span class="glitch-wrapper">
+                        <span class="glitch gradient-text" data-text="DİRİLT">DİRİLT</span>
+                    </span>
+                </h1>
+                
+                <p class="mt-4 max-w-2xl mx-auto lg:mx-0 text-xl text-gray-400 mb-12 leading-relaxed" data-aos="fade-up" data-aos-delay="400">
+                    GraveBOT ile sunucunuzun sınırlarını zorlayın. <br>
+                    <span class="text-white font-semibold">Moderasyon</span>, <span class="text-white font-semibold">Müzik</span> ve <span class="text-white font-semibold">Eğlence</span> tek bir çatı altında.
+                </p>
+                
+                <div class="flex justify-center lg:justify-start gap-6 flex-col sm:flex-row" data-aos="fade-up" data-aos-delay="600">
+                    <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" class="group px-8 py-4 bg-white text-black hover:bg-gray-100 rounded-xl text-lg font-bold transition-all transform hover:scale-105 flex items-center justify-center gap-3 relative overflow-hidden">
+                        <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-400 via-pink-500 to-purple-500 opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                        <i class="fa-brands fa-discord text-2xl"></i> 
+                        <span>Sunucuna Ekle</span>
+                    </a>
+                    <a href="https://discord.gg/CVZ4zEkJws" class="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-lg font-bold transition-all transform hover:scale-105 flex items-center justify-center gap-3 backdrop-blur-sm">
+                        <i class="fa-solid fa-circle-info"></i> 
+                        <span>Destek Sunucusu</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Column: Terminal Simulation -->
+            <div class="hidden lg:block relative" data-aos="fade-left" data-aos-delay="800" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
+                <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-30 animate-pulse"></div>
+                <div class="relative bg-[#0f0f13] rounded-2xl border border-white/10 p-6 shadow-2xl font-mono text-sm h-[400px] overflow-hidden flex flex-col transform-style-3d">
+                    <div class="flex items-center gap-2 mb-4 border-b border-white/5 pb-4">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <div class="ml-4 text-xs text-gray-500">terminal@gravebot:~</div>
+                    </div>
+                    <div id="terminal-content" class="flex-1 overflow-y-auto text-gray-300 space-y-2">
+                        <!-- Terminal content will be injected here via JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Video Showcase Section -->
+    <section class="py-20 relative overflow-hidden bg-[#0f0f13]">
+        <div class="absolute inset-0 bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12" data-aos="fade-up">
+                <h2 class="text-3xl font-bold text-white mb-4">GraveBOT <span class="text-purple-500">Aksiyon Halinde</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Sadece anlatmakla kalmıyoruz, gösteriyoruz. İşte GraveBOT'un gücü.</p>
+            </div>
+            
+            <!-- Quick Stats Row -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+                <div class="bg-[#1a1a20]/50 p-4 rounded-xl border border-white/5 text-center backdrop-blur-sm hover:border-purple-500/30 transition-colors">
+                    <div class="text-2xl font-bold text-white mb-1">4K+</div>
+                    <div class="text-xs text-gray-500 uppercase tracking-widest">Çözünürlük</div>
+                </div>
+                <div class="bg-[#1a1a20]/50 p-4 rounded-xl border border-white/5 text-center backdrop-blur-sm hover:border-purple-500/30 transition-colors">
+                    <div class="text-2xl font-bold text-white mb-1">60 FPS</div>
+                    <div class="text-xs text-gray-500 uppercase tracking-widest">Akıcı Arayüz</div>
+                </div>
+                <div class="bg-[#1a1a20]/50 p-4 rounded-xl border border-white/5 text-center backdrop-blur-sm hover:border-purple-500/30 transition-colors">
+                    <div class="text-2xl font-bold text-white mb-1">%100</div>
+                    <div class="text-xs text-gray-500 uppercase tracking-widest">Türkçe</div>
+                </div>
+                <div class="bg-[#1a1a20]/50 p-4 rounded-xl border border-white/5 text-center backdrop-blur-sm hover:border-purple-500/30 transition-colors">
+                    <div class="text-2xl font-bold text-white mb-1">7/24</div>
+                    <div class="text-xs text-gray-500 uppercase tracking-widest">Destek</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-32 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20" data-aos="fade-up">
+                <h2 class="text-4xl font-bold text-white mb-6">Neden <span class="text-purple-500">GraveBOT?</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-lg">Sunucunuzu yönetmek hiç bu kadar kolay ve güçlü olmamıştı. İşte sizi bekleyen özelliklerden bazıları.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="p-8 bg-[#1a1a20] rounded-3xl border border-white/5 card-spotlight group card-3d" data-aos="fade-up" data-aos-delay="100" data-tilt data-tilt-glare data-tilt-max-glare="0.1">
+                    <div class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 transform-style-3d translate-z-10 relative z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white transform-style-3d translate-z-10 relative z-10">Gelişmiş Moderasyon</h3>
+                    <p class="text-gray-400 leading-relaxed transform-style-3d translate-z-5 relative z-10">Sunucunuzu otomatik moderasyon sistemleri, loglama ve güvenlik araçları ile 7/24 koruma altına alın.</p>
+                    <button onclick="openFeatureModal('moderation')" class="mt-6 text-sm font-bold text-purple-400 hover:text-purple-300 flex items-center gap-2 group-hover:gap-3 transition-all cursor-pointer relative z-20">
+                        Detayları Gör <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="p-8 bg-[#1a1a20] rounded-3xl border border-white/5 card-spotlight group card-3d" data-aos="fade-up" data-aos-delay="200" data-tilt data-tilt-glare data-tilt-max-glare="0.1">
+                    <div class="w-16 h-16 bg-pink-500/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 transform-style-3d translate-z-10 relative z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white transform-style-3d translate-z-10 relative z-10">Yüksek Kalite Müzik</h3>
+                    <p class="text-gray-400 leading-relaxed transform-style-3d translate-z-5 relative z-10">Spotify, SoundCloud ve YouTube üzerinden kesintisiz, yüksek kaliteli müzik deneyimi yaşatın.</p>
+                    <button onclick="openFeatureModal('music')" class="mt-6 text-sm font-bold text-pink-400 hover:text-pink-300 flex items-center gap-2 group-hover:gap-3 transition-all cursor-pointer relative z-20">
+                        Detayları Gör <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="p-8 bg-[#1a1a20] rounded-3xl border border-white/5 card-spotlight group card-3d" data-aos="fade-up" data-aos-delay="300" data-tilt data-tilt-glare data-tilt-max-glare="0.1">
+                    <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 transform-style-3d translate-z-10 relative z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white transform-style-3d translate-z-10 relative z-10">Ekonomi Sistemi</h3>
+                    <p class="text-gray-400 leading-relaxed transform-style-3d translate-z-5 relative z-10">Global ekonomi sistemi, mağaza, günlük ödüller ve kumar komutları ile sunucu aktifliğini artırın.</p>
+                    <button onclick="openFeatureModal('economy')" class="mt-6 text-sm font-bold text-blue-400 hover:text-blue-300 flex items-center gap-2 group-hover:gap-3 transition-all cursor-pointer relative z-20">
+                        Detayları Gör <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Guide Section -->
+    <section class="py-20 bg-[#0f0f13] border-b border-white/5 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" data-aos="fade-up">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white mb-4">Nasıl <span class="text-purple-500">Kullanılır?</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Sadece 3 adımda GraveBOT'u sunucuna ekle ve kullanmaya başla.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                <!-- Connecting Line (Desktop) -->
+                <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-y-1/2 z-0"></div>
+
+                <!-- Step 1 -->
+                <div class="relative z-10 bg-[#1a1a20] p-8 rounded-3xl border border-white/5 text-center group hover:border-purple-500/50 transition-all hover:-translate-y-2 card-spotlight">
+                    <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center text-2xl font-bold text-white mx-auto mb-6 shadow-lg shadow-purple-600/30 group-hover:scale-110 transition-transform relative z-10">1</div>
+                    <h3 class="text-xl font-bold text-white mb-3 relative z-10">Davet Et</h3>
+                    <p class="text-gray-400 text-sm relative z-10">"Discord'a Ekle" butonuna tıkla ve botu sunucuna davet et.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative z-10 bg-[#1a1a20] p-8 rounded-3xl border border-white/5 text-center group hover:border-pink-500/50 transition-all hover:-translate-y-2 card-spotlight">
+                    <div class="w-16 h-16 bg-pink-600 rounded-full flex items-center justify-center text-2xl font-bold text-white mx-auto mb-6 shadow-lg shadow-pink-600/30 group-hover:scale-110 transition-transform relative z-10">2</div>
+                    <h3 class="text-xl font-bold text-white mb-3 relative z-10">Yetkilendir</h3>
+                    <p class="text-gray-400 text-sm relative z-10">Botun çalışması için gerekli izinleri onayla ve yönetici rolünü ver.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative z-10 bg-[#1a1a20] p-8 rounded-3xl border border-white/5 text-center group hover:border-blue-500/50 transition-all hover:-translate-y-2 card-spotlight">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-2xl font-bold text-white mx-auto mb-6 shadow-lg shadow-blue-600/30 group-hover:scale-110 transition-transform relative z-10">3</div>
+                    <h3 class="text-xl font-bold text-white mb-3 relative z-10">Tadını Çıkar</h3>
+                    <p class="text-gray-400 text-sm relative z-10">"g!yardım" yazarak komutları keşfet ve eğlenceye başla!</p>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" class="inline-flex items-center justify-center px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-all transform hover:scale-105 gap-2 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-500 opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                    <i class="fab fa-discord text-xl relative z-10"></i> 
+                    <span class="relative z-10">Hemen Ekle</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commands Section -->
+    <section id="commands" class="py-32 relative bg-[#0f0f13]">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold text-white mb-4">Gelişmiş <span class="text-purple-500">Komutlar</span></h2>
+                <p class="text-gray-400">Sunucunuzu yönetmek için ihtiyacınız olan her şey.</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-8" data-aos="fade-up" data-aos-delay="200">
+                <!-- Categories -->
+                <div class="w-full md:w-1/4 space-y-2">
+                    <button onclick="switchTab('moderation')" id="tab-moderation" class="w-full text-left px-6 py-4 rounded-xl bg-purple-600 text-white font-semibold transition-all shadow-lg shadow-purple-900/20 ring-2 ring-purple-500">Moderasyon</button>
+                    <button onclick="switchTab('music')" id="tab-music" class="w-full text-left px-6 py-4 rounded-xl bg-[#1a1a20] text-gray-400 hover:bg-white/5 hover:text-white font-semibold transition-all">Müzik</button>
+                    <button onclick="switchTab('entertainment')" id="tab-entertainment" class="w-full text-left px-6 py-4 rounded-xl bg-[#1a1a20] text-gray-400 hover:bg-white/5 hover:text-white font-semibold transition-all">Eğlence</button>
+                    <button onclick="switchTab('general')" id="tab-general" class="w-full text-left px-6 py-4 rounded-xl bg-[#1a1a20] text-gray-400 hover:bg-white/5 hover:text-white font-semibold transition-all">Genel</button>
+                </div>
+
+                <!-- Command List -->
+                <div class="w-full md:w-3/4 bg-[#1a1a20] rounded-2xl border border-white/5 p-8 min-h-[400px]">
+                    <!-- Moderation -->
+                    <div id="content-moderation" class="space-y-4 command-content">
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-purple-400 font-bold mb-1">g!ban</div>
+                                <div class="text-gray-400 text-sm">Belirtilen kullanıcıyı sunucudan yasaklar.</div>
+                            </div>
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">Yönetici</div>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-purple-400 font-bold mb-1">g!kick</div>
+                                <div class="text-gray-400 text-sm">Belirtilen kullanıcıyı sunucudan atar.</div>
+                            </div>
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">Yönetici</div>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-purple-400 font-bold mb-1">g!mute</div>
+                                <div class="text-gray-400 text-sm">Kullanıcıyı süreli veya süresiz susturur.</div>
+                            </div>
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">Moderatör</div>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-purple-400 font-bold mb-1">g!sil</div>
+                                <div class="text-gray-400 text-sm">Belirtilen miktarda mesajı kanaldan siler.</div>
+                            </div>
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">Yönetici</div>
+                        </div>
+                    </div>
+
+                    <!-- Music -->
+                    <div id="content-music" class="space-y-4 command-content hidden">
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-pink-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-pink-400 font-bold mb-1">g!play</div>
+                                <div class="text-gray-400 text-sm">İstediğiniz müziği veya çalma listesini oynatır.</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-pink-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-pink-400 font-bold mb-1">g!skip</div>
+                                <div class="text-gray-400 text-sm">Çalan şarkıyı atlar.</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-pink-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-pink-400 font-bold mb-1">g!lyrics</div>
+                                <div class="text-gray-400 text-sm">Çalan şarkının sözlerini gösterir.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Entertainment -->
+                    <div id="content-entertainment" class="space-y-4 command-content hidden">
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-blue-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-blue-400 font-bold mb-1">g!coinflip</div>
+                                <div class="text-gray-400 text-sm">Yazı tura atar.</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-blue-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-blue-400 font-bold mb-1">g!rank</div>
+                                <div class="text-gray-400 text-sm">Seviye kartınızı ve sıralamanızı gösterir.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- General -->
+                    <div id="content-general" class="space-y-4 command-content hidden">
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-green-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-green-400 font-bold mb-1">g!yardım</div>
+                                <div class="text-gray-400 text-sm">Tüm komutların listesini ve yardım menüsünü gösterir.</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-green-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-green-400 font-bold mb-1">g!ping</div>
+                                <div class="text-gray-400 text-sm">Botun gecikme sürelerini gösterir.</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-green-500/50 transition-colors group">
+                            <div>
+                                <div class="font-mono text-green-400 font-bold mb-1">g!istatistik</div>
+                                <div class="text-gray-400 text-sm">Botun sunucu ve kullanıcı istatistiklerini gösterir.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rank Card Customizer Section -->
+    <section id="rank-customizer" class="py-32 relative bg-[#0a0a0c] border-t border-white/5">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] -mr-20 -mt-20 pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/10 rounded-full blur-[100px] -ml-20 -mb-20 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold text-white mb-4">Kendi Kartını <span class="text-pink-500">Tasarla</span></h2>
+                <p class="text-gray-400">Sunucundaki seviye kartını tamamen özelleştir.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Controls -->
+                <div class="bg-[#1a1a20] rounded-3xl border border-white/5 p-8" data-aos="fade-right">
+                    <h3 class="text-2xl font-bold text-white mb-6">Özelleştirme Seçenekleri</h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Theme Color -->
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-3">Tema Rengi</label>
+                            <div class="flex gap-3">
+                                <button onclick="updateCardTheme('#a855f7')" class="w-10 h-10 rounded-full bg-purple-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
+                                <button onclick="updateCardTheme('#ec4899')" class="w-10 h-10 rounded-full bg-pink-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
+                                <button onclick="updateCardTheme('#3b82f6')" class="w-10 h-10 rounded-full bg-blue-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
+                                <button onclick="updateCardTheme('#22c55e')" class="w-10 h-10 rounded-full bg-green-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
+                                <button onclick="updateCardTheme('#eab308')" class="w-10 h-10 rounded-full bg-yellow-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-white"></button>
+                                <input type="color" id="customColorPicker" class="w-10 h-10 rounded-full bg-transparent border-0 cursor-pointer" oninput="updateCardTheme(this.value)">
+                            </div>
+                        </div>
+
+                        <!-- Card Background -->
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-3">Arka Plan Stili</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button onclick="updateCardBg('solid')" class="px-4 py-3 rounded-xl bg-white/5 text-white hover:bg-white/10 border border-white/5 transition-colors text-sm font-medium">Sade</button>
+                                <button onclick="updateCardBg('gradient')" class="px-4 py-3 rounded-xl bg-gradient-to-r from-purple-900/50 to-pink-900/50 text-white border border-white/5 transition-colors text-sm font-medium">Gradient</button>
+                                <button onclick="updateCardBg('image')" class="px-4 py-3 rounded-xl bg-[url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=500&auto=format&fit=crop&q=60')] bg-cover text-white border border-white/5 transition-colors text-sm font-medium shadow-inner">Resim</button>
+                                <button onclick="updateCardBg('glass')" class="px-4 py-3 rounded-xl bg-white/5 backdrop-blur-md text-white border border-white/5 transition-colors text-sm font-medium">Glass</button>
+                            </div>
+                        </div>
+
+                        <!-- Username Input -->
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-3">Kullanıcı Adı</label>
+                            <input type="text" id="cardNameInput" placeholder="Kullanıcı Adı" class="w-full bg-[#0f0f13] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors" oninput="updateCardText()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="relative" data-aos="fade-left">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur opacity-30 animate-pulse"></div>
+                    <div id="rankCard" class="relative w-full aspect-[3/1] bg-[#1a1a20] rounded-2xl overflow-hidden shadow-2xl flex items-center p-6 border border-white/10 transition-all duration-500">
+                        <!-- Background Layer -->
+                        <div id="rankCardBg" class="absolute inset-0 bg-[#1a1a20] z-0 transition-all duration-500"></div>
+                        
+                        <!-- Content -->
+                        <div class="relative z-10 w-full flex items-center gap-6">
+                            <!-- Avatar -->
+                            <div class="relative">
+                                <div class="w-24 h-24 rounded-full border-4 border-[#1a1a20] overflow-hidden shadow-lg">
+                                    <img src="https://ui-avatars.com/api/?name=User&background=random" id="cardAvatar" class="w-full h-full object-cover">
+                                </div>
+                                <div class="absolute bottom-1 right-1 w-6 h-6 rounded-full border-4 border-[#1a1a20] bg-green-500"></div>
+                            </div>
+
+                            <!-- Info -->
+                            <div class="flex-1">
+                                <div class="flex justify-between items-end mb-2">
+                                    <div>
+                                        <h4 id="cardName" class="text-2xl font-bold text-white shadow-black drop-shadow-md">Kullanıcı</h4>
+                                        <span class="text-gray-400 text-sm font-medium">#1234</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-gray-400 uppercase tracking-widest">Rank</span>
+                                        <span class="text-3xl font-black text-white ml-1 shadow-black drop-shadow-md">#1</span>
+                                    </div>
+                                </div>
+
+                                <!-- XP Bar -->
+                                <div class="relative w-full h-6 bg-black/50 rounded-full overflow-hidden backdrop-blur-sm">
+                                    <div id="cardProgress" class="absolute top-0 left-0 h-full w-[75%] bg-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all duration-500"></div>
+                                    <div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/80 tracking-widest">
+                                        750 / 1000 XP
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-center">
+                        <p class="text-gray-500 text-sm mb-4">Bu sadece bir önizlemedir. Bot üzerinden çok daha fazlasını yapabilirsiniz.</p>
+                        <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 font-bold transition-colors">
+                            <i class="fas fa-magic"></i> Hemen Kendi Kartını Oluştur
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Login Modal Functions
+        function openLoginModal() {
+            const modal = document.getElementById('login-modal');
+            const content = document.getElementById('login-modal-content');
+            
+            modal.classList.remove('hidden');
+            // Small delay to trigger transition
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0', 'translate-y-8');
+                content.classList.add('scale-100', 'opacity-100', 'translate-y-0');
+            }, 10);
+        }
+
+        function closeLoginModal() {
+            const modal = document.getElementById('login-modal');
+            const content = document.getElementById('login-modal-content');
+            
+            content.classList.remove('scale-100', 'opacity-100', 'translate-y-0');
+            content.classList.add('scale-95', 'opacity-0', 'translate-y-8');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 500);
+        }
+
+        // Close modal when clicking on overlay
+        document.getElementById('login-modal-overlay').addEventListener('click', closeLoginModal);
+
+        // Feature Modal Functions
+        function openFeatureModal(type) {
+            const modal = document.getElementById('feature-modal');
+            const content = document.getElementById('feature-modal-content');
+            const body = document.getElementById('feature-modal-body');
+            
+            const features = {
+                moderation: {
+                    title: 'Gelişmiş Moderasyon',
+                    icon: 'fa-shield-halved',
+                    color: 'purple',
+                    desc: 'Sunucunuzun güvenliği bizim için her şeyden önemli.',
+                    list: [
+                        'Otomatik küfür, reklam ve spam engelleme.',
+                        'Detaylı log sistemi (Mesaj silme, kanal oluşturma vb.)',
+                        'Süreli susturma (Mute) ve yasaklama komutları.',
+                        'Yaş sınırı ve otorol gibi güvenlik araçları.'
+                    ]
+                },
+                music: {
+                    title: 'Yüksek Kalite Müzik',
+                    icon: 'fa-music',
+                    color: 'pink',
+                    desc: 'Müzik deneyiminizi bir üst seviyeye taşıyın.',
+                    list: [
+                        'Spotify, SoundCloud ve YouTube playlist desteği.',
+                        'Hi-Fi Studio kalitesinde (320kbps) ses çıkışı.',
+                        'Dinamik EQ ayarları ve ses efektleri.',
+                        '7/24 kesintisiz müzik çalma özelliği.'
+                    ]
+                },
+                economy: {
+                    title: 'Ekonomi Sistemi',
+                    icon: 'fa-coins',
+                    color: 'blue',
+                    desc: 'Sunucu içi etkileşimi ve rekabeti artırın.',
+                    list: [
+                        'Kişiselleştirilebilir global para birimi.',
+                        'Mağaza sistemi ve rol satın alma.',
+                        'Günlük ödüller ve seviye tabanlı XP sistemi.',
+                        'Slot, yazı-tura gibi eğlenceli kumar oyunları.'
+                    ]
+                }
+            };
+
+            const f = features[type];
+            if (!f) return;
+
+            body.innerHTML = `
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-16 h-16 bg-${f.color}-500/20 rounded-2xl flex items-center justify-center text-${f.color}-500 shadow-lg shadow-${f.color}-500/10">
+                        <i class="fa-solid ${f.icon} text-3xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-black text-white tracking-tight">${f.title}</h2>
+                        <p class="text-gray-400 text-sm">${f.desc}</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                    ${f.list.map(item => `
+                        <div class="flex items-start gap-3 p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-${f.color}-500/30 transition-colors">
+                            <i class="fa-solid fa-check-circle text-${f.color}-500 mt-1"></i>
+                            <span class="text-gray-300 text-sm font-medium leading-relaxed">${item}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mt-10 flex gap-4">
+                    <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" class="flex-1 py-4 bg-${f.color}-600 hover:bg-${f.color}-500 text-white rounded-2xl font-bold text-center transition-all transform hover:scale-[1.02]">
+                        Botu Davet Et
+                    </a>
+                    <button onclick="closeFeatureModal()" class="px-8 py-4 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-bold border border-white/10 transition-all">
+                        Kapat
+                    </button>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0', 'translate-y-8');
+                content.classList.add('scale-100', 'opacity-100', 'translate-y-0');
+            }, 10);
+        }
+
+        function closeFeatureModal() {
+            const modal = document.getElementById('feature-modal');
+            const content = document.getElementById('feature-modal-content');
+            
+            content.classList.remove('scale-100', 'opacity-100', 'translate-y-0');
+            content.classList.add('scale-95', 'opacity-0', 'translate-y-8');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 500);
+        }
+
+        document.getElementById('feature-modal-overlay').addEventListener('click', closeFeatureModal);
+
+        function updateCardTheme(color) {
+            const progressBar = document.getElementById('cardProgress');
+            progressBar.style.backgroundColor = color;
+            progressBar.style.boxShadow = `0 0 15px ${color}80`;
+            
+            // Also update the glow effect behind the card
+            const glow = document.querySelector('#rankCard').previousElementSibling;
+            // Since tailwind classes are used, we can't easily change the gradient via JS without inline styles or removing classes.
+            // Let's just update the progress bar for now as the main "theme" indicator.
+        }
+
+        function updateCardBg(type) {
+            const bg = document.getElementById('rankCardBg');
+            
+            // Reset classes
+            bg.className = 'absolute inset-0 z-0 transition-all duration-500';
+            bg.style = ''; // Reset inline styles
+
+            if (type === 'solid') {
+                bg.classList.add('bg-[#1a1a20]');
+            } else if (type === 'gradient') {
+                bg.classList.add('bg-gradient-to-r', 'from-purple-900', 'to-pink-900');
+            } else if (type === 'image') {
+                bg.style.backgroundImage = "url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1000&auto=format&fit=crop&q=80')";
+                bg.style.backgroundSize = 'cover';
+                bg.style.backgroundPosition = 'center';
+            } else if (type === 'glass') {
+                bg.classList.add('bg-white/10', 'backdrop-blur-md');
+            }
+        }
+
+        function updateCardText() {
+            const input = document.getElementById('cardNameInput');
+            const name = document.getElementById('cardName');
+            const avatar = document.getElementById('cardAvatar');
+            
+            if (input.value.trim() !== '') {
+                name.innerText = input.value;
+                avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(input.value)}&background=random`;
+            } else {
+                name.innerText = 'Kullanıcı';
+                avatar.src = 'https://ui-avatars.com/api/?name=User&background=random';
+            }
+        }
+    </script>
+
+    <!-- Stats Section -->
+    <section id="stats" class="py-20 relative overflow-hidden bg-gradient-to-b from-[#0f0f13] to-[#1a1a20]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-white/10 bg-white/5 rounded-3xl p-10 border border-white/5 backdrop-blur-sm" data-aos="zoom-in">
+                <div class="p-4 flex flex-col items-center group hover:bg-white/5 transition-colors rounded-xl">
+                    <div class="mb-4 p-4 bg-purple-500/10 rounded-2xl group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                        </svg>
+                    </div>
+                    <div class="text-5xl font-black text-white mb-2" data-target="500">0</div>
+                    <div class="text-purple-400 font-medium uppercase tracking-wider text-sm">Sunucu</div>
+                </div>
+                <div class="p-4 flex flex-col items-center group hover:bg-white/5 transition-colors rounded-xl">
+                    <div class="mb-4 p-4 bg-pink-500/10 rounded-2xl group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </div>
+                    <div class="text-5xl font-black text-white mb-2" data-target="150000">0</div>
+                    <div class="text-pink-400 font-medium uppercase tracking-wider text-sm">Kullanıcı</div>
+                </div>
+                <div class="p-4 flex flex-col items-center group hover:bg-white/5 transition-colors rounded-xl">
+                    <div class="mb-4 p-4 bg-blue-500/10 rounded-2xl group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <div class="text-5xl font-black text-white mb-2" data-target="24">0</div>
+                    <div class="text-blue-400 font-medium uppercase tracking-wider text-sm">Ping (ms)</div>
+                </div>
+                <div class="p-4 flex flex-col items-center group hover:bg-white/5 transition-colors rounded-xl">
+                    <div class="mb-4 p-4 bg-green-500/10 rounded-2xl group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </div>
+                    <div class="text-5xl font-black text-white mb-2" id="busuanzi_value_site_uv">0</div>
+                    <div class="text-green-400 font-medium uppercase tracking-wider text-sm">Site Ziyaretçisi</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section class="py-10 border-b border-white/5 bg-[#0a0a0c] overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-gray-500 text-sm font-bold uppercase tracking-widest mb-8">Bize Güvenen Topluluklar</p>
+            
+            <div class="relative w-full overflow-hidden">
+                <div class="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-[#0a0a0c] to-transparent z-10"></div>
+                <div class="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-[#0a0a0c] to-transparent z-10"></div>
+                
+                <div class="flex animate-marquee whitespace-nowrap opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                    <!-- Partner Items (Duplicated for seamless loop) -->
+                    <div class="flex items-center gap-2 mr-20 hover:scale-110 transition-transform cursor-pointer">
+                        <i class="fab fa-discord text-4xl text-white group-hover:text-[#5865F2] transition-colors"></i>
+                        <span class="text-xl font-bold text-white">Discord</span>
+                    </div>
+                    <div class="flex items-center gap-2 mr-20 hover:scale-110 transition-transform cursor-pointer">
+                        <i class="fab fa-spotify text-4xl text-white group-hover:text-[#1DB954] transition-colors"></i>
+                        <span class="text-xl font-bold text-white">Spotify</span>
+                    </div>
+                    <div class="flex items-center gap-2 mr-20 hover:scale-110 transition-transform cursor-pointer">
+                        <i class="fab fa-soundcloud text-4xl text-white group-hover:text-[#ff5500] transition-colors"></i>
+                        <span class="text-xl font-bold text-white">SoundCloud</span>
+                    </div>
+                    <div class="flex items-center gap-2 mr-20 hover:scale-110 transition-transform cursor-pointer">
+                        <i class="fab fa-youtube text-4xl text-white group-hover:text-[#FF0000] transition-colors"></i>
+                        <span class="text-xl font-bold text-white">YouTube</span>
+                    </div>
+                    <div class="flex items-center gap-2 mr-20 hover:scale-110 transition-transform cursor-pointer">
+                        <i class="fab fa-twitch text-4xl text-white group-hover:text-[#9146FF] transition-colors"></i>
+                        <span class="text-xl font-bold text-white">Twitch</span>
+                    </div>
+                    <!-- Duplicates -->
+                    <div class="flex items-center gap-2 mr-20 hover:scale-110 transition-transform cursor-pointer">
+                        <i class="fab fa-discord text-4xl text-white group-hover:text-[#5865F2] transition-colors"></i>
+                        <span class="text-xl font-bold text-white">Discord</span>
+                    </div>
+                    <div class="flex items-center gap-2 mr-20 hover:scale-110 transition-transform cursor-pointer">
+                        <i class="fab fa-spotify text-4xl text-white group-hover:text-[#1DB954] transition-colors"></i>
+                        <span class="text-xl font-bold text-white">Spotify</span>
+                    </div>
+                    <div class="flex items-center gap-2 mr-20 hover:scale-110 transition-transform cursor-pointer">
+                        <i class="fab fa-soundcloud text-4xl text-white group-hover:text-[#ff5500] transition-colors"></i>
+                        <span class="text-xl font-bold text-white">SoundCloud</span>
+                    </div>
+                    <div class="flex items-center gap-2 mr-20 hover:scale-110 transition-transform cursor-pointer">
+                        <i class="fab fa-youtube text-4xl text-white group-hover:text-[#FF0000] transition-colors"></i>
+                        <span class="text-xl font-bold text-white">YouTube</span>
+                    </div>
+                    <div class="flex items-center gap-2 mr-20 hover:scale-110 transition-transform cursor-pointer">
+                        <i class="fab fa-twitch text-4xl text-white group-hover:text-[#9146FF] transition-colors"></i>
+                        <span class="text-xl font-bold text-white">Twitch</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Status Section -->
+    <section class="py-10 bg-[#0f0f13] border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Status Item 1 -->
+                <div class="bg-[#1a1a20] rounded-xl p-4 border border-white/5 flex items-center justify-between group hover:border-green-500/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse"></div>
+                        <span class="text-gray-300 font-medium text-sm">API Durumu</span>
+                    </div>
+                    <span class="text-green-400 font-bold text-xs bg-green-500/10 px-2 py-1 rounded">Aktif</span>
+                </div>
+                <!-- Status Item 2 -->
+                <div class="bg-[#1a1a20] rounded-xl p-4 border border-white/5 flex items-center justify-between group hover:border-green-500/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse"></div>
+                        <span class="text-gray-300 font-medium text-sm">Veritabanı</span>
+                    </div>
+                    <span class="text-green-400 font-bold text-xs bg-green-500/10 px-2 py-1 rounded">Stabil</span>
+                </div>
+                <!-- Status Item 3 -->
+                <div class="bg-[#1a1a20] rounded-xl p-4 border border-white/5 flex items-center justify-between group hover:border-green-500/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse"></div>
+                        <span class="text-gray-300 font-medium text-sm">Müzik Düğümleri</span>
+                    </div>
+                    <span class="text-green-400 font-bold text-xs bg-green-500/10 px-2 py-1 rounded">%99.9</span>
+                </div>
+                <!-- Status Item 4 -->
+                <div class="bg-[#1a1a20] rounded-xl p-4 border border-white/5 flex items-center justify-between group hover:border-green-500/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse"></div>
+                        <span class="text-gray-300 font-medium text-sm">Gecikme</span>
+                    </div>
+                    <span class="text-green-400 font-bold text-xs bg-green-500/10 px-2 py-1 rounded">24ms</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Us Section -->
+    <section class="py-20 bg-[#0a0a0c] border-b border-white/5 relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-pink-500/10 rounded-full blur-[100px]"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" data-aos="fade-up">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white mb-4">Neden <span class="text-purple-500">GraveBOT?</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Rakiplerimizden bizi ayıran özellikler ve sunduğumuz ayrıcalıklar.</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="p-4 border-b border-white/10 text-gray-400 font-medium w-1/3">Özellik</th>
+                            <th class="p-4 border-b border-purple-500/30 text-white font-bold text-lg bg-purple-500/10 rounded-t-xl w-1/3 text-center">
+                                <i class="fas fa-crown text-yellow-400 mr-2"></i>GraveBOT
+                            </th>
+                            <th class="p-4 border-b border-white/10 text-gray-500 font-medium w-1/3 text-center">Diğer Botlar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-300">
+                        <tr class="group hover:bg-white/5 transition-colors">
+                            <td class="p-4 border-b border-white/5 font-medium">Müzik Kalitesi</td>
+                            <td class="p-4 border-b border-white/5 bg-purple-500/5 text-center font-bold text-purple-400">Hi-Fi Studio</td>
+                            <td class="p-4 border-b border-white/5 text-center text-gray-500">Standart</td>
+                        </tr>
+                        <tr class="group hover:bg-white/5 transition-colors">
+                            <td class="p-4 border-b border-white/5 font-medium">Çalışma Süresi (Uptime)</td>
+                            <td class="p-4 border-b border-white/5 bg-purple-500/5 text-center font-bold text-green-400">%99.9</td>
+                            <td class="p-4 border-b border-white/5 text-center text-gray-500">%95-98</td>
+                        </tr>
+                        <tr class="group hover:bg-white/5 transition-colors">
+                            <td class="p-4 border-b border-white/5 font-medium">Dashboard Kontrolü</td>
+                            <td class="p-4 border-b border-white/5 bg-purple-500/5 text-center text-green-400"><i class="fas fa-check"></i></td>
+                            <td class="p-4 border-b border-white/5 text-center text-red-500"><i class="fas fa-times"></i></td>
+                        </tr>
+                        <tr class="group hover:bg-white/5 transition-colors">
+                            <td class="p-4 border-b border-white/5 font-medium">Türkçe Destek</td>
+                            <td class="p-4 border-b border-white/5 bg-purple-500/5 text-center text-green-400"><i class="fas fa-check"></i></td>
+                            <td class="p-4 border-b border-white/5 text-center text-yellow-500">Kısmi</td>
+                        </tr>
+                        <tr class="group hover:bg-white/5 transition-colors">
+                            <td class="p-4 border-b border-white/5 font-medium">Gecikme Süresi</td>
+                            <td class="p-4 border-b border-white/5 bg-purple-500/5 text-center font-bold text-purple-400">&lt; 20ms</td>
+                            <td class="p-4 border-b border-white/5 text-center text-gray-500">100ms+</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-medium">Kurulum Kolaylığı</td>
+                            <td class="p-4 bg-purple-500/5 text-center font-bold text-purple-400 rounded-b-xl">Tek Tıkla</td>
+                            <td class="p-4 text-center text-gray-500">Karmaşık</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-32 relative bg-[#0f0f13]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold text-white mb-4">Seçkin <span class="text-purple-500">Üyelikler</span></h2>
+                <p class="text-gray-400">Sunucunuzu bir üst seviyeye taşıyın.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Free Plan -->
+                <div class="relative p-8 bg-[#1a1a20] rounded-3xl border border-white/5 hover:border-gray-500/50 transition-all group" data-aos="fade-up" data-aos-delay="100">
+                    <div class="absolute top-0 right-0 bg-gray-600/20 text-gray-400 text-xs font-bold px-3 py-1 rounded-bl-xl rounded-tr-3xl">BAŞLANGIÇ</div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Mezar Taşı</h3>
+                    <div class="flex items-baseline mb-6">
+                        <span class="text-4xl font-black text-white">₺0</span>
+                        <span class="text-gray-500 ml-2">/ay</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-400"><i class="fas fa-check text-green-500 mr-3"></i> Temel Moderasyon</li>
+                        <li class="flex items-center text-gray-400"><i class="fas fa-check text-green-500 mr-3"></i> Müzik Çalma (Standart)</li>
+                        <li class="flex items-center text-gray-400"><i class="fas fa-check text-green-500 mr-3"></i> Ekonomi Sistemi</li>
+                        <li class="flex items-center text-gray-600"><i class="fas fa-times mr-3"></i> Özel Filtreler</li>
+                        <li class="flex items-center text-gray-600"><i class="fas fa-times mr-3"></i> 2x XP Kazanımı</li>
+                    </ul>
+                    <a href="#" class="block w-full py-3 rounded-xl bg-white/5 text-white font-bold text-center hover:bg-white/10 transition-colors border border-white/5">Mevcut Plan</a>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="relative p-8 bg-[#1a1a20] rounded-3xl border-2 border-purple-500 hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] transition-all transform scale-105 z-10" data-aos="fade-up" data-aos-delay="200">
+                    <div class="absolute top-0 right-0 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl">POPÜLER</div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Ruh</h3>
+                    <div class="flex items-baseline mb-6">
+                        <span class="text-4xl font-black text-white">₺29</span>
+                        <span class="text-gray-500 ml-2">/ay</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-white"><i class="fas fa-check text-purple-500 mr-3"></i> Gelişmiş Moderasyon</li>
+                        <li class="flex items-center text-white"><i class="fas fa-check text-purple-500 mr-3"></i> Yüksek Kalite Müzik</li>
+                        <li class="flex items-center text-white"><i class="fas fa-check text-purple-500 mr-3"></i> Özel Ses Filtreleri</li>
+                        <li class="flex items-center text-white"><i class="fas fa-check text-purple-500 mr-3"></i> Reklamsız Deneyim</li>
+                        <li class="flex items-center text-gray-500"><i class="fas fa-times mr-3"></i> Sunucu Özel Bot</li>
+                    </ul>
+                    <a href="#" class="block w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-center hover:shadow-lg hover:scale-105 transition-all">Satın Al</a>
+                </div>
+
+                <!-- Ultimate Plan -->
+                <div class="relative p-8 bg-[#1a1a20] rounded-3xl border border-white/5 hover:border-pink-500/50 transition-all group" data-aos="fade-up" data-aos-delay="300">
+                    <div class="absolute top-0 right-0 bg-pink-600/20 text-pink-400 text-xs font-bold px-3 py-1 rounded-bl-xl rounded-tr-3xl">VIP</div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Diriliş</h3>
+                    <div class="flex items-baseline mb-6">
+                        <span class="text-4xl font-black text-white">₺50</span>
+                        <span class="text-gray-500 ml-2">/ay</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-400"><i class="fas fa-check text-pink-500 mr-3"></i> Her Şey Sınırsız</li>
+                        <li class="flex items-center text-gray-400"><i class="fas fa-check text-pink-500 mr-3"></i> 4x XP Kazanımı</li>
+                        <li class="flex items-center text-gray-400"><i class="fas fa-check text-pink-500 mr-3"></i> Öncelikli Destek</li>
+                        <li class="flex items-center text-gray-400"><i class="fas fa-check text-pink-500 mr-3"></i> Sunucuya Özel Bot İsmi</li>
+                        <li class="flex items-center text-gray-400"><i class="fas fa-check text-pink-500 mr-3"></i> Erken Erişim</li>
+                    </ul>
+                    <a href="#" class="block w-full py-3 rounded-xl bg-white/5 text-white font-bold text-center hover:bg-white/10 transition-colors border border-white/5">Satın Al</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section 2 -->
+    <section class="py-20 relative overflow-hidden bg-gradient-to-b from-[#0f0f13] to-[#1a1a20]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Kullanıcı <span class="text-pink-500">Yorumları</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Binlerce mutlu kullanıcı GraveBOT'u tercih ediyor.</p>
+            </div>
+
+            <!-- Swiper 2 -->
+            <div class="swiper mySwiper2 !pb-12">
+                <div class="swiper-wrapper">
+                    <!-- Slide 1 -->
+                    <div class="swiper-slide h-auto">
+                        <div class="bg-[#1a1a20] border border-white/5 p-6 rounded-2xl h-full flex flex-col hover:border-pink-500/30 transition-all hover:-translate-y-1 shadow-lg shadow-black/20 group">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        <img src="https://ui-avatars.com/api/?name=Ahmet+Y&background=ec4899&color=fff" class="w-10 h-10 rounded-full border-2 border-[#1a1a20]">
+                                        <div class="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-[#1a1a20]"></div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold text-sm group-hover:text-pink-400 transition-colors">Ahmet Y.</h4>
+                                        <p class="text-xs text-gray-500">Sunucu Sahibi</p>
+                                    </div>
+                                </div>
+                                <div class="bg-pink-500/10 px-2 py-1 rounded text-xs text-pink-400 font-medium flex items-center gap-1">
+                                    <i class="fas fa-check-circle"></i> Doğrulanmış
+                                </div>
+                            </div>
+                            <div class="flex text-yellow-500 text-xs mb-3 gap-0.5">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-1">"GraveBOT sayesinde sunucumdaki moderasyon işlemleri çok kolaylaştı. Kesinlikle tavsiye ederim!"</p>
+                            <div class="text-xs text-gray-600 pt-3 border-t border-white/5 flex justify-between items-center">
+                                <span>2 gün önce</span>
+                                <span class="text-pink-500/50 group-hover:text-pink-500 transition-colors"><i class="fab fa-discord"></i> Discord</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2 -->
+                    <div class="swiper-slide h-auto">
+                        <div class="bg-[#1a1a20] border border-white/5 p-6 rounded-2xl h-full flex flex-col hover:border-purple-500/30 transition-all hover:-translate-y-1 shadow-lg shadow-black/20 group">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        <img src="https://ui-avatars.com/api/?name=Elif+K&background=8b5cf6&color=fff" class="w-10 h-10 rounded-full border-2 border-[#1a1a20]">
+                                        <div class="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-[#1a1a20]"></div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold text-sm group-hover:text-purple-400 transition-colors">Elif K.</h4>
+                                        <p class="text-xs text-gray-500">Topluluk Yöneticisi</p>
+                                    </div>
+                                </div>
+                                <div class="bg-purple-500/10 px-2 py-1 rounded text-xs text-purple-400 font-medium flex items-center gap-1">
+                                    <i class="fas fa-gem"></i> Premium
+                                </div>
+                            </div>
+                            <div class="flex text-yellow-500 text-xs mb-3 gap-0.5">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-1">"Müzik kalitesi gerçekten harika. Diğer botlara göre çok daha stabil çalışıyor."</p>
+                            <div class="text-xs text-gray-600 pt-3 border-t border-white/5 flex justify-between items-center">
+                                <span>5 gün önce</span>
+                                <span class="text-purple-500/50 group-hover:text-purple-500 transition-colors"><i class="fab fa-discord"></i> Discord</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="swiper-slide h-auto">
+                        <div class="bg-[#1a1a20] border border-white/5 p-6 rounded-2xl h-full flex flex-col hover:border-blue-500/30 transition-all hover:-translate-y-1 shadow-lg shadow-black/20 group">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        <img src="https://ui-avatars.com/api/?name=Mehmet+S&background=3b82f6&color=fff" class="w-10 h-10 rounded-full border-2 border-[#1a1a20]">
+                                        <div class="absolute -bottom-1 -right-1 bg-gray-500 w-3 h-3 rounded-full border-2 border-[#1a1a20]"></div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold text-sm group-hover:text-blue-400 transition-colors">Mehmet S.</h4>
+                                        <p class="text-xs text-gray-500">Moderatör</p>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-500/10 px-2 py-1 rounded text-xs text-blue-400 font-medium flex items-center gap-1">
+                                    <i class="fas fa-shield-alt"></i> Mod
+                                </div>
+                            </div>
+                            <div class="flex text-yellow-500 text-xs mb-3 gap-0.5">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-1">"Ekonomi sistemi sunucumuzu çok daha eğlenceli hale getirdi. Teşekkürler GraveBOT!"</p>
+                            <div class="text-xs text-gray-600 pt-3 border-t border-white/5 flex justify-between items-center">
+                                <span>1 hafta önce</span>
+                                <span class="text-blue-500/50 group-hover:text-blue-500 transition-colors"><i class="fab fa-discord"></i> Discord</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4 -->
+                    <div class="swiper-slide h-auto">
+                        <div class="bg-[#1a1a20] border border-white/5 p-6 rounded-2xl h-full flex flex-col hover:border-green-500/30 transition-all hover:-translate-y-1 shadow-lg shadow-black/20 group">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        <img src="https://ui-avatars.com/api/?name=Zeynep+A&background=10b981&color=fff" class="w-10 h-10 rounded-full border-2 border-[#1a1a20]">
+                                        <div class="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-[#1a1a20]"></div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold text-sm group-hover:text-green-400 transition-colors">Zeynep A.</h4>
+                                        <p class="text-xs text-gray-500">Discord Partneri</p>
+                                    </div>
+                                </div>
+                                <div class="bg-green-500/10 px-2 py-1 rounded text-xs text-green-400 font-medium flex items-center gap-1">
+                                    <i class="fab fa-discord"></i> Partner
+                                </div>
+                            </div>
+                            <div class="flex text-yellow-500 text-xs mb-3 gap-0.5">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-1">"Destek ekibi çok ilgili ve hızlı dönüş yapıyor. Herhangi bir sorun yaşamadım."</p>
+                            <div class="text-xs text-gray-600 pt-3 border-t border-white/5 flex justify-between items-center">
+                                <span>2 hafta önce</span>
+                                <span class="text-green-500/50 group-hover:text-green-500 transition-colors"><i class="fab fa-discord"></i> Discord</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5 -->
+                    <div class="swiper-slide h-auto">
+                        <div class="bg-[#1a1a20] border border-white/5 p-6 rounded-2xl h-full flex flex-col hover:border-yellow-500/30 transition-all hover:-translate-y-1 shadow-lg shadow-black/20 group">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        <img src="https://ui-avatars.com/api/?name=Can+B&background=eab308&color=fff" class="w-10 h-10 rounded-full border-2 border-[#1a1a20]">
+                                        <div class="absolute -bottom-1 -right-1 bg-red-500 w-3 h-3 rounded-full border-2 border-[#1a1a20] animate-pulse"></div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold text-sm group-hover:text-yellow-400 transition-colors">Can B.</h4>
+                                        <p class="text-xs text-gray-500">Yayıncı</p>
+                                    </div>
+                                </div>
+                                <div class="bg-yellow-500/10 px-2 py-1 rounded text-xs text-yellow-400 font-medium flex items-center gap-1">
+                                    <i class="fas fa-video"></i> Streamer
+                                </div>
+                            </div>
+                            <div class="flex text-yellow-500 text-xs mb-3 gap-0.5">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-1">"Yayınlarımda kullandığım en iyi müzik botu. Gecikme yok, ses kalitesi süper."</p>
+                            <div class="text-xs text-gray-600 pt-3 border-t border-white/5 flex justify-between items-center">
+                                <span>3 hafta önce</span>
+                                <span class="text-yellow-500/50 group-hover:text-yellow-500 transition-colors"><i class="fab fa-discord"></i> Discord</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next-2 absolute top-1/2 right-0 z-10 w-8 h-8 -mt-4 flex items-center justify-center cursor-pointer text-pink-500 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="swiper-button-prev-2 absolute top-1/2 left-0 z-10 w-8 h-8 -mt-4 flex items-center justify-center cursor-pointer text-pink-500 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Changelog Section -->
+    <section id="changelog" class="py-32 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold text-white mb-4">Son <span class="text-purple-500">Güncellemeler</span></h2>
+                <p class="text-gray-400">GraveBOT her gün daha iyiye gidiyor.</p>
+            </div>
+
+            <div class="relative border-l-2 border-purple-500/20 ml-4 space-y-12" data-aos="fade-up" data-aos-delay="200">
+                <!-- Version 1.2 -->
+                <div class="relative pl-8">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+                    <div class="mb-2 flex items-center gap-3">
+                        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-bold border border-purple-500/20">v1.2.0</span>
+                        <span class="text-gray-500 text-sm">22 Şubat 2026</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Web Sitesi Yenilendi</h3>
+                    <p class="text-gray-400 mb-4">Kullanıcı deneyimini artırmak için web sitemizi tamamen yeniledik. Artık daha hızlı ve modern.</p>
+                    <ul class="list-disc list-inside text-gray-500 space-y-1 text-sm">
+                        <li>Yeni tasarım ve animasyonlar eklendi.</li>
+                        <li>Mobil uyumluluk geliştirildi.</li>
+                        <li>Karanlık mod optimize edildi.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.1 -->
+                <div class="relative pl-8">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[#1a1a20] border-2 border-purple-500"></div>
+                    <div class="mb-2 flex items-center gap-3">
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-gray-400 text-xs font-bold border border-white/10">v1.1.5</span>
+                        <span class="text-gray-500 text-sm">15 Şubat 2026</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Müzik Sistemi Güncellemesi</h3>
+                    <p class="text-gray-400 mb-4">Müzik kalitesi artırıldı ve yeni kaynaklar eklendi.</p>
+                    <ul class="list-disc list-inside text-gray-500 space-y-1 text-sm">
+                        <li>Spotify çalma listesi desteği iyileştirildi.</li>
+                        <li>Ses kesilme sorunları giderildi.</li>
+                        <li>Yeni ses filtreleri (Bass Boost, Nightcore) eklendi.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.0 -->
+                <div class="relative pl-8">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[#1a1a20] border-2 border-gray-600"></div>
+                    <div class="mb-2 flex items-center gap-3">
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-gray-400 text-xs font-bold border border-white/10">v1.0.0</span>
+                        <span class="text-gray-500 text-sm">01 Ocak 2026</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">İlk Çıkış</h3>
+                    <p class="text-gray-400">GraveBOT, beta sürecini tamamlayarak tüm kullanıcılara açıldı.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section class="py-20 bg-[#0f0f13] border-b border-white/5 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" data-aos="fade-up">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white mb-4">Gelecek <span class="text-purple-500">Planlarımız</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">GraveBOT'u daha da ileriye taşımak için çalıştığımız projeler.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Phase 1 -->
+                <div class="relative p-6 rounded-2xl bg-[#1a1a20] border border-green-500/30 group hover:bg-[#22222a] transition-all">
+                    <div class="absolute -top-3 -right-3 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30">
+                        <i class="fas fa-check text-white text-xs"></i>
+                    </div>
+                    <span class="text-xs font-bold text-green-400 uppercase tracking-widest mb-2 block">Tamamlandı</span>
+                    <h3 class="text-xl font-bold text-white mb-2">v1.0 Lansman</h3>
+                    <p class="text-gray-400 text-sm">Temel müzik komutları, moderasyon sistemi ve web paneli yayına alındı.</p>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="relative p-6 rounded-2xl bg-[#1a1a20] border border-purple-500/50 group hover:bg-[#22222a] transition-all transform scale-105 shadow-2xl shadow-purple-900/20">
+                    <div class="absolute -top-3 -right-3 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center shadow-lg shadow-purple-600/30 animate-pulse">
+                        <i class="fas fa-sync-alt text-white text-xs animate-spin"></i>
+                    </div>
+                    <span class="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2 block">Şu An</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Web Dashboard v2</h3>
+                    <p class="text-gray-400 text-sm">Gelişmiş sunucu yönetimi, log sistemi ve detaylı istatistikler.</p>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="relative p-6 rounded-2xl bg-[#1a1a20] border border-white/5 group hover:border-purple-500/30 transition-all opacity-75 hover:opacity-100">
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">2026 Q3</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Yapay Zeka</h3>
+                    <p class="text-gray-400 text-sm">AI destekli moderasyon, sohbet botu ve akıllı müzik önerileri.</p>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="relative p-6 rounded-2xl bg-[#1a1a20] border border-white/5 group hover:border-purple-500/30 transition-all opacity-75 hover:opacity-100">
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">2026 Q4</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Mobil Uygulama</h3>
+                    <p class="text-gray-400 text-sm">iOS ve Android için sunucu yönetim uygulaması.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-32 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold text-white mb-4">Sıkça Sorulan <span class="text-pink-500">Sorular</span></h2>
+                <p class="text-gray-400">Aklınıza takılan soruların cevapları burada.</p>
+            </div>
+
+            <div class="space-y-4" data-aos="fade-up" data-aos-delay="200">
+                <!-- FAQ Item 1 -->
+                <details class="accordion-item group bg-[#1a1a20] rounded-xl border border-white/5 p-6 cursor-pointer">
+                    <summary class="flex justify-between items-center font-bold text-lg text-white list-none">
+                        GraveBOT ücretli mi?
+                        <span class="accordion-icon transition-transform duration-300 text-purple-500"><i class="fa-solid fa-chevron-down"></i></span>
+                    </summary>
+                    <div class="accordion-content text-gray-400">
+                        GraveBOT'un temel özellikleri tamamen ücretsizdir. Ancak daha gelişmiş özellikler (özel müzik filtreleri, daha fazla moderasyon kaydı vb.) için Premium üyelik satın alabilirsiniz.
+                    </div>
+                </details>
+
+                <!-- FAQ Item 2 -->
+                <details class="accordion-item group bg-[#1a1a20] rounded-xl border border-white/5 p-6 cursor-pointer">
+                    <summary class="flex justify-between items-center font-bold text-lg text-white list-none">
+                        Botu sunucuma nasıl eklerim?
+                        <span class="accordion-icon transition-transform duration-300 text-purple-500"><i class="fa-solid fa-chevron-down"></i></span>
+                    </summary>
+                    <div class="accordion-content text-gray-400">
+                        Ana sayfadaki "Discord'a Ekle" veya "Sunucuna Ekle" butonlarına tıklayarak botu sunucunuza davet edebilirsiniz. Yönetici yetkisine sahip olduğunuz herhangi bir sunucuya ekleyebilirsiniz.
+                    </div>
+                </details>
+
+                <!-- FAQ Item 3 -->
+                <details class="accordion-item group bg-[#1a1a20] rounded-xl border border-white/5 p-6 cursor-pointer">
+                    <summary class="flex justify-between items-center font-bold text-lg text-white list-none">
+                        Verilerim güvende mi?
+                        <span class="accordion-icon transition-transform duration-300 text-purple-500"><i class="fa-solid fa-chevron-down"></i></span>
+                    </summary>
+                    <div class="accordion-content text-gray-400">
+                        Evet, kullanıcı verileriniz şifrelenmiş sunucularımızda güvenle saklanır ve üçüncü şahıslarla paylaşılmaz. Gizlilik politikamızda detayları bulabilirsiniz.
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-32 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-3xl p-12 text-center border border-white/10 relative overflow-hidden" data-aos="flip-up">
+                <div class="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+                
+                <h2 class="text-4xl font-bold text-white mb-6 relative z-10">Sunucunu Bir Üst Seviyeye Taşı</h2>
+                <p class="text-gray-300 mb-10 max-w-2xl mx-auto relative z-10">GraveBOT'u hemen sunucuna ekle ve binlerce mutlu kullanıcının arasına katıl.</p>
+                
+                <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" class="inline-block px-10 py-5 bg-white text-black rounded-full font-bold text-lg hover:bg-gray-200 transition-all transform hover:scale-105 shadow-xl shadow-purple-900/50 relative z-10">
+                    Hemen Başla
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Developer Section -->
+    <section class="py-20 bg-[#0a0a0c] border-t border-white/5 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full">
+            <div class="absolute w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] -top-20 -left-20"></div>
+            <div class="absolute w-96 h-96 bg-pink-600/10 rounded-full blur-[100px] -bottom-20 -right-20"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl font-bold text-white mb-4">Geliştirici <span class="text-purple-500">Ekibi</span></h2>
+                <p class="text-gray-400">GraveBOT'un arkasındaki beyin.</p>
+            </div>
+
+            <div class="flex justify-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="bg-[#1a1a20]/80 backdrop-blur-xl border border-white/10 p-8 rounded-3xl max-w-md w-full hover:border-purple-500/30 transition-all group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="flex flex-col items-center text-center relative z-10">
+                        <div class="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-purple-500 to-pink-500 mb-6 relative group-hover:scale-105 transition-transform duration-300">
+                            <div class="w-full h-full rounded-full overflow-hidden bg-[#0f0f13]">
+                                <img src="logo2.png" alt="Developer" class="w-full h-full object-cover">
+                            </div>
+                            <div class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 rounded-full border-4 border-[#1a1a20]" title="Online"></div>
+                        </div>
+                        
+                        <h3 class="text-2xl font-bold text-white mb-1">Motion</h3>
+                        <p class="text-purple-400 font-medium text-sm mb-4">Lead Developer & Founder</p>
+                        
+                        <p class="text-gray-400 mb-8 leading-relaxed">
+                            Discord bot geliştirme konusunda 7+ yıllık deneyim. Modern teknolojilerle kullanıcı dostu ve güçlü sistemler tasarlıyorum.
+                        </p>
+                        
+                        <div class="flex gap-4">
+                            <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#5865F2] hover:text-white transition-all hover:-translate-y-1">
+                                <i class="fab fa-discord text-xl"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#171515] hover:text-white transition-all hover:-translate-y-1">
+                                <i class="fab fa-github text-xl"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#1DA1F2] hover:text-white transition-all hover:-translate-y-1">
+                                <i class="fab fa-twitter text-xl"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#E1306C] hover:text-white transition-all hover:-translate-y-1">
+                                <i class="fab fa-instagram text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Vote Section -->
+    <section class="py-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-pink-900/20"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center" data-aos="fade-up">
+            <h2 class="text-4xl md:text-5xl font-black text-white mb-6">Bize Destek Olun</h2>
+            <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">GraveBOT'u oylayarak büyümemize katkıda bulunun ve sürpriz ödüller kazanın.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://top.gg/tr/bot/1066016782827130960/vote" class="px-8 py-4 rounded-xl bg-white text-black font-bold text-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                    <i class="fas fa-vote-yea"></i> Şimdi Oyla
+                </a>
+                <a href="https://discord.gg/CVZ4zEkJws" class="px-8 py-4 rounded-xl bg-white/10 text-white font-bold text-lg hover:bg-white/20 transition-colors flex items-center justify-center gap-2 backdrop-blur-md border border-white/10">
+                    <i class="fab fa-discord"></i> Destek Sunucusu
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile App Teaser -->
+    <section class="py-20 bg-gradient-to-r from-purple-900/20 to-pink-900/20 border-y border-white/5 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
+            <div class="flex-1 text-center md:text-left" data-aos="fade-right">
+                <span class="px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-sm font-bold uppercase tracking-widest mb-6 inline-block">Çok Yakında</span>
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Sunucunuz <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Cebinizde</span></h2>
+                <p class="text-gray-400 text-lg mb-8 leading-relaxed">
+                    GraveBOT Mobil Uygulaması ile sunucunuzu dilediğiniz yerden yönetin. Müzik açın, üyeleri denetleyin ve istatistikleri takip edin.
+                </p>
+                <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                    <button class="px-6 py-3 rounded-xl bg-white text-black font-bold flex items-center gap-3 hover:bg-gray-200 transition-colors opacity-50 cursor-not-allowed" disabled>
+                        <i class="fab fa-apple text-xl"></i>
+                        <div class="text-left leading-tight">
+                            <span class="text-xs block font-medium">Coming Soon on</span>
+                            <span class="text-sm font-bold">App Store</span>
+                        </div>
+                    </button>
+                    <button class="px-6 py-3 rounded-xl bg-transparent border border-white/20 text-white font-bold flex items-center gap-3 hover:bg-white/5 transition-colors opacity-50 cursor-not-allowed" disabled>
+                        <i class="fab fa-google-play text-xl"></i>
+                        <div class="text-left leading-tight">
+                            <span class="text-xs block font-medium">Coming Soon on</span>
+                            <span class="text-sm font-bold">Google Play</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 relative" data-aos="fade-left">
+                <!-- Abstract Phone Mockup -->
+                <div class="relative w-64 h-[500px] bg-[#0a0a0c] border-8 border-[#1a1a20] rounded-[3rem] mx-auto shadow-2xl shadow-purple-900/50 overflow-hidden">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-[#1a1a20] rounded-b-xl z-20"></div>
+                    <div class="w-full h-full bg-gradient-to-br from-purple-900/40 to-[#0a0a0c] p-6 flex flex-col justify-center items-center text-center">
+                        <div class="w-16 h-16 rounded-full bg-purple-600 mb-4 flex items-center justify-center animate-bounce">
+                            <img src="logo.png" class="w-10 h-10 object-contain">
+                        </div>
+                        <h3 class="text-white font-bold text-xl mb-2">GraveBOT</h3>
+                        <p class="text-purple-400 text-sm">Mobile App</p>
+                        
+                        <div class="mt-8 w-full space-y-3">
+                            <div class="h-12 bg-white/5 rounded-xl w-full animate-pulse"></div>
+                            <div class="h-12 bg-white/5 rounded-xl w-full animate-pulse delay-75"></div>
+                            <div class="h-32 bg-white/5 rounded-xl w-full animate-pulse delay-150"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-20 relative overflow-hidden bg-[#0a0a0c] border-t border-white/5">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+            <h2 class="text-3xl font-bold text-white mb-4">Gelişmelerden <span class="text-purple-500">Haberdar Olun</span></h2>
+            <p class="text-gray-400 mb-8">Yeni özellikler, güncellemeler ve özel teklifler için bültenimize abone olun.</p>
+            
+            <form class="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
+                <input type="email" placeholder="E-posta adresiniz" class="flex-1 px-6 py-4 rounded-xl bg-[#1a1a20] border border-white/10 text-white focus:outline-none focus:border-purple-500 transition-colors placeholder-gray-600">
+                <button type="submit" class="px-8 py-4 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-500 transition-colors shadow-lg shadow-purple-900/30">
+                    Abone Ol
+                </button>
+            </form>
+            <p class="text-gray-600 text-xs mt-4">Spam yok, sadece önemli güncellemeler.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#0a0a0c] border-t border-white/5 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-full bg-purple-600/20 flex items-center justify-center overflow-hidden">
+                            <img src="logo.png" alt="GraveBOT Logo" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-bold text-2xl tracking-wide text-white">GraveBOT</span>
+                    </div>
+                    <p class="text-gray-500 max-w-sm leading-relaxed">
+                        Discord sunucunuzu yönetmenin en kolay ve en güçlü yolu. Topluluğunuzu büyütmek ve yönetmek için bugün başlayın.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 text-lg">Bağlantılar</h4>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-gray-500 hover:text-purple-400 transition-colors">Ana Sayfa</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-purple-400 transition-colors">Komutlar</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-purple-400 transition-colors">Premium</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-purple-400 transition-colors">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 text-lg">Yasal</h4>
+                    <ul class="space-y-4">
+                        <li><a href="privacy.html" class="text-gray-500 hover:text-purple-400 transition-colors">Gizlilik Politikası</a></li>
+                        <li><a href="terms.html" class="text-gray-500 hover:text-purple-400 transition-colors">Kullanım Şartları</a></li>
+                        <li><a href="cookies.html" class="text-gray-500 hover:text-purple-400 transition-colors">Çerez Politikası</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-gray-600 text-sm">© 2026 GraveBOT. Tüm hakları saklıdır.</p>
+                <!-- Social Links -->
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-purple-500 hover:scale-110 transition-all duration-300 text-white group">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.086 2.157 2.419 0 1.334-.956 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.086 2.157 2.419 0 1.334-.946 2.419-2.157 2.419z"/></svg>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-purple-500 hover:scale-110 transition-all duration-300 text-white group">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-purple-500 hover:scale-110 transition-all duration-300 text-white group">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.42-1.305.763-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTopBtn" class="fixed bottom-8 right-8 w-12 h-12 bg-purple-600 text-white rounded-full shadow-lg shadow-purple-600/30 flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-purple-500 hover:scale-110 z-50">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Cookie Consent -->
+    <div id="cookie-banner" class="fixed bottom-4 left-4 right-4 md:left-8 md:right-auto md:max-w-md bg-[#1a1a20] border border-white/10 p-6 rounded-xl shadow-2xl z-50 transform translate-y-[200%] transition-transform duration-500">
+        <div class="flex items-start gap-4">
+            <i class="fas fa-cookie-bite text-purple-500 text-2xl mt-1"></i>
+            <div>
+                <h3 class="text-white font-bold mb-2">Çerez Politikası</h3>
+                <p class="text-gray-400 text-sm mb-4">Size daha iyi bir deneyim sunmak için çerezleri kullanıyoruz. Sitemizi kullanarak bunu kabul etmiş sayılırsınız.</p>
+                <div class="flex gap-3">
+                    <button onclick="acceptCookies()" class="px-4 py-2 bg-purple-600 text-white text-sm font-bold rounded-lg hover:bg-purple-500 transition-colors">Kabul Et</button>
+                    <a href="cookies.html" class="px-4 py-2 bg-white/5 text-white text-sm font-medium rounded-lg hover:bg-white/10 transition-colors">Detaylar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Details Modal -->
+    <div id="featureModal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeFeatureModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative bg-[#1a1a20] rounded-3xl border border-white/10 max-w-2xl w-full mx-4 p-8 shadow-2xl transform transition-all scale-95 opacity-0" id="featureModalContent">
+            <button onclick="closeFeatureModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div id="modalBody">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <script>
+        // Cookie Consent Logic
+        setTimeout(() => {
+            if (!localStorage.getItem('cookiesAccepted')) {
+                document.getElementById('cookie-banner').classList.remove('translate-y-[200%]');
+            }
+        }, 2000);
+
+        function acceptCookies() {
+            localStorage.setItem('cookiesAccepted', 'true');
+            document.getElementById('cookie-banner').classList.add('translate-y-[200%]');
+        }
+
+        // Orbital Eclipse Preloader Logic
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            const progressRing = document.getElementById('progress-ring');
+            
+            // Circumference of the circle (2 * PI * r)
+            // r = 54, so C = ~339.292
+            const circumference = 339.292;
+            
+            if (progressRing) {
+                progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+                progressRing.style.strokeDashoffset = circumference;
+            }
+
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 3; 
+                if (progress > 100) progress = 100;
+                
+                if (progressRing) {
+                    const offset = circumference - (progress / 100) * circumference;
+                    progressRing.style.strokeDashoffset = offset;
+                }
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        if(preloader) {
+                            preloader.style.opacity = '0';
+                            preloader.style.visibility = 'hidden';
+                        }
+                    }, 800);
+                }
+            }, 30);
+        });
+
+        // Initialize AOS
+        AOS.init({
+            once: true,
+            offset: 50,
+            duration: 800,
+            easing: 'ease-out-cubic',
+        });
+
+        // Initialize Particles.js
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#a855f7" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5, "random": true },
+                "size": { "value": 3, "random": true },
+                "line_linked": { "enable": true, "distance": 150, "color": "#a855f7", "opacity": 0.2, "width": 1 },
+                "move": { "enable": true, "speed": 2, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "repulse" },
+                    "onclick": { "enable": true, "mode": "push" },
+                    "resize": true
+                },
+                "modes": {
+                    "repulse": { "distance": 100, "duration": 0.4 }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Mouse Glow Effect
+        const cursorGlow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        // Terminal Simulation
+        const terminalContent = document.getElementById('terminal-content');
+        const commands = [
+            { cmd: 'g!yardım', output: 'GraveBOT Komut Listesi yükleniyor...' },
+            { cmd: 'g!play', output: '🎶 Şimdi Çalıyor: The Weeknd - Starboy' },
+            { cmd: 'g!ban @troll', output: '🔨 Kullanıcı başarıyla yasaklandı!' },
+            { cmd: 'g!bilgi', output: '📊 Sunucu: 500+ | Ping: 24ms' }
+        ];
+
+        let cmdIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let isWaiting = false;
+
+        function typeTerminal() {
+            const currentCommand = commands[cmdIndex];
+            
+            if (isWaiting) return;
+
+            // Clear terminal if it gets too full (simulate clear)
+            if (terminalContent.children.length > 6) {
+                terminalContent.innerHTML = '';
+            }
+
+            // Create a new line container if we are starting a new command
+            let currentLine = terminalContent.lastElementChild;
+            if (!currentLine || !currentLine.classList.contains('active-line')) {
+                const newLine = document.createElement('div');
+                newLine.className = 'active-line mb-2';
+                newLine.innerHTML = `<span class="text-green-500">user@discord:~$</span> <span class="cmd-text"></span><span class="cursor"></span>`;
+                terminalContent.appendChild(newLine);
+                currentLine = newLine;
+                // Scroll to bottom
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+            }
+
+            const cmdTextSpan = currentLine.querySelector('.cmd-text');
+            const fullCmd = currentCommand.cmd;
+
+            if (!isDeleting) {
+                // Typing
+                cmdTextSpan.textContent = fullCmd.substring(0, charIndex + 1);
+                charIndex++;
+                if (charIndex === fullCmd.length) {
+                    // Command finished typing, show output
+                    isWaiting = true;
+                    setTimeout(() => {
+                        // Remove cursor from current line
+                        currentLine.querySelector('.cursor').remove();
+                        
+                        // Add output
+                        const outputLine = document.createElement('div');
+                        outputLine.className = 'text-purple-400 mb-4 pl-4';
+                        outputLine.textContent = `> ${currentCommand.output}`;
+                        terminalContent.appendChild(outputLine);
+                        
+                        // Reset for next command
+                        isWaiting = false;
+                        charIndex = 0;
+                        cmdIndex = (cmdIndex + 1) % commands.length;
+                        
+                        // Trigger next loop
+                        setTimeout(typeTerminal, 500);
+                    }, 800);
+                    return;
+                }
+            }
+            
+            setTimeout(typeTerminal, 100 + Math.random() * 100);
+        }
+
+        // Start terminal animation
+        setTimeout(typeTerminal, 1000);
+
+        // Number Counter Animation
+        const counters = document.querySelectorAll('.counter, [data-target]');
+        let started = false;
+        
+        const startCounters = () => {
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const duration = 2000; // 2 seconds
+                const increment = target / (duration / 16); // 60 FPS
+                
+                let current = 0;
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        counter.innerText = Math.ceil(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.innerText = target.toLocaleString() + (counter.classList.contains('counter') ? '+' : '');
+                    }
+                };
+                
+                updateCounter();
+            });
+        };
+
+        // Trigger counter when visible
+        const counterSection = document.querySelector('#stats');
+
+        if (counterSection) {
+            window.addEventListener('scroll', () => {
+                const sectionPos = counterSection.getBoundingClientRect().top;
+                const screenPos = window.innerHeight / 1.3;
+                
+                if (sectionPos < screenPos && !started) {
+                    startCounters();
+                    started = true;
+                }
+            });
+        }
+
+        // Spotlight Effect
+        document.querySelectorAll('.card-spotlight').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Tab Switching Logic
+        function switchTab(category) {
+            // Hide all contents
+            document.querySelectorAll('.command-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('fade-in-up'); // Reset animation
+            });
+            
+            // Show selected content with animation
+            const content = document.getElementById(`content-${category}`);
+            content.classList.remove('hidden');
+            void content.offsetWidth; // Trigger reflow for animation restart
+            content.classList.add('fade-in-up');
+            
+            // Update button styles
+            const buttons = ['moderation', 'music', 'entertainment', 'general'];
+            buttons.forEach(btn => {
+                const el = document.getElementById(`tab-${btn}`);
+                if(btn === category) {
+                    el.classList.remove('bg-[#1a1a20]', 'text-gray-400', 'hover:bg-white/5', 'hover:text-white');
+                    el.classList.add('bg-purple-600', 'text-white', 'shadow-lg', 'shadow-purple-900/20', 'ring-2', 'ring-purple-500');
+                } else {
+                    el.classList.add('bg-[#1a1a20]', 'text-gray-400', 'hover:bg-white/5', 'hover:text-white');
+                    el.classList.remove('bg-purple-600', 'text-white', 'shadow-lg', 'shadow-purple-900/20', 'ring-2', 'ring-purple-500');
+                }
+            });
+        }
+
+        // Scroll to Top Logic
+        const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.remove("opacity-0", "invisible");
+            } else {
+                scrollToTopBtn.classList.add("opacity-0", "invisible");
+            }
+        });
+
+        scrollToTopBtn.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+
+        // ScrollSpy Logic
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav a[href^="#"]');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('text-purple-400');
+                const span = link.querySelector('span');
+                if(span) span.classList.remove('w-full');
+                if(span) span.classList.add('w-0');
+                
+                if (link.getAttribute('href').includes(current) && current !== '') {
+                    link.classList.add('text-purple-400');
+                    if(span) {
+                        span.classList.remove('w-0');
+                        span.classList.add('w-full');
+                    }
+                }
+            });
+        });
+
+        // Feature Modal Logic
+        const featureDetails = {
+            moderation: {
+                title: "Gelişmiş Moderasyon",
+                icon: "fa-shield-alt",
+                color: "text-purple-500",
+                description: "Sunucunuzu güvende tutmak için ihtiyacınız olan tüm araçlar tek bir yerde.",
+                features: [
+                    "Otomatik Küfür ve Reklam Engelleyici",
+                    "Gelişmiş Log Sistemi (Mesaj, Ses, Rol)",
+                    "Captcha Doğrulama Sistemi",
+                    "Süreli Ban ve Mute",
+                    "Anti-Raid Koruması"
+                ]
+            },
+            music: {
+                title: "Yüksek Kalite Müzik",
+                icon: "fa-music",
+                color: "text-pink-500",
+                description: "Sunucunuzda arkadaşlarınızla birlikte müzik dinlemenin keyfini çıkarın.",
+                features: [
+                    "Spotify, YouTube, SoundCloud Desteği",
+                    "Gelişmiş Filtreler (Bassboost, Nightcore)",
+                    "Otomatik Oynatma Listeleri",
+                    "Şarkı Sözleri Gösterimi",
+                    "24/7 Radyo Modu"
+                ]
+            },
+            economy: {
+                title: "Ekonomi Sistemi",
+                icon: "fa-coins",
+                color: "text-blue-500",
+                description: "Sunucunuzda aktifliği artırmak için eğlenceli bir ekonomi deneyimi.",
+                features: [
+                    "Günlük, Haftalık Ödüller",
+                    "Blackjack, Slot, Yazı Tura Oyunları",
+                    "Kullanıcılar Arası Para Transferi",
+                    "Özelleştirilebilir Mağaza Sistemi",
+                    "Liderlik Tablosu"
+                ]
+            }
+        };
+
+        function openFeatureModal(featureKey) {
+            const modal = document.getElementById('featureModal');
+            const content = document.getElementById('featureModalContent');
+            const body = document.getElementById('modalBody');
+            const data = featureDetails[featureKey];
+
+            if(!data) return;
+
+            body.innerHTML = `
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
+                        <i class="fas ${data.icon} ${data.color} text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">${data.title}</h3>
+                </div>
+                <p class="text-gray-300 mb-6 leading-relaxed">${data.description}</p>
+                <div class="space-y-3">
+                    ${data.features.map(item => `
+                        <div class="flex items-center gap-3 text-gray-400">
+                            <i class="fas fa-check-circle ${data.color}"></i>
+                            <span>${item}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mt-8 flex justify-end">
+                    <button onclick="closeFeatureModal()" class="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors font-medium">
+                        Kapat
+                    </button>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            // Trigger animation
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeFeatureModal() {
+            const modal = document.getElementById('featureModal');
+            const content = document.getElementById('featureModalContent');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+    </script>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: true,
+            grabCursor: true,
+            autoplay: {
+                delay: 3500,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: ".mySwiper .swiper-pagination",
+                clickable: true,
+                dynamicBullets: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 30,
+                },
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                },
+            },
+        });
+
+        var swiper2 = new Swiper(".mySwiper2", {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: true,
+            grabCursor: true,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: ".mySwiper2 .swiper-pagination",
+                clickable: true,
+                dynamicBullets: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next-2",
+                prevEl: ".swiper-button-prev-2",
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 30,
+                },
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                },
+            },
+        });
+    </script>
+</body>
+</html>
