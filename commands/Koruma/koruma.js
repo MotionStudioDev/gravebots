@@ -16,6 +16,8 @@ module.exports = {
         const systems = {
             'küfür': 'antiSwear',
             'reklam': 'antiLink',
+            'url': 'antiUrl',
+            'emoji': 'antiEmoji',
             'spam': 'antiSpam',
             'caps': 'antiCaps',
             'bot': 'antiBot'
@@ -36,6 +38,8 @@ module.exports = {
                 .addFields(
                     { name: '🤬 Küfür Engel', value: p.antiSwear ? '✅ Açık' : '❌ Kapalı', inline: true },
                     { name: '🔗 Reklam Engel', value: p.antiLink ? '✅ Açık' : '❌ Kapalı', inline: true },
+                    { name: '🌐 URL Engel', value: p.antiUrl ? '✅ Açık' : '❌ Kapalı', inline: true },
+                    { name: '😀 Emoji Engel', value: p.antiEmoji ? '✅ Açık' : '❌ Kapalı', inline: true },
                     { name: '⌨️ Caps Engel', value: p.antiCaps ? '✅ Açık' : '❌ Kapalı', inline: true },
                     { name: '⏳ Spam Engel', value: p.antiSpam ? '✅ Açık' : '❌ Kapalı', inline: true },
                     { name: '🤖 Bot Engel', value: p.antiBot ? '✅ Açık' : '❌ Kapalı', inline: true },
@@ -79,8 +83,8 @@ module.exports = {
                 const p = settings?.protections || {};
                 
                 const allMatch = status ? 
-                    (p.antiSwear && p.antiLink && p.antiSpam && p.antiCaps && p.antiBot) : 
-                    (!p.antiSwear && !p.antiLink && !p.antiSpam && !p.antiCaps && !p.antiBot);
+                    (p.antiSwear && p.antiLink && p.antiUrl && p.antiEmoji && p.antiSpam && p.antiCaps && p.antiBot) : 
+                    (!p.antiSwear && !p.antiLink && !p.antiUrl && !p.antiEmoji && !p.antiSpam && !p.antiCaps && !p.antiBot);
 
                 if (allMatch) {
                     return i.reply({ 
@@ -94,6 +98,8 @@ module.exports = {
                     { 
                         'protections.antiSwear': status,
                         'protections.antiLink': status,
+                        'protections.antiUrl': status,
+                        'protections.antiEmoji': status,
                         'protections.antiSpam': status,
                         'protections.antiCaps': status,
                         'protections.antiBot': status

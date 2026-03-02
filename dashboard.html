@@ -429,7 +429,10 @@
                         <i class="fa-solid fa-ban w-5 text-center"></i> Komut Yasaklama
                     </button>
                     <button onclick="switchModalTab('protections')" class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="protections">
-                        <i class="fa-solid fa-shield-halved w-5 text-center"></i> Koruma Ayarları
+                        <i class="fa-solid fa-user-shield w-5 text-center"></i> Koruma Ayarları
+                    </button>
+                    <button onclick="switchModalTab('levels')" class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="levels">
+                        <i class="fa-solid fa-award w-5 text-center"></i> Level Sistemi
                     </button>
                     <button onclick="switchModalTab('reaction-roles')" class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="reaction-roles">
                         <i class="fa-solid fa-icons w-5 text-center"></i> Emoji Roller
@@ -648,10 +651,48 @@
                                 </label>
                             </div>
 
+                            <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
+                                <div>
+                                    <h5 class="text-sm font-bold text-white">URL Koruma</h5>
+                                    <p class="text-xs text-gray-500">Tüm linkleri otomatik engeller.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="setting-anti-url" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                </label>
+                            </div>
+
+                            <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
+                                <div>
+                                    <h5 class="text-sm font-bold text-white">Emoji Koruma</h5>
+                                    <p class="text-xs text-gray-500">Aşırı emoji kullanımını engeller.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="setting-anti-emoji" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                </label>
+                            </div>
+
                             <div class="glass-panel p-4 rounded-xl space-y-2">
                                 <h5 class="text-sm font-bold text-white">Yaş Sınırı (Gün)</h5>
                                 <input type="number" id="setting-age-limit" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-purple-500" placeholder="0 (Kapalı)">
                                 <p class="text-[10px] text-gray-500">Hesap bu günden yeniyse atılır.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 space-y-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="text-sm font-bold text-white">Mod-Log Sistemi</h5>
+                                <button onclick="resetModLog()" class="text-[10px] text-red-400 hover:text-red-300 transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-power-off"></i> Sistemi Kapat
+                                </button>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs text-gray-400">Mod-Log Kanalı</label>
+                                <select id="setting-mod-log" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                    <option value="">Devre Dışı</option>
+                                </select>
+                                <p class="text-[10px] text-gray-500">Küfür, Reklam ve URL engellemeleri bu kanala loglanır.</p>
                             </div>
                         </div>
 
@@ -700,6 +741,73 @@
                             <h5 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Mevcut Emoji Roller</h5>
                             <div id="rr-list" class="space-y-2">
                                 <!-- RR items will be populated -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: LEVELS -->
+                    <div id="tab-levels" class="modal-tab-content hidden space-y-6">
+                        <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Seviye Sistemi</h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Guild Level Settings -->
+                            <div class="glass-panel p-4 rounded-xl space-y-4">
+                                <h5 class="text-sm font-bold text-purple-400">Sunucu Ayarları</h5>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h6 class="text-xs font-bold text-white">Sistem Durumu</h6>
+                                        <p class="text-[10px] text-gray-500">Seviye sistemini aç/kapat.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="setting-level-status" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    </label>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-gray-400">Level Up Kanalı</label>
+                                    <select id="setting-level-channel" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors">
+                                        <option value="">O Anki Kanal</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-gray-400">XP Çarpanı (1-5)</label>
+                                    <input type="number" id="setting-xp-rate" min="1" max="5" value="1" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors">
+                                </div>
+                            </div>
+
+                            <!-- User Rank Card Settings -->
+                            <div class="glass-panel p-4 rounded-xl space-y-4">
+                                <h5 class="text-sm font-bold text-pink-400">Kişisel Ayarların</h5>
+                                
+                                <!-- Drag & Drop Area -->
+                                <div id="drop-zone" class="relative group cursor-pointer border-2 border-dashed border-white/10 hover:border-purple-500/50 rounded-xl p-6 transition-all bg-white/5 hover:bg-purple-500/5 flex flex-col items-center justify-center gap-3 overflow-hidden">
+                                    <input type="file" id="rank-bg-upload" class="hidden" accept="image/*">
+                                    <div id="upload-idle" class="flex flex-col items-center">
+                                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-500 group-hover:text-purple-400 transition-colors mb-2"></i>
+                                        <span class="text-xs font-bold text-gray-400 group-hover:text-gray-200">Dosyayı Sürükle veya Seç</span>
+                                        <span class="text-[10px] text-gray-600 mt-1">PNG, JPG, GIF (Max 5MB)</span>
+                                    </div>
+                                    <div id="upload-preview" class="hidden absolute inset-0 w-full h-full">
+                                        <img id="bg-preview-img" class="w-full h-full object-cover opacity-40">
+                                        <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
+                                            <i class="fa-solid fa-check-circle text-2xl text-green-500 mb-1"></i>
+                                            <span class="text-[10px] font-bold text-white uppercase tracking-widest">Resim Seçildi</span>
+                                        </div>
+                                    </div>
+                                    <div id="upload-loading" class="hidden absolute inset-0 w-full h-full bg-[#0f0f13]/90 flex flex-col items-center justify-center">
+                                        <i class="fa-solid fa-spinner fa-spin text-2xl text-purple-500 mb-2"></i>
+                                        <span class="text-[10px] font-bold text-purple-400">Yükleniyor...</span>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Veya URL ile Ayarla</label>
+                                    <input type="text" id="user-rank-bg" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors" placeholder="https://...">
+                                </div>
+                                
+                                <button onclick="saveUserLevelSettings()" class="w-full py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white text-xs font-bold transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-500/20">
+                                    Değişiklikleri Kaydet
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -789,6 +897,8 @@
                     document.getElementById('setting-welcome-channel'),
                     document.getElementById('setting-leave-channel'),
                     document.getElementById('setting-ticket-log'),
+                    document.getElementById('setting-mod-log'),
+                    document.getElementById('setting-level-channel'),
                     document.getElementById('ticket-setup-channel'),
                     document.getElementById('rr-channel')
                 ];
@@ -884,10 +994,38 @@
                 document.getElementById('setting-ticket-log').value = data.settings.ticketLogChannel || '';
                 document.getElementById('setting-ticket-message').value = data.settings.ticketMessage || '';
                 document.getElementById('setting-autorole').value = data.settings.autorole || '';
+                document.getElementById('setting-mod-log').value = data.settings.logs?.moderation || '';
+                
+                // Level System
+                document.getElementById('setting-level-status').checked = data.settings.levelSystem?.status || false;
+                document.getElementById('setting-level-channel').value = data.settings.levelSystem?.channel || '';
+                document.getElementById('setting-xp-rate').value = data.settings.levelSystem?.xpRate || 1;
+                document.getElementById('user-rank-bg').value = data.userLevel?.background || '';
+                
+                // Rank Card Preview Update
+                if (data.userLevel?.background) {
+                    const previewImg = document.getElementById('bg-preview-img');
+                    const uploadIdle = document.getElementById('upload-idle');
+                    const uploadPreview = document.getElementById('upload-preview');
+                    if (previewImg && uploadIdle && uploadPreview) {
+                        previewImg.src = data.userLevel.background;
+                        uploadIdle.classList.add('hidden');
+                        uploadPreview.classList.remove('hidden');
+                    }
+                } else {
+                    const uploadIdle = document.getElementById('upload-idle');
+                    const uploadPreview = document.getElementById('upload-preview');
+                    if (uploadIdle && uploadPreview) {
+                        uploadIdle.classList.remove('hidden');
+                        uploadPreview.classList.add('hidden');
+                    }
+                }
 
                 // Protections
                 document.getElementById('setting-anti-swear').checked = data.settings.protections?.antiSwear || false;
                 document.getElementById('setting-anti-link').checked = data.settings.protections?.antiLink || false;
+                document.getElementById('setting-anti-url').checked = data.settings.protections?.antiUrl || false;
+                document.getElementById('setting-anti-emoji').checked = data.settings.protections?.antiEmoji || false;
                 document.getElementById('setting-anti-spam').checked = data.settings.protections?.antiSpam || false;
                 document.getElementById('setting-anti-caps').checked = data.settings.protections?.antiCaps || false;
                 document.getElementById('setting-anti-bot').checked = data.settings.protections?.antiBot || false;
@@ -907,6 +1045,9 @@
         function closeManageModal() {
             document.getElementById('manage-modal').classList.add('hidden');
             currentGuildId = null;
+            selectedFile = null;
+            if (uploadIdle) uploadIdle.classList.remove('hidden');
+            if (uploadPreview) uploadPreview.classList.add('hidden');
         }
 
         function switchModalTab(tabId) {
@@ -1032,6 +1173,123 @@
             }
         }
 
+        async function resetModLog() {
+            if (!confirm('Mod-Log sistemini kapatmak istediğinize emin misiniz?')) return;
+            document.getElementById('setting-mod-log').value = '';
+            showToast('Mod-Log kanalı sıfırlandı, kaydetmeyi unutmayın!', 'success');
+        }
+
+        // --- DRAG & DROP LOGIC ---
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('rank-bg-upload');
+        const uploadIdle = document.getElementById('upload-idle');
+        const uploadPreview = document.getElementById('upload-preview');
+        const uploadLoading = document.getElementById('upload-loading');
+        const previewImg = document.getElementById('bg-preview-img');
+        let selectedFile = null;
+
+        if (dropZone) {
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-purple-500', 'bg-purple-500/10');
+            });
+
+            ['dragleave', 'drop'].forEach(event => {
+                dropZone.addEventListener(event, () => {
+                    dropZone.classList.remove('border-purple-500', 'bg-purple-500/10');
+                });
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) handleFileSelect(file);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) handleFileSelect(file);
+            });
+        }
+
+        function handleFileSelect(file) {
+            if (file.size > 5 * 1024 * 1024) return showToast('Dosya boyutu 5MB\'dan küçük olmalı!', 'error');
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                uploadIdle.classList.add('hidden');
+                uploadPreview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function saveUserLevelSettings() {
+            const backgroundUrl = document.getElementById('user-rank-bg').value;
+            
+            // Eğer dosya seçildiyse önce onu yükle
+            if (selectedFile) {
+                uploadLoading.classList.remove('hidden');
+                const formData = new FormData();
+                formData.append('background', selectedFile);
+
+                try {
+                    const response = await fetch(`/api/server/${currentGuildId}/user-level-upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        showToast('Resim başarıyla yüklendi ve kaydedildi!', 'success');
+                        selectedFile = null;
+                        uploadLoading.classList.add('hidden');
+                        document.getElementById('user-rank-bg').value = result.background;
+                        
+                        // Önizlemeyi güncelle
+                        previewImg.src = result.background;
+                        uploadIdle.classList.add('hidden');
+                        uploadPreview.classList.remove('hidden');
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } catch (e) {
+                    showToast('Resim yüklenemedi: ' + e.message, 'error');
+                    uploadLoading.classList.add('hidden');
+                }
+                return;
+            }
+
+            // Dosya seçilmediyse URL ile kaydet (boşsa temizle)
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/user-level-config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ background: backgroundUrl || null })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast(backgroundUrl ? 'Arka plan URL\'si güncellendi!' : 'Arka plan başarıyla sıfırlandı!', 'success');
+                    
+                    // Önizlemeyi güncelle
+                    if (!backgroundUrl) {
+                        uploadIdle.classList.remove('hidden');
+                        uploadPreview.classList.add('hidden');
+                        previewImg.src = '';
+                    } else {
+                        previewImg.src = backgroundUrl;
+                        uploadIdle.classList.add('hidden');
+                        uploadPreview.classList.remove('hidden');
+                    }
+                } else {
+                    showToast(result.error || 'Hata oluştu', 'error');
+                }
+            } catch (e) {
+                showToast('Sistem hatası', 'error');
+            }
+        }
+
         async function saveGuildSettings() {
             if(!currentGuildId) return;
 
@@ -1054,10 +1312,20 @@
                 ticketLogChannel: document.getElementById('setting-ticket-log').value,
                 ticketMessage: document.getElementById('setting-ticket-message').value,
                 autorole: document.getElementById('setting-autorole').value,
+                logs: {
+                    moderation: document.getElementById('setting-mod-log').value
+                },
+                levelSystem: {
+                    status: document.getElementById('setting-level-status').checked,
+                    channel: document.getElementById('setting-level-channel').value,
+                    xpRate: parseInt(document.getElementById('setting-xp-rate').value) || 1
+                },
                 disabledCommands: disabledCommands,
                 protections: {
                     antiSwear: document.getElementById('setting-anti-swear').checked,
                     antiLink: document.getElementById('setting-anti-link').checked,
+                    antiUrl: document.getElementById('setting-anti-url').checked,
+                    antiEmoji: document.getElementById('setting-anti-emoji').checked,
                     antiSpam: document.getElementById('setting-anti-spam').checked,
                     antiCaps: document.getElementById('setting-anti-caps').checked,
                     antiBot: document.getElementById('setting-anti-bot').checked,

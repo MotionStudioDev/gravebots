@@ -1,6 +1,7 @@
 const Guild = require('../models/Guild');
 const Afk = require('../models/Afk');
-const { EmbedBuilder } = require('discord.js');
+const Level = require('../models/Level');
+const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 
 // Basit Spam Kontrolü İçin Bellek
 const spamMap = new Map();
@@ -24,7 +25,64 @@ module.exports = {
         if (!settings) settings = await Guild.create({ guildId: message.guild.id });
 
         const isOwner = botOwnerIds.includes(message.author.id);
-        const isAdmin = message.member.permissions.has('Administrator');
+        const isAdmin = message.member.permissions.has(PermissionsBitField.Flags.Administrator);
+
+        // --- LEVEL SİSTEMİ (XP KAZANMA) ---
+        if (settings.levelSystem?.status) {
+            console.log(`[XP] Seviye sistemi aktif: ${message.author.tag} (ID: ${message.author.id})`);
+            let userLevel = await Level.findOne({ guildId: message.guild.id, userId: message.author.id });
+            if (!userLevel) {
+                userLevel = new Level({ 
+                    guildId: message.guild.id, 
+                    userId: message.author.id, 
+                    level: 1, 
+                    xp: 0,
+                    lastMessage: new Date(0) // İlk mesajda XP alabilmesi için
+                });
+            }
+
+            // XP Cooldown (Bot sahibi için cooldown yok, üyeler için 5 saniye)
+            const now = Date.now();
+            const lastMsg = userLevel.lastMessage ? new Date(userLevel.lastMessage).getTime() : 0;
+            const diff = now - lastMsg;
+            const cooldown = isOwner ? 0 : 5000;
+            
+            if (diff > cooldown) {
+                const xpGain = (Math.floor(Math.random() * 10) + 15) * (settings.levelSystem.xpRate || 1);
+                userLevel.xp += xpGain;
+                userLevel.lastMessage = now;
+                console.log(`[XP] ${message.author.tag} için XP eklendi: +${xpGain} (Toplam: ${userLevel.xp})`);
+
+                // Level Up Kontrolü (Gelişmiş)
+                let nextLevelXP = userLevel.level * userLevel.level * 100;
+                
+                while (userLevel.xp >= nextLevelXP) {
+                    userLevel.xp -= nextLevelXP; // XP'yi sıfırlamak yerine kalanı tutalım
+                    userLevel.level += 1;
+                    nextLevelXP = userLevel.level * userLevel.level * 100;
+                    // console.log(`SEVİYE ATLADI! Yeni Seviye: ${userLevel.level}`);
+
+                    const levelUpEmbed = new EmbedBuilder()
+                        .setColor('#00FF00')
+                        .setTitle('🎉 Seviye Atladın!')
+                        .setDescription(`Tebrikler <@${message.author.id}>! **${userLevel.level}.** seviyeye ulaştın!`)
+                        .setThumbnail(message.author.displayAvatarURL())
+                        .setTimestamp();
+
+                    const logChannelId = settings.levelSystem.channel;
+                    const logChannel = logChannelId ? message.guild.channels.cache.get(logChannelId) : message.channel;
+                    
+                    if (logChannel) {
+                        logChannel.send({ embeds: [levelUpEmbed] }).catch(() => {});
+                    }
+                }
+                
+                await userLevel.save().catch(err => console.error("XP Kayıt Hatası:", err));
+                console.log(`[XP] XP Eklendi: ${message.author.tag} -> +${xpGain} XP (Yeni Toplam: ${userLevel.xp})`);
+            } else {
+                // console.log(`[XP] ${message.author.tag} için cooldown aktif. Kalan: ${5000 - diff}ms`);
+            }
+        }
 
         // --- AFK KONTROLÜ ---
         // 1. AFK olan birinden bahsedildi mi?
@@ -78,9 +136,36 @@ module.exports = {
         if (!isOwner && !isAdmin) {
             // 1. Küfür Engel
             if (settings.protections?.antiSwear) {
-                const badWords = ['küfür1', 'küfür2', 'piç', 'aq', 'amk', 'sik']; // Örnek liste, genişletilebilir
-                if (badWords.some(word => message.content.toLowerCase().includes(word))) {
+                const badWords = [
+                    'amk', 'aq', 'sik', 'piç', 'göt', 'oç', 'yarrak', 'amcık', 'meme', 'taşak', 'kahpe', 'fahişe', 'it', 'köpek', 'şerefsiz', 'haysiyetsiz', 'namussuz', 'evveliyatını', 'gelmişini', 'geçmişini', 'bacını', 'karını', 'karısı', 'bacısı', 'gavat', 'pezevenk', 'pic', 'sikik', 'siktir', 'sikerim', 'siktiğim', 'sokuk', 'amına', 'aminakoyim', 'aminakoim', 'amkoyim', 'orospu', 'orospi', 'orosbu', 'mal', 'gerizekalı', 'aptal', 'salak', 'şerefsiz', 'pust', 'puşt', 'yavşak', 'yawsak', 'veled', 'velet'
+                ];
+                
+                const contentLower = message.content.toLowerCase();
+                const hasBadWord = badWords.some(word => {
+                    const regex = new RegExp(`(\\b|\\W)${word}(\\b|\\W)`, 'i');
+                    return regex.test(contentLower) || contentLower.includes(word);
+                });
+
+                if (hasBadWord) {
                     await message.delete().catch(() => {});
+                    
+                    // Mod-Log Gönder
+                    if (settings.logs?.moderation) {
+                        const logChannel = message.guild.channels.cache.get(settings.logs.moderation) || await message.guild.channels.fetch(settings.logs.moderation).catch(() => null);
+                        if (logChannel) {
+                            const logEmbed = new EmbedBuilder()
+                                .setColor('#FF0000')
+                                .setTitle('🔞 Küfür Filtresi')
+                                .addFields(
+                                    { name: 'Kullanıcı', value: `${message.author.tag} (${message.author.id})`, inline: true },
+                                    { name: 'Kanal', value: `<#${message.channel.id}>`, inline: true },
+                                    { name: 'Mesaj İçeriği', value: `\`\`\`${message.content.substring(0, 500)}\`\`\`` }
+                                )
+                                .setTimestamp();
+                            logChannel.send({ embeds: [logEmbed] }).catch(err => console.error("Log gönderme hatası:", err));
+                        }
+                    }
+
                     return message.channel.send({ embeds: [
                         new EmbedBuilder()
                             .setColor('#FF0000')
@@ -89,15 +174,67 @@ module.exports = {
                 }
             }
 
-            // 2. Reklam/Link Engel
-            if (settings.protections?.antiLink) {
+            // 2. Reklam/Link/URL Engel
+            if (settings.protections?.antiLink || settings.protections?.antiUrl) {
                 const linkPattern = /(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|discordapp\.com\/invite)\/.+[a-z]/g;
-                if (linkPattern.test(message.content) || message.content.includes('http')) {
+                const generalLinkPattern = /(https?:\/\/[^\s]+)/g;
+                
+                let isLink = linkPattern.test(message.content);
+                let isGeneralUrl = generalLinkPattern.test(message.content);
+
+                // Sadece Discord Davet Linki Korunuyorsa
+                if (settings.protections?.antiLink && isLink) {
                     await message.delete().catch(() => {});
+                    
+                    // Mod-Log Gönder
+                    if (settings.logs?.moderation) {
+                        const logChannel = message.guild.channels.cache.get(settings.logs.moderation);
+                        if (logChannel) {
+                            const logEmbed = new EmbedBuilder()
+                                .setColor('#FF0000')
+                                .setTitle('🔗 Reklam Filtresi')
+                                .addFields(
+                                    { name: 'Kullanıcı', value: `${message.author.tag} (${message.author.id})`, inline: true },
+                                    { name: 'Kanal', value: `<#${message.channel.id}>`, inline: true },
+                                    { name: 'Mesaj İçeriği', value: `\`\`\`${message.content.substring(0, 500)}\`\`\`` }
+                                )
+                                .setTimestamp();
+                            logChannel.send({ embeds: [logEmbed] }).catch(() => {});
+                        }
+                    }
+
                     return message.channel.send({ embeds: [
                         new EmbedBuilder()
                             .setColor('#FF0000')
-                            .setDescription(`⚠️ <@${message.author.id}>, bu sunucuda reklam/link paylaşımı yasaktır!`)
+                            .setDescription(`⚠️ <@${message.author.id}>, bu sunucuda reklam paylaşımı yasaktır!`)
+                    ]}).then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
+                }
+
+                // Genel URL Korunuyorsa
+                if (settings.protections?.antiUrl && isGeneralUrl) {
+                    await message.delete().catch(() => {});
+                    
+                    // Mod-Log Gönder
+                    if (settings.logs?.moderation) {
+                        const logChannel = message.guild.channels.cache.get(settings.logs.moderation);
+                        if (logChannel) {
+                            const logEmbed = new EmbedBuilder()
+                                .setColor('#FF0000')
+                                .setTitle('🌐 URL Filtresi')
+                                .addFields(
+                                    { name: 'Kullanıcı', value: `${message.author.tag} (${message.author.id})`, inline: true },
+                                    { name: 'Kanal', value: `<#${message.channel.id}>`, inline: true },
+                                    { name: 'Mesaj İçeriği', value: `\`\`\`${message.content.substring(0, 500)}\`\`\`` }
+                                )
+                                .setTimestamp();
+                            logChannel.send({ embeds: [logEmbed] }).catch(() => {});
+                        }
+                    }
+
+                    return message.channel.send({ embeds: [
+                        new EmbedBuilder()
+                            .setColor('#FF0000')
+                            .setDescription(`⚠️ <@${message.author.id}>, bu sunucuda URL paylaşımı yasaktır!`)
                     ]}).then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
                 }
             }
@@ -140,6 +277,39 @@ module.exports = {
                     return;
                 }
             }
+
+            // 5. Emoji Engel
+            if (settings.protections?.antiEmoji) {
+                const emojiRegex = /<a?:.+?:\d+>|[\u{1f300}-\u{1f5ff}\u{1f600}-\u{1f64f}\u{1f680}-\u{1f6ff}\u{1f700}-\u{1f77f}\u{1f780}-\u{1f7ff}\u{1f900}-\u{1f9ff}\u{1fa00}-\u{1faff}\u{2600}-\u{26ff}\u{2700}-\u{27bf}]/gu;
+                const emojiCount = (message.content.match(emojiRegex) || []).length;
+
+                if (emojiCount > 5) { // 5'ten fazla emoji varsa
+                    await message.delete().catch(() => {});
+
+                    // Mod-Log Gönder
+                    if (settings.logs?.moderation) {
+                        const logChannel = message.guild.channels.cache.get(settings.logs.moderation) || await message.guild.channels.fetch(settings.logs.moderation).catch(() => null);
+                        if (logChannel) {
+                            const logEmbed = new EmbedBuilder()
+                                .setColor('#FF0000')
+                                .setTitle('😀 Emoji Filtresi')
+                                .addFields(
+                                    { name: 'Kullanıcı', value: `${message.author.tag} (${message.author.id})`, inline: true },
+                                    { name: 'Kanal', value: `<#${message.channel.id}>`, inline: true },
+                                    { name: 'Emoji Sayısı', value: `${emojiCount}`, inline: true }
+                                )
+                                .setTimestamp();
+                            logChannel.send({ embeds: [logEmbed] }).catch(() => {});
+                        }
+                    }
+
+                    return message.channel.send({ embeds: [
+                        new EmbedBuilder()
+                            .setColor('#FF0000')
+                            .setDescription(`⚠️ <@${message.author.id}>, lütfen aşırı emoji kullanma! (Maks: 5)`)
+                    ]}).then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
+                }
+            }
         }
 
         const prefix = settings.prefix || 'g!';
@@ -149,42 +319,30 @@ module.exports = {
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
 
-        // Bakım Modu Kontrolü
-        if (global.maintenanceMode) {
-            // Eğer sahipse ve komut "bakım-kapat" değilse normal devam edebilir
-            // Ama kullanıcı testi görmek istiyorsa g!bakım-test gibi bir şey yapabiliriz
-            // Şimdilik sahip olsa bile bakım mesajını görmesi için burayı düzenliyorum
-            
-            const isOwner = botOwnerIds.includes(message.author.id);
-            
-            // Sahipse ve g! komutu değilse veya özel bir komutsa geçsin
-            // Ama genel olarak sahiplerin de görmesi için uyaralım
-            if (isOwner) {
-                // Sahibi bilgilendir ama komutu engelleme (opsiyonel)
-                // message.channel.send('ℹ️ **Bilgi:** Bakım modu şu an açık, ancak bot sahibi olduğunuz için komutları kullanmaya devam edebilirsiniz.');
-            } else {
-                const { EmbedBuilder } = require('discord.js');
-                const maintenanceEmbed = new EmbedBuilder()
-                    .setColor('#FFA500')
-                    .setTitle('🛠️ Bakım Modu Aktif')
-                    .setDescription('Botumuz şu anda sizlere daha iyi hizmet verebilmek için bakıma alınmıştır.')
-                    .addFields(
-                        { name: 'Neden?', value: 'Yeni özellikler ekleniyor veya sistem iyileştirmeleri yapılıyor.' },
-                        { name: 'Ne Zaman Biter?', value: 'En kısa sürede tekrar aktif olacağız. Anlayışınız için teşekkürler!' }
-                    )
-                    .setTimestamp()
-                    .setFooter({ text: 'GraveBOT Yönetim Paneli', iconURL: client.user.displayAvatarURL() });
-
-                return message.reply({ embeds: [maintenanceEmbed] });
-            }
-        }
-
-        const command = client.commands.get(commandName);
+        const command = client.commands.get(commandName) || 
+                        client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+        
         if (!command) return;
 
+        // Bakım Modu Kontrolü
+        if (global.maintenanceMode && !isOwner) {
+            const maintenanceEmbed = new EmbedBuilder()
+                .setColor('#FFA500')
+                .setTitle('🛠️ Bakım Modu Aktif')
+                .setDescription('Botumuz şu anda sizlere daha iyi hizmet verebilmek için bakıma alınmıştır.')
+                .addFields(
+                    { name: 'Neden?', value: 'Yeni özellikler ekleniyor veya sistem iyileştirmeleri yapılıyor.' },
+                    { name: 'Ne Zaman Biter?', value: 'En kısa sürede tekrar aktif olacağız. Anlayışınız için teşekkürler!' }
+                )
+                .setTimestamp()
+                .setFooter({ text: 'GraveBOT Yönetim Paneli', iconURL: client.user.displayAvatarURL() });
+
+            return message.reply({ embeds: [maintenanceEmbed] });
+        }
+
         // Komut Yasaklama Kontrolü
-        if (settings.disabledCommands.includes(commandName)) {
-            return message.reply(`❌ **${commandName}** komutu bu sunucuda devre dışı bırakılmış.`);
+        if (settings.disabledCommands.includes(command.name)) {
+            return message.reply(`❌ **${command.name}** komutu bu sunucuda devre dışı bırakılmış.`);
         }
 
         try {

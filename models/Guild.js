@@ -20,12 +20,19 @@ const GuildSchema = new mongoose.Schema({
         antiSpam: { type: Boolean, default: false },
         antiCaps: { type: Boolean, default: false },
         antiBot: { type: Boolean, default: false },
+        antiUrl: { type: Boolean, default: false }, // Sunucu URL/Link koruması
+        antiEmoji: { type: Boolean, default: false }, // Emoji koruması
         bannedTags: { type: Array, default: [] },
         ageLimit: { type: Number, default: 0 } // 0 = Kapalı, Gün bazında (örn: 7)
     },
     logs: {
         moderation: { type: String, default: null },
         messages: { type: String, default: null }
+    },
+    levelSystem: {
+        status: { type: Boolean, default: false },
+        channel: { type: String, default: null }, // Level up mesajının gideceği kanal (null = o anki kanal)
+        xpRate: { type: Number, default: 1 } // XP çarpanı
     }
 });
 

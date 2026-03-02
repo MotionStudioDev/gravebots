@@ -19,6 +19,12 @@ module.exports = {
             const category = guild.channels.cache.get(settings.ticketCategory);
             if (!category) return interaction.editReply('❌ Ticket kategorisi bulunamadı! Lütfen bir yetkiliye bildirin.');
 
+            // Botun kategori üzerinde yetkisi var mı kontrol edelim
+            const botPermissions = category.permissionsFor(client.user);
+            if (!botPermissions.has(PermissionsBitField.Flags.ManageChannels) || !botPermissions.has(PermissionsBitField.Flags.ViewChannel)) {
+                return interaction.editReply('❌ Botun bu kategoride kanal oluşturma (Manage Channels) yetkisi yok! Lütfen yetkilerimi kontrol edin.');
+            }
+
             // Kullanıcının halihazırda açık bir ticket'ı var mı kontrol edelim
             const existingChannel = guild.channels.cache.find(c => c.name === `ticket-${user.username.toLowerCase()}` && c.parentId === category.id);
             if (existingChannel) {

@@ -6,11 +6,13 @@ const passport = require('passport');
 const { Strategy } = require('passport-discord');
 const path = require('path');
 const os = require('os');
+const multer = require('multer');
 
 const mongoose = require('mongoose');
 const Guild = require('./models/Guild');
 const GlobalConfig = require('./models/GlobalConfig');
 const ReactionRole = require('./models/ReactionRole');
+const Level = require('./models/Level');
 const fs = require('fs');
 const { Collection } = require('discord.js');
 
@@ -32,7 +34,6 @@ async function loadConfig() {
 }
 loadConfig();
 let commandCount = 0; 
-let botOwnerIds = []; 
 const HARDCODED_ADMIN_ID = "336814068595818497"; 
 
 // MongoDB Bağlantısı
@@ -70,6 +71,7 @@ const client = new Client({
     partials: [Partials.Message, Partials.Channel, Partials.Reaction]
 });
 
+client.botOwnerIds = [];
 client.commands = new Collection();
 
 // Komut Handler
@@ -88,9 +90,9 @@ const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'
 for (const file of eventFiles) {
     const event = require(`./events/${file}`);
     if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args, client, botOwnerIds, HARDCODED_ADMIN_ID, addActivity));
+        client.once(event.name, (...args) => event.execute(...args, client, client.botOwnerIds, HARDCODED_ADMIN_ID, addActivity));
     } else {
-        client.on(event.name, (...args) => event.execute(...args, client, botOwnerIds, addActivity));
+        client.on(event.name, (...args) => event.execute(...args, client, client.botOwnerIds, addActivity));
     }
 }
 
@@ -130,12 +132,38 @@ function checkAuth(req, res, next) {
 // Middleware: Admin Kontrolü (Bot Sahibi)
 function checkAdmin(req, res, next) {
     // Bot sahiplerinden biri mi?
-    if (req.isAuthenticated() && botOwnerIds.includes(req.user.id)) return next();
+    if (req.isAuthenticated() && client.botOwnerIds.includes(req.user.id)) return next();
     res.status(403).json({ error: "Bu işlem için yetkiniz yok." });
 }
 
 app.use(express.json()); 
 app.use(express.static(path.join(__dirname)));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Multer Konfigürasyonu
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'bg-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpeg|jpg|png|gif|webp/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+        if (extname && mimetype) return cb(null, true);
+        cb(new Error('Sadece resim dosyaları yüklenebilir!'));
+    }
+});
 
 // Auth Rotaları
 app.get('/auth/discord', passport.authenticate('discord'));
@@ -153,7 +181,7 @@ app.get('/auth/logout', (req, res) => {
 
 app.get('/api/user', (req, res) => {
     if (req.isAuthenticated()) {
-        const user = { ...req.user, isAdmin: botOwnerIds.includes(req.user.id) };
+        const user = { ...req.user, isAdmin: client.botOwnerIds.includes(req.user.id) };
         res.json(user);
     } else {
         res.status(401).json({ error: "Giriş yapılmamış" });
@@ -216,13 +244,13 @@ app.get('/api/servers', checkAuth, (req, res) => {
     if (!client.user) return res.status(503).json([]);
     
     // Admin (Bot Sahibi) ise tüm sunucuları görsün
-    if (botOwnerIds.includes(req.user.id)) {
+    if (client.botOwnerIds.includes(req.user.id)) {
         const servers = client.guilds.cache.map(guild => ({
             id: guild.id,
             name: guild.name,
             memberCount: guild.memberCount,
             icon: guild.iconURL() || 'https://cdn.discordapp.com/embed/avatars/0.png',
-            owner: botOwnerIds.includes(guild.ownerId),
+            owner: client.botOwnerIds.includes(guild.ownerId),
             isAdmin: true // Admin olduğu için her şeyi yapabilir
         }));
         return res.json(servers);
@@ -253,7 +281,7 @@ app.get('/api/servers', checkAuth, (req, res) => {
                 name: botGuild.name,
                 memberCount: botGuild.memberCount,
                 icon: botGuild.iconURL() || 'https://cdn.discordapp.com/embed/avatars/0.png',
-                owner: botOwnerIds.includes(botGuild.ownerId), // Bot sahibi mi?
+                owner: client.botOwnerIds.includes(botGuild.ownerId), // Bot sahibi mi?
                 isAdmin: false
             });
         }
@@ -270,7 +298,7 @@ app.get('/api/server/:id', checkAuth, async (req, res) => {
     const targetGuildId = req.params.id;
     let isAuthorized = false;
 
-    if (botOwnerIds.includes(req.user.id)) {
+    if (client.botOwnerIds.includes(req.user.id)) {
         isAuthorized = true;
     } else {
         const userGuilds = req.user.guilds || [];
@@ -311,6 +339,9 @@ app.get('/api/server/:id', checkAuth, async (req, res) => {
     // Reaction Roles
     const reactionRoles = await ReactionRole.find({ guildId: targetGuildId });
     
+    // User Level Info
+    const userLevel = await Level.findOne({ guildId: targetGuildId, userId: req.user.id }) || new Level({ guildId: targetGuildId, userId: req.user.id });
+
     // Sahiplik bilgisini al (Discord API bazen geç getirebilir, cache'den alıyoruz)
     let ownerName = "Bilinmiyor";
     try {
@@ -333,8 +364,45 @@ app.get('/api/server/:id', checkAuth, async (req, res) => {
         textChannels: textChannels,
         guildRoles: guildRoles,
         settings: settings,
-        reactionRoles: reactionRoles
+        reactionRoles: reactionRoles,
+        userLevel: userLevel
     });
+});
+
+// API: Kullanıcı Seviye Ayarlarını Kaydet (Arka Plan)
+app.post('/api/server/:id/user-level-config', checkAuth, async (req, res) => {
+    try {
+        const { background } = req.body;
+        
+        await Level.findOneAndUpdate(
+            { guildId: req.params.id, userId: req.user.id },
+            { background: background },
+            { upsert: true }
+        );
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Rank Kartı Arka Planı Yükle (Dosya)
+app.post('/api/server/:id/user-level-upload', checkAuth, upload.single('background'), async (req, res) => {
+    try {
+        if (!req.file) throw new Error("Dosya yüklenemedi.");
+
+        const bgUrl = `/uploads/${req.file.filename}`;
+
+        await Level.findOneAndUpdate(
+            { guildId: req.params.id, userId: req.user.id },
+            { background: bgUrl },
+            { upsert: true }
+        );
+
+        res.json({ success: true, background: bgUrl });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // API: Emoji Rol Ekle
@@ -413,7 +481,7 @@ app.post('/api/server/:id/config', checkAuth, async (req, res) => {
     
     // YETKİ KONTROLÜ
     let isAuthorized = false;
-    if (botOwnerIds.includes(req.user.id)) {
+    if (client.botOwnerIds.includes(req.user.id)) {
         isAuthorized = true;
     } else {
         const userGuilds = req.user.guilds || [];
@@ -456,7 +524,7 @@ app.post('/api/server/leave', checkAuth, async (req, res) => {
     let isAuthorized = false;
 
     // 1. Bot Sahibi ise her türlü ayrılabilir
-    if (botOwnerIds.includes(req.user.id)) isAuthorized = true;
+    if (client.botOwnerIds.includes(req.user.id)) isAuthorized = true;
     
     // 2. Sunucu Sahibi ise ayrılabilir
     if (guild.ownerId === req.user.id) isAuthorized = true;
