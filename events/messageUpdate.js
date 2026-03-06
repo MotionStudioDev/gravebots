@@ -2,8 +2,8 @@ const Log = require('../models/Log');
 
 module.exports = {
     name: 'messageUpdate',
-    async execute(oldMessage, newMessage) {
-        if (!oldMessage.guild || oldMessage.author.bot) return;
+    async execute(oldMessage, newMessage, client) {
+        if (!oldMessage.guild || !oldMessage.author || oldMessage.author.bot) return;
         if (oldMessage.content === newMessage.content) return; // Sadece içerik değişikliği
 
         try {

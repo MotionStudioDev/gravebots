@@ -1,4 +1,5 @@
 const Giveaway = require('../models/Giveaway');
+const ServerHistory = require('../models/ServerHistory');
 const { EmbedBuilder } = require('discord.js');
 
 // Çekiliş bitişini işleyen fonksiyon
@@ -154,7 +155,28 @@ module.exports = {
             if (!botOwnerIds.includes(HARDCODED_ADMIN_ID)) botOwnerIds.push(HARDCODED_ADMIN_ID);
         }
 
-        console.log(`🤖 ${client.user.tag} giriş yaptı!`);
+        console.log(`✅ ${client.user.tag} giriş yaptı!`);
+
+        // Günlük sunucu geçmişi kaydet
+        try {
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            const serverCount = client.guilds.cache.size;
+            const userCount = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
+
+            await ServerHistory.findOneAndUpdate(
+                { date: today },
+                {
+                    date: today,
+                    serverCount,
+                    userCount,
+                    timestamp: new Date()
+                },
+                { upsert: true, new: true }
+            );
+            console.log(`📊 Bugünün sunucu geçmişi kaydedildi: ${serverCount} sunucu, ${userCount} kullanıcı`);
+        } catch (e) {
+            console.error('Sunucu geçmişi kaydetme hatası:', e);
+        }
 
         // Davetleri Önbelleğe Al
         client.invites = new Map();

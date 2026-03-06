@@ -2,6 +2,7 @@ const Guild = require('../models/Guild');
 const Afk = require('../models/Afk');
 const Level = require('../models/Level');
 const Blacklist = require('../models/Blacklist');
+const CommandUsage = require('../models/CommandUsage');
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 
 // Basit Spam Kontrolü İçin Bellek
@@ -383,6 +384,14 @@ module.exports = {
 
         try {
             await command.execute(message, args, client, addActivity);
+            
+            // Komut kullanımını kaydet
+            await CommandUsage.create({
+                commandName: command.name,
+                category: command.category || 'Genel',
+                userId: message.author.id,
+                guildId: message.guild.id
+            });
         } catch (error) {
             console.error(error);
             message.reply('❌ Bu komutu çalıştırırken bir hata oluştu!');

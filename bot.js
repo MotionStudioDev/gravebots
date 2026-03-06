@@ -18,6 +18,8 @@ const Infraction = require('./models/Infraction');
 const Log = require('./models/Log');
 const Giveaway = require('./models/Giveaway');
 const Blacklist = require('./models/Blacklist');
+const ServerHistory = require('./models/ServerHistory');
+const CommandUsage = require('./models/CommandUsage');
 const fs = require('fs');
 const { Collection } = require('discord.js');
 
@@ -245,46 +247,89 @@ app.get('/api/activities', checkAdmin, (req, res) => {
     res.json(activityLog);
 });
 
-// API: İstatistiksel Veriler (Grafikler için)
+// API: İstatistiksel Veriler (Grafikler için) - GERÇEK VERİLER
 app.get('/api/stats/analytics', checkAuth, async (req, res) => {
     try {
-        // Sunucu büyüme verileri (simüle edilmiş - gerçek veri için database gerekli)
+        // 1. SUNUCU BÜYÜME VERİLERİ (Gerçek veritabanı verileri)
         const serverGrowth = [];
-        const now = Date.now();
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Son 7 günün verilerini çek
         for (let i = 6; i >= 0; i--) {
-            const date = new Date(now - i * 24 * 60 * 60 * 1000);
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
             const dayName = date.toLocaleDateString('tr-TR', { weekday: 'short' });
-            // Simüle edilmiş veri (gerçek implementasyon için database'den çekilmeli)
-            const baseCount = client.guilds.cache.size;
-            const randomFactor = Math.floor(Math.random() * 3) - 1; // -1, 0, +1
+            
+            let history = await ServerHistory.findOne({ date: dateStr });
+            
+            // Eğer o güne ait veri yoksa, bugünün verisini kullan (ilk günler için)
+            if (!history) {
+                history = await ServerHistory.findOne({ date: today });
+            }
+            
             serverGrowth.push({
                 day: dayName,
-                servers: Math.max(1, baseCount + randomFactor),
-                users: Math.floor((client.guilds.cache.reduce((a, g) => a + g.memberCount, 0) / baseCount) * (baseCount + randomFactor))
+                servers: history ? history.serverCount : client.guilds.cache.size,
+                users: history ? history.userCount : client.guilds.cache.reduce((a, g) => a + g.memberCount, 0)
             });
         }
 
-        // Komut kullanım istatistikleri
+        // 2. KOMUT KULLANIM İSTATİSTİKLERİ (Gerçek veritabanı verileri)
         const commandUsage = [];
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        
+        // Son 7 günde her kategori için kullanım sayısını al
+        const usageStats = await CommandUsage.aggregate([
+            {
+                $match: {
+                    timestamp: { $gte: sevenDaysAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: '$category',
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { count: -1 }
+            }
+        ]);
+        
+        // Kullanılmayan kategorileri de ekle
         const categories = {};
         client.commands.forEach(cmd => {
             const cat = cmd.category || 'Genel';
             if (!categories[cat]) categories[cat] = 0;
-            categories[cat]++;
         });
         
-        // Her kategori için simüle edilmiş kullanım sayısı
-        Object.entries(categories).forEach(([category, count]) => {
-            commandUsage.push({
-                category,
-                count: Math.floor(count * (Math.random() * 50 + 10)), // Simüle edilmiş
-                color: getRandomColor()
-            });
+        usageStats.forEach(stat => {
+            if (categories[stat._id] !== undefined) {
+                commandUsage.push({
+                    category: stat._id,
+                    count: stat.count,
+                    color: getRandomColor()
+                });
+            }
+        });
+        
+        // Hiç kullanılmamış kategorileri 0 ile ekle
+        Object.keys(categories).forEach(cat => {
+            if (!commandUsage.find(cu => cu.category === cat)) {
+                commandUsage.push({
+                    category: cat,
+                    count: 0,
+                    color: '#6b7280' // Gri renk (kullanılmamış)
+                });
+            }
         });
 
-        // Level dağılımı (simüle edilmiş)
+        // 3. LEVEL DAĞILIMI (Gerçek veritabanı verileri)
         const levelDistribution = [];
-        const totalLevels = await Level.countDocuments();
+        const allLevels = await Level.find({}).select('level').lean();
+        const totalLevels = allLevels.length;
+        
         const levelRanges = [
             { min: 1, max: 5, label: '1-5' },
             { min: 6, max: 10, label: '6-10' },
@@ -294,21 +339,34 @@ app.get('/api/stats/analytics', checkAuth, async (req, res) => {
         ];
 
         for (const range of levelRanges) {
-            // Simüle edilmiş dağılım
-            const percentage = Math.random() * 30 + 10;
+            const count = allLevels.filter(l => l.level >= range.min && l.level <= range.max).length;
+            const percentage = totalLevels > 0 ? Math.round((count / totalLevels) * 100) : 0;
             levelDistribution.push({
                 range: range.label,
-                count: Math.floor(totalLevels * (percentage / 100)),
-                percentage: Math.round(percentage)
+                count,
+                percentage
             });
         }
 
-        // Aktif kullanıcı analizi (son 24 saat)
+        // 4. AKTİF KULLANICI ANALİZİ (Son mesaj zamanlarına göre)
         const activeUsers = {
-            last24h: Math.floor(client.guilds.cache.reduce((a, g) => a + g.memberCount, 0) * 0.1), // %10 aktif
-            last7d: Math.floor(client.guilds.cache.reduce((a, g) => a + g.memberCount, 0) * 0.3), // %30 aktif
-            last30d: Math.floor(client.guilds.cache.reduce((a, g) => a + g.memberCount, 0) * 0.6)  // %60 aktif
+            last24h: 0,
+            last7d: 0,
+            last30d: 0
         };
+        
+        // Level verilerinden son mesaj zamanlarını kontrol et (simüle edilmiş)
+        // Gerçek implementasyon için User modeline lastMessageTime eklenmeli
+        const now = Date.now();
+        const oneDay = 24 * 60 * 60 * 1000;
+        const sevenDays = 7 * oneDay;
+        const thirtyDays = 30 * oneDay;
+        
+        // Şimdilik toplam kullanıcı sayısının yüzdesi olarak hesapla
+        const totalUsers = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
+        activeUsers.last24h = Math.floor(totalUsers * 0.1); // %10 aktif
+        activeUsers.last7d = Math.floor(totalUsers * 0.3);  // %30 aktif
+        activeUsers.last30d = Math.floor(totalUsers * 0.6); // %60 aktif
 
         res.json({
             serverGrowth,
