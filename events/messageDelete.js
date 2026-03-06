@@ -2,8 +2,8 @@ const Log = require('../models/Log');
 
 module.exports = {
     name: 'messageDelete',
-    async execute(message) {
-        if (!message.guild || message.author.bot) return;
+    async execute(message, client) {
+        if (!message.guild || !message.author || message.author.bot) return;
 
         try {
             await Log.create({

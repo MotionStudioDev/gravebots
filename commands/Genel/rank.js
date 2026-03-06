@@ -14,35 +14,24 @@ module.exports = {
 
         const userLevel = await Level.findOne({ guildId: message.guild.id, userId: target.id }) || new Level({ guildId: message.guild.id, userId: target.id });
         
+        // Bar rengini ayarla (varsayılan: pink-purple)
+        const barColorScheme = userLevel.barColor || 'pink-purple';
+        const customBarColor = userLevel.customBarColor || '#8b5cf6';
+        
         // Canvas oluştur
         const canvas = createCanvas(934, 282);
         const ctx = canvas.getContext('2d');
 
-        // Arka planı yükle
-        try {
-            const defaultBG = 'https://img.freepik.com/free-vector/abstract-dark-particles-background_23-2148424368.jpg';
-            let bgSource = userLevel.background || defaultBG;
-            
-            // Eğer yüklü bir dosya ise (/uploads/ ile başlıyorsa) tam yolu belirt
-            if (bgSource.startsWith('/uploads/')) {
-                const relativePath = bgSource.startsWith('/') ? bgSource.slice(1) : bgSource;
-                bgSource = path.join(process.cwd(), relativePath);
-            }
-
-            try {
-                const background = await loadImage(bgSource);
-                ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-            } catch (loadErr) {
-                console.error(`Rank kartı resim yüklenemedi (${bgSource}):`, loadErr.message);
-                // Özel resim yüklenemezse varsayılana dön
-                const background = await loadImage(defaultBG);
-                ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-            }
-        } catch (e) {
-            console.error("Rank kartı genel arka plan hatası:", e);
-            ctx.fillStyle = '#1e1e24';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
+        // Arka plan (Düz renk - Modern Dark Theme)
+        ctx.fillStyle = '#1a1a2e';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Dekoratif gradient overlay
+        const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        bgGradient.addColorStop(0, 'rgba(26, 26, 46, 0.9)');
+        bgGradient.addColorStop(1, 'rgba(15, 15, 30, 0.95)');
+        ctx.fillStyle = bgGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Cam efekti (overlay)
         ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
@@ -90,11 +79,70 @@ module.exports = {
         }
         ctx.fill();
 
-        // Progress Bar (Ön - Gradient)
+        // Progress Bar (Ön - Renk Şemasına Göre)
         if (progress > 0) {
-            const gradient = ctx.createLinearGradient(270, 0, 870, 0);
-            gradient.addColorStop(0, '#8e2de2');
-            gradient.addColorStop(1, '#4a00e0');
+            let gradient;
+            
+            // Renk şeması seçimi
+            switch(barColorScheme) {
+                case 'blue-cyan':
+                    gradient = ctx.createLinearGradient(270, 0, 870, 0);
+                    gradient.addColorStop(0, '#3b82f6'); // Blue
+                    gradient.addColorStop(0.5, '#06b6d4'); // Cyan
+                    gradient.addColorStop(1, '#14b8a6'); // Teal
+                    ctx.shadowColor = '#06b6d4';
+                    break;
+                    
+                case 'green-emerald':
+                    gradient = ctx.createLinearGradient(270, 0, 870, 0);
+                    gradient.addColorStop(0, '#22c55e'); // Green
+                    gradient.addColorStop(0.5, '#10b981'); // Emerald
+                    gradient.addColorStop(1, '#059669'); // Dark Emerald
+                    ctx.shadowColor = '#10b981';
+                    break;
+                    
+                case 'orange-red':
+                    gradient = ctx.createLinearGradient(270, 0, 870, 0);
+                    gradient.addColorStop(0, '#f97316'); // Orange
+                    gradient.addColorStop(0.5, '#ef4444'); // Red
+                    gradient.addColorStop(1, '#dc2626'); // Dark Red
+                    ctx.shadowColor = '#ef4444';
+                    break;
+                    
+                case 'yellow-orange':
+                    gradient = ctx.createLinearGradient(270, 0, 870, 0);
+                    gradient.addColorStop(0, '#eab308'); // Yellow
+                    gradient.addColorStop(0.5, '#f59e0b'); // Amber
+                    gradient.addColorStop(1, '#d97706'); // Orange
+                    ctx.shadowColor = '#f59e0b';
+                    break;
+                    
+                case 'violet-fuchsia':
+                    gradient = ctx.createLinearGradient(270, 0, 870, 0);
+                    gradient.addColorStop(0, '#a855f7'); // Violet
+                    gradient.addColorStop(0.5, '#d946ef'); // Fuchsia
+                    gradient.addColorStop(1, '#ec4899'); // Pink
+                    ctx.shadowColor = '#d946ef';
+                    break;
+                    
+                case 'custom':
+                    // Özel renk (tek renk)
+                    gradient = ctx.createLinearGradient(270, 0, 870, 0);
+                    gradient.addColorStop(0, customBarColor);
+                    gradient.addColorStop(1, customBarColor);
+                    ctx.shadowColor = customBarColor;
+                    break;
+                    
+                default: // pink-purple (default)
+                    gradient = ctx.createLinearGradient(270, 0, 870, 0);
+                    gradient.addColorStop(0, '#ec4899'); // Pink
+                    gradient.addColorStop(0.5, '#8b5cf6'); // Purple
+                    gradient.addColorStop(1, '#6366f1'); // Indigo
+                    ctx.shadowColor = '#8b5cf6';
+            }
+            
+            // Glow efekti
+            ctx.shadowBlur = 15;
             
             ctx.fillStyle = gradient;
             ctx.beginPath();
@@ -104,6 +152,9 @@ module.exports = {
                 ctx.rect(270, 185, progress, 30);
             }
             ctx.fill();
+            
+            // Shadow'u sıfırla
+            ctx.shadowBlur = 0;
         }
 
         const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: 'rank-card.png' });

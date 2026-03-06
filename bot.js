@@ -572,14 +572,17 @@ app.get('/api/server/:id', checkAuth, async (req, res) => {
     });
 });
 
-// API: Kullanıcı Seviye Ayarlarını Kaydet (Arka Plan)
+// API: Kullanıcı Seviye Ayarlarını Kaydet (Bar Rengi)
 app.post('/api/server/:id/user-level-config', checkAuth, async (req, res) => {
     try {
-        const { background } = req.body;
+        const { barColor, customBarColor } = req.body;
 
         await Level.findOneAndUpdate(
             { guildId: req.params.id, userId: req.user.id },
-            { background: background },
+            { 
+                barColor: barColor || 'pink-purple',
+                customBarColor: customBarColor || '#8b5cf6'
+            },
             { upsert: true }
         );
 

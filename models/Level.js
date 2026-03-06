@@ -5,8 +5,8 @@ const LevelSchema = new mongoose.Schema({
     userId: { type: String, required: true },
     xp: { type: Number, default: 0 },
     level: { type: Number, default: 1 },
-    background: { type: String, default: null }, // Varsayılan arka plan yok
-    lastMessage: { type: Date, default: Date.now }
+    barColor: { type: String, default: 'pink-purple' }, // Renk şeması
+    customBarColor: { type: String, default: '#8b5cf6' } // Özel renk hex kodu
 });
 
 // Aynı sunucuda aynı kullanıcıdan sadece bir kayıt olabilir

@@ -1149,49 +1149,68 @@
                             </div>
 
                             <!-- User Rank Card Settings -->
-                            <div class="glass-panel p-4 rounded-xl space-y-4">
+                            <div class="glass-panel p-4 rounded-xl space-y-3">
                                 <h5 class="text-sm font-bold text-pink-400">Kişisel Ayarların</h5>
-
-                                <!-- Drag & Drop Area -->
-                                <div id="drop-zone"
-                                    class="relative group cursor-pointer border-2 border-dashed border-white/10 hover:border-purple-500/50 rounded-xl p-6 transition-all bg-white/5 hover:bg-purple-500/5 flex flex-col items-center justify-center gap-3 overflow-hidden">
-                                    <input type="file" id="rank-bg-upload" class="hidden" accept="image/*">
-                                    <div id="upload-idle" class="flex flex-col items-center">
-                                        <i
-                                            class="fa-solid fa-cloud-arrow-up text-3xl text-gray-500 group-hover:text-purple-400 transition-colors mb-2"></i>
-                                        <span class="text-xs font-bold text-gray-400 group-hover:text-gray-200">Dosyayı
-                                            Sürükle veya Seç</span>
-                                        <span class="text-[10px] text-gray-600 mt-1">PNG, JPG, GIF (Max 5MB)</span>
+                                
+                                <div class="space-y-3">
+                                    <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Progress Bar Rengi</label>
+                                    
+                                    <!-- Renk Seçici Grid -->
+                                    <div class="grid grid-cols-6 gap-2">
+                                        <!-- Pink-Purple-Indigo (Default) -->
+                                        <button onclick="setBarColor('pink-purple')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                            style="background: linear-gradient(135deg, #ec4899, #8b5cf6, #6366f1);"
+                                            data-color="pink-purple">
+                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                        </button>
+                                        
+                                        <!-- Blue-Cyan -->
+                                        <button onclick="setBarColor('blue-cyan')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                            style="background: linear-gradient(135deg, #3b82f6, #06b6d4, #14b8a6);"
+                                            data-color="blue-cyan">
+                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                        </button>
+                                        
+                                        <!-- Green-Emerald -->
+                                        <button onclick="setBarColor('green-emerald')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                            style="background: linear-gradient(135deg, #22c55e, #10b981, #059669);"
+                                            data-color="green-emerald">
+                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                        </button>
+                                        
+                                        <!-- Orange-Red -->
+                                        <button onclick="setBarColor('orange-red')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                            style="background: linear-gradient(135deg, #f97316, #ef4444, #dc2626);"
+                                            data-color="orange-red">
+                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                        </button>
+                                        
+                                        <!-- Yellow-Orange -->
+                                        <button onclick="setBarColor('yellow-orange')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                            style="background: linear-gradient(135deg, #eab308, #f59e0b, #d97706);"
+                                            data-color="yellow-orange">
+                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                        </button>
+                                        
+                                        <!-- Violet-Fuchsia -->
+                                        <button onclick="setBarColor('violet-fuchsia')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                            style="background: linear-gradient(135deg, #a855f7, #d946ef, #ec4899);"
+                                            data-color="violet-fuchsia">
+                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                        </button>
                                     </div>
-                                    <div id="upload-preview" class="hidden absolute inset-0 w-full h-full">
-                                        <img id="bg-preview-img" class="w-full h-full object-cover opacity-40">
-                                        <div
-                                            class="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
-                                            <i class="fa-solid fa-check-circle text-2xl text-green-500 mb-1"></i>
-                                            <span
-                                                class="text-[10px] font-bold text-white uppercase tracking-widest">Resim
-                                                Seçildi</span>
-                                        </div>
+                                    
+                                    <!-- Özel Renk Seçici -->
+                                    <div class="flex items-center gap-2 mt-2">
+                                        <input type="color" id="custom-bar-color" 
+                                            class="w-10 h-10 rounded-lg cursor-pointer border-2 border-white/20 bg-transparent"
+                                            value="#8b5cf6"
+                                            onchange="setCustomBarColor(this.value)">
+                                        <span class="text-xs text-gray-400">Özel renk seç</span>
                                     </div>
-                                    <div id="upload-loading"
-                                        class="hidden absolute inset-0 w-full h-full bg-[#0f0f13]/90 flex flex-col items-center justify-center">
-                                        <i class="fa-solid fa-spinner fa-spin text-2xl text-purple-500 mb-2"></i>
-                                        <span class="text-[10px] font-bold text-purple-400">Yükleniyor...</span>
-                                    </div>
+                                    
+                                    <p class="text-[10px] text-gray-500">Seçtiğiniz renk Discord'da g!rank komutunda gösterilecek</p>
                                 </div>
-
-                                <div class="space-y-2">
-                                    <label class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Veya URL
-                                        ile Ayarla</label>
-                                    <input type="text" id="user-rank-bg"
-                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors"
-                                        placeholder="https://...">
-                                </div>
-
-                                <button onclick="saveUserLevelSettings()"
-                                    class="w-full py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white text-xs font-bold transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-500/20">
-                                    Değişiklikleri Kaydet
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -1614,7 +1633,6 @@
                 document.getElementById('setting-level-status').checked = data.settings.levelSystem?.status || false;
                 document.getElementById('setting-level-channel').value = data.settings.levelSystem?.channel || '';
                 document.getElementById('setting-xp-rate').value = data.settings.levelSystem?.xpRate || 1;
-                document.getElementById('user-rank-bg').value = data.userLevel?.background || '';
 
                 // Economy System
                 document.getElementById('setting-economy-status').checked = data.settings.economy?.status || false;
@@ -2104,6 +2122,51 @@
             }
         }
 
+        // --- RANK BAR RENK SEÇİCİ ---
+        let selectedBarColor = 'pink-purple'; // Default
+        
+        function setBarColor(colorScheme) {
+            selectedBarColor = colorScheme;
+            
+            // Tüm butonlardan check işareti kaldır
+            document.querySelectorAll('.bar-color-btn .fa-check').forEach(icon => {
+                icon.classList.add('hidden');
+            });
+            
+            // Seçili butona check işareti ekle
+            const selectedBtn = document.querySelector(`.bar-color-btn[data-color="${colorScheme}"]`);
+            if (selectedBtn) {
+                const checkIcon = selectedBtn.querySelector('.fa-check');
+                if (checkIcon) checkIcon.classList.remove('hidden');
+                
+                // Border highlight
+                document.querySelectorAll('.bar-color-btn').forEach(btn => {
+                    btn.classList.remove('border-white', 'border-purple-500');
+                    btn.classList.add('border-white/20');
+                });
+                selectedBtn.classList.remove('border-white/20');
+                selectedBtn.classList.add('border-white', 'border-purple-500');
+            }
+            
+            // Özel renk input'u sıfırla
+            document.getElementById('custom-bar-color').value = '#8b5cf6';
+        }
+        
+        function setCustomBarColor(colorValue) {
+            selectedBarColor = 'custom';
+            
+            // Tüm butonlardan check işareti kaldır
+            document.querySelectorAll('.bar-color-btn .fa-check').forEach(icon => {
+                icon.classList.add('hidden');
+            });
+            
+            // Tüm butonların border'ını sıfırla
+            document.querySelectorAll('.bar-color-btn').forEach(btn => {
+                btn.classList.remove('border-white', 'border-purple-500');
+                btn.classList.add('border-white/20');
+            });
+        }
+
         async function fetchInvites() {
             const list = document.getElementById('invites-list');
             list.innerHTML = '<tr><td colspan="2" class="text-center py-8 text-gray-500">Yükleniyor...</td></tr>';
@@ -2162,116 +2225,6 @@
             showToast('Mod-Log kanalı sıfırlandı, kaydetmeyi unutmayın!', 'success');
         }
 
-        // --- DRAG & DROP LOGIC ---
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('rank-bg-upload');
-        const uploadIdle = document.getElementById('upload-idle');
-        const uploadPreview = document.getElementById('upload-preview');
-        const uploadLoading = document.getElementById('upload-loading');
-        const previewImg = document.getElementById('bg-preview-img');
-        let selectedFile = null;
-
-        if (dropZone) {
-            dropZone.addEventListener('click', () => fileInput.click());
-
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('border-purple-500', 'bg-purple-500/10');
-            });
-
-            ['dragleave', 'drop'].forEach(event => {
-                dropZone.addEventListener(event, () => {
-                    dropZone.classList.remove('border-purple-500', 'bg-purple-500/10');
-                });
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                const file = e.dataTransfer.files[0];
-                if (file && file.type.startsWith('image/')) handleFileSelect(file);
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) handleFileSelect(file);
-            });
-        }
-
-        function handleFileSelect(file) {
-            if (file.size > 5 * 1024 * 1024) return showToast('Dosya boyutu 5MB\'dan küçük olmalı!', 'error');
-            selectedFile = file;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                previewImg.src = e.target.result;
-                uploadIdle.classList.add('hidden');
-                uploadPreview.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function saveUserLevelSettings() {
-            const backgroundUrl = document.getElementById('user-rank-bg').value;
-
-            // Eğer dosya seçildiyse önce onu yükle
-            if (selectedFile) {
-                uploadLoading.classList.remove('hidden');
-                const formData = new FormData();
-                formData.append('background', selectedFile);
-
-                try {
-                    const response = await fetch(`/api/server/${currentGuildId}/user-level-upload`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                        showToast('Resim başarıyla yüklendi ve kaydedildi!', 'success');
-                        selectedFile = null;
-                        uploadLoading.classList.add('hidden');
-                        document.getElementById('user-rank-bg').value = result.background;
-
-                        // Önizlemeyi güncelle
-                        previewImg.src = result.background;
-                        uploadIdle.classList.add('hidden');
-                        uploadPreview.classList.remove('hidden');
-                    } else {
-                        throw new Error(result.error);
-                    }
-                } catch (e) {
-                    showToast('Resim yüklenemedi: ' + e.message, 'error');
-                    uploadLoading.classList.add('hidden');
-                }
-                return;
-            }
-
-            // Dosya seçilmediyse URL ile kaydet (boşsa temizle)
-            try {
-                const response = await fetch(`/api/server/${currentGuildId}/user-level-config`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ background: backgroundUrl || null })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    showToast(backgroundUrl ? 'Arka plan URL\'si güncellendi!' : 'Arka plan başarıyla sıfırlandı!', 'success');
-
-                    // Önizlemeyi güncelle
-                    if (!backgroundUrl) {
-                        uploadIdle.classList.remove('hidden');
-                        uploadPreview.classList.add('hidden');
-                        previewImg.src = '';
-                    } else {
-                        previewImg.src = backgroundUrl;
-                        uploadIdle.classList.add('hidden');
-                        uploadPreview.classList.remove('hidden');
-                    }
-                } else {
-                    showToast(result.error || 'Hata oluştu', 'error');
-                }
-            } catch (e) {
-                showToast('Sistem hatası', 'error');
-            }
-        }
 
         async function saveGuildSettings() {
             if (!currentGuildId) return;
@@ -2305,7 +2258,9 @@
                 levelSystem: {
                     status: document.getElementById('setting-level-status').checked,
                     channel: document.getElementById('setting-level-channel').value,
-                    xpRate: parseInt(document.getElementById('setting-xp-rate').value) || 1
+                    xpRate: parseInt(document.getElementById('setting-xp-rate').value) || 1,
+                    barColor: selectedBarColor || 'pink-purple',
+                    customBarColor: document.getElementById('custom-bar-color').value
                 },
                 economy: {
                     status: document.getElementById('setting-economy-status').checked,
@@ -2339,6 +2294,20 @@
 
                 if (result.success) {
                     showToast('Ayarlar başarıyla kaydedildi!', 'success');
+                    
+                    // Bar rengini kaydet
+                    try {
+                        await fetch(`/api/server/${currentGuildId}/user-level-config`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                barColor: selectedBarColor || 'pink-purple',
+                                customBarColor: document.getElementById('custom-bar-color').value
+                            })
+                        });
+                    } catch (e) {
+                        console.error('Bar rengi kaydedilemedi:', e);
+                    }
                 } else {
                     throw new Error(result.error || 'Kaydedilemedi');
                 }

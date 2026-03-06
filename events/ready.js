@@ -157,6 +157,18 @@ module.exports = {
 
         console.log(`✅ ${client.user.tag} giriş yaptı!`);
 
+        // Bot Oynuyor Durumu - DND (Do Not Disturb)
+        client.user.setPresence({
+            activities: [{ 
+                name: 'g!yardım - Web Panel https://l24.im/35lT8W',
+                type: 3 // 3 = WATCHING (İzliyor)
+            }],
+            status: 'dnd' // dnd = Do Not Disturb (Rahatsız Etmeyin)
+        });
+        
+        console.log(`🎮 Bot durumu ayarlandı: g!yardım - Web Panel https://l24.im/35lT8W`);
+        console.log(`🔕 Mod: Rahatsız Etmeyin (DND)`);
+
         // Günlük sunucu geçmişi kaydet
         try {
             const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD

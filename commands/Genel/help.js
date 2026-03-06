@@ -85,7 +85,7 @@ module.exports = {
             new ButtonBuilder()
                 .setLabel('Web Panel')
                 .setStyle(ButtonStyle.Link)
-                .setURL('http://localhost:3000'),
+                .setURL('https://l24.im/35lT8W'),
             new ButtonBuilder()
                 .setLabel('Destek Al')
                 .setStyle(ButtonStyle.Link)
