@@ -1,6 +1,7 @@
 const Guild = require('../models/Guild');
 const Afk = require('../models/Afk');
 const Level = require('../models/Level');
+const Blacklist = require('../models/Blacklist');
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 
 // Basit Spam Kontrolü İçin Bellek
@@ -10,19 +11,35 @@ module.exports = {
     name: 'messageCreate',
     async execute(message, client, botOwnerIds, addActivity) {
         if (!message.guild || message.author.bot) {
-            // Bot Engel Kontrolü (Sadece bot ise ve koruma açıksa)
-            if (message.author.bot && message.guild) {
-                let settings = await Guild.findOne({ guildId: message.guild.id });
-                if (settings?.protections?.antiBot && !botOwnerIds.includes(message.author.id)) {
-                    // Botun yetkisi varsa yeni botu atabilir (Opsiyonel, şimdilik sadece mesaj engeli)
-                }
-            }
             return;
         }
-        
+
+        // --- GLOBAL BLACKLIST (KARA LİSTE) KONTROLÜ ---
+        // 1. Sunucu Kara Listede mi?
+        const isBlacklistedGuild = await Blacklist.findOne({ targetId: message.guild.id, type: 'guild' });
+        if (isBlacklistedGuild) {
+            console.log(`📡 [BLACKLIST] Engellenen sunucudan mesaj alındı (${message.guild.name}). Sunucudan çıkılıyor...`);
+            await message.guild.leave().catch(() => { });
+            return;
+        }
+
+        // 2. Kullanıcı Kara Listede mi?
+        const isBlacklistedUser = await Blacklist.findOne({ targetId: message.author.id, type: 'user' });
+        if (isBlacklistedUser && !botOwnerIds.includes(message.author.id)) {
+            return; // Kara listedeki kullanıcı botu kullanamaz
+        }
+
         // MongoDB'den ayarları al
         let settings = await Guild.findOne({ guildId: message.guild.id });
         if (!settings) settings = await Guild.create({ guildId: message.guild.id });
+
+        // --- SA-AS SİSTEMİ ---
+        if (settings.saas) {
+            const saludos = ['sa', 'selam', 'selamun aleyküm', 'selamın aleyküm', 'sea', 's.a'];
+            if (saludos.includes(message.content.toLowerCase().trim())) {
+                message.reply('Aleyküm Selam, Hoşgeldin! 👋').catch(() => { });
+            }
+        }
 
         const isOwner = botOwnerIds.includes(message.author.id);
         const isAdmin = message.member.permissions.has(PermissionsBitField.Flags.Administrator);
@@ -32,10 +49,10 @@ module.exports = {
             console.log(`[XP] Seviye sistemi aktif: ${message.author.tag} (ID: ${message.author.id})`);
             let userLevel = await Level.findOne({ guildId: message.guild.id, userId: message.author.id });
             if (!userLevel) {
-                userLevel = new Level({ 
-                    guildId: message.guild.id, 
-                    userId: message.author.id, 
-                    level: 1, 
+                userLevel = new Level({
+                    guildId: message.guild.id,
+                    userId: message.author.id,
+                    level: 1,
                     xp: 0,
                     lastMessage: new Date(0) // İlk mesajda XP alabilmesi için
                 });
@@ -46,7 +63,7 @@ module.exports = {
             const lastMsg = userLevel.lastMessage ? new Date(userLevel.lastMessage).getTime() : 0;
             const diff = now - lastMsg;
             const cooldown = isOwner ? 0 : 5000;
-            
+
             if (diff > cooldown) {
                 const xpGain = (Math.floor(Math.random() * 10) + 15) * (settings.levelSystem.xpRate || 1);
                 userLevel.xp += xpGain;
@@ -55,7 +72,7 @@ module.exports = {
 
                 // Level Up Kontrolü (Gelişmiş)
                 let nextLevelXP = userLevel.level * userLevel.level * 100;
-                
+
                 while (userLevel.xp >= nextLevelXP) {
                     userLevel.xp -= nextLevelXP; // XP'yi sıfırlamak yerine kalanı tutalım
                     userLevel.level += 1;
@@ -71,12 +88,12 @@ module.exports = {
 
                     const logChannelId = settings.levelSystem.channel;
                     const logChannel = logChannelId ? message.guild.channels.cache.get(logChannelId) : message.channel;
-                    
+
                     if (logChannel) {
-                        logChannel.send({ embeds: [levelUpEmbed] }).catch(() => {});
+                        logChannel.send({ embeds: [levelUpEmbed] }).catch(() => { });
                     }
                 }
-                
+
                 await userLevel.save().catch(err => console.error("XP Kayıt Hatası:", err));
                 console.log(`[XP] XP Eklendi: ${message.author.tag} -> +${xpGain} XP (Yeni Toplam: ${userLevel.xp})`);
             } else {
@@ -98,8 +115,8 @@ module.exports = {
                     const embed = new EmbedBuilder()
                         .setColor('#FFA500')
                         .setDescription(`👤 **${user.tag}** şu an AFK.\n\n**Sebep:** ${afkData.reason}\n**Süre:** ${timeStr} önce AFK oldu.`);
-                    
-                    message.reply({ embeds: [embed] }).then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
+
+                    message.reply({ embeds: [embed] }).then(msg => setTimeout(() => msg.delete().catch(() => { }), 5000));
                 }
             });
         }
@@ -111,25 +128,27 @@ module.exports = {
             const hours = Math.floor(duration / 3600);
             const minutes = Math.floor((duration % 3600) / 60);
             const seconds = duration % 60;
-            
+
             let timeStr = "";
             if (hours > 0) timeStr += `${hours} saat `;
             if (minutes > 0) timeStr += `${minutes} dakika `;
             timeStr += `${seconds} saniye`;
 
             await Afk.deleteOne({ userId: message.author.id, guildId: message.guild.id });
-            
+
             // İsmini eski haline getirme (Opsiyonel)
             if (message.member.manageable && message.member.displayName.startsWith('[AFK]')) {
                 const newNick = message.member.displayName.replace('[AFK] ', '');
-                message.member.setNickname(newNick).catch(() => {});
+                message.member.setNickname(newNick).catch(() => { });
             }
 
-            message.reply({ embeds: [
-                new EmbedBuilder()
-                    .setColor('#00FF00')
-                    .setDescription(`👋 Hoş geldin <@${message.author.id}>! Tekrar mesaj yazdığın için AFK modun kapatıldı.\n\n**Süre:** ${timeStr} boyunca AFK kaldın.`)
-            ]}).then(msg => setTimeout(() => msg.delete().catch(() => {}), 10000));
+            message.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor('#00FF00')
+                        .setDescription(`👋 Hoş geldin <@${message.author.id}>! Tekrar mesaj yazdığın için AFK modun kapatıldı.\n\n**Süre:** ${timeStr} boyunca AFK kaldın.`)
+                ]
+            }).then(msg => setTimeout(() => msg.delete().catch(() => { }), 10000));
         }
 
         // --- KORUMA SİSTEMLERİ (Admin ve Sahip Muaf) ---
@@ -139,7 +158,7 @@ module.exports = {
                 const badWords = [
                     'amk', 'aq', 'sik', 'piç', 'göt', 'oç', 'yarrak', 'amcık', 'meme', 'taşak', 'kahpe', 'fahişe', 'it', 'köpek', 'şerefsiz', 'haysiyetsiz', 'namussuz', 'evveliyatını', 'gelmişini', 'geçmişini', 'bacını', 'karını', 'karısı', 'bacısı', 'gavat', 'pezevenk', 'pic', 'sikik', 'siktir', 'sikerim', 'siktiğim', 'sokuk', 'amına', 'aminakoyim', 'aminakoim', 'amkoyim', 'orospu', 'orospi', 'orosbu', 'mal', 'gerizekalı', 'aptal', 'salak', 'şerefsiz', 'pust', 'puşt', 'yavşak', 'yawsak', 'veled', 'velet'
                 ];
-                
+
                 const contentLower = message.content.toLowerCase();
                 const hasBadWord = badWords.some(word => {
                     const regex = new RegExp(`(\\b|\\W)${word}(\\b|\\W)`, 'i');
@@ -147,8 +166,8 @@ module.exports = {
                 });
 
                 if (hasBadWord) {
-                    await message.delete().catch(() => {});
-                    
+                    await message.delete().catch(() => { });
+
                     // Mod-Log Gönder
                     if (settings.logs?.moderation) {
                         const logChannel = message.guild.channels.cache.get(settings.logs.moderation) || await message.guild.channels.fetch(settings.logs.moderation).catch(() => null);
@@ -166,11 +185,13 @@ module.exports = {
                         }
                     }
 
-                    return message.channel.send({ embeds: [
-                        new EmbedBuilder()
-                            .setColor('#FF0000')
-                            .setDescription(`⚠️ <@${message.author.id}>, bu sunucuda küfür kullanımı yasaktır!`)
-                    ]}).then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
+                    return message.channel.send({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setColor('#FF0000')
+                                .setDescription(`⚠️ <@${message.author.id}>, bu sunucuda küfür kullanımı yasaktır!`)
+                        ]
+                    }).then(msg => setTimeout(() => msg.delete().catch(() => { }), 5000));
                 }
             }
 
@@ -178,14 +199,14 @@ module.exports = {
             if (settings.protections?.antiLink || settings.protections?.antiUrl) {
                 const linkPattern = /(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|discordapp\.com\/invite)\/.+[a-z]/g;
                 const generalLinkPattern = /(https?:\/\/[^\s]+)/g;
-                
+
                 let isLink = linkPattern.test(message.content);
                 let isGeneralUrl = generalLinkPattern.test(message.content);
 
                 // Sadece Discord Davet Linki Korunuyorsa
                 if (settings.protections?.antiLink && isLink) {
-                    await message.delete().catch(() => {});
-                    
+                    await message.delete().catch(() => { });
+
                     // Mod-Log Gönder
                     if (settings.logs?.moderation) {
                         const logChannel = message.guild.channels.cache.get(settings.logs.moderation);
@@ -199,21 +220,23 @@ module.exports = {
                                     { name: 'Mesaj İçeriği', value: `\`\`\`${message.content.substring(0, 500)}\`\`\`` }
                                 )
                                 .setTimestamp();
-                            logChannel.send({ embeds: [logEmbed] }).catch(() => {});
+                            logChannel.send({ embeds: [logEmbed] }).catch(() => { });
                         }
                     }
 
-                    return message.channel.send({ embeds: [
-                        new EmbedBuilder()
-                            .setColor('#FF0000')
-                            .setDescription(`⚠️ <@${message.author.id}>, bu sunucuda reklam paylaşımı yasaktır!`)
-                    ]}).then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
+                    return message.channel.send({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setColor('#FF0000')
+                                .setDescription(`⚠️ <@${message.author.id}>, bu sunucuda reklam paylaşımı yasaktır!`)
+                        ]
+                    }).then(msg => setTimeout(() => msg.delete().catch(() => { }), 5000));
                 }
 
                 // Genel URL Korunuyorsa
                 if (settings.protections?.antiUrl && isGeneralUrl) {
-                    await message.delete().catch(() => {});
-                    
+                    await message.delete().catch(() => { });
+
                     // Mod-Log Gönder
                     if (settings.logs?.moderation) {
                         const logChannel = message.guild.channels.cache.get(settings.logs.moderation);
@@ -227,15 +250,17 @@ module.exports = {
                                     { name: 'Mesaj İçeriği', value: `\`\`\`${message.content.substring(0, 500)}\`\`\`` }
                                 )
                                 .setTimestamp();
-                            logChannel.send({ embeds: [logEmbed] }).catch(() => {});
+                            logChannel.send({ embeds: [logEmbed] }).catch(() => { });
                         }
                     }
 
-                    return message.channel.send({ embeds: [
-                        new EmbedBuilder()
-                            .setColor('#FF0000')
-                            .setDescription(`⚠️ <@${message.author.id}>, bu sunucuda URL paylaşımı yasaktır!`)
-                    ]}).then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
+                    return message.channel.send({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setColor('#FF0000')
+                                .setDescription(`⚠️ <@${message.author.id}>, bu sunucuda URL paylaşımı yasaktır!`)
+                        ]
+                    }).then(msg => setTimeout(() => msg.delete().catch(() => { }), 5000));
                 }
             }
 
@@ -243,12 +268,14 @@ module.exports = {
             if (settings.protections?.antiCaps) {
                 const capsCount = (message.content.match(/[A-Z]/g) || []).length;
                 if (message.content.length > 5 && (capsCount / message.content.length) > 0.7) {
-                    await message.delete().catch(() => {});
-                    return message.channel.send({ embeds: [
-                        new EmbedBuilder()
-                            .setColor('#FF0000')
-                            .setDescription(`⚠️ <@${message.author.id}>, lütfen aşırı büyük harf kullanma!`)
-                    ]}).then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
+                    await message.delete().catch(() => { });
+                    return message.channel.send({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setColor('#FF0000')
+                                .setDescription(`⚠️ <@${message.author.id}>, lütfen aşırı büyük harf kullanma!`)
+                        ]
+                    }).then(msg => setTimeout(() => msg.delete().catch(() => { }), 5000));
                 }
             }
 
@@ -256,7 +283,7 @@ module.exports = {
             if (settings.protections?.antiSpam) {
                 const now = Date.now();
                 const userData = spamMap.get(message.author.id) || { count: 0, lastMessage: 0 };
-                
+
                 if (now - userData.lastMessage < 2000) { // 2 saniye içinde
                     userData.count++;
                 } else {
@@ -266,13 +293,15 @@ module.exports = {
                 spamMap.set(message.author.id, userData);
 
                 if (userData.count > 5) { // 5 mesaj sınırı
-                    await message.delete().catch(() => {});
+                    await message.delete().catch(() => { });
                     if (userData.count === 6) {
-                        return message.channel.send({ embeds: [
-                            new EmbedBuilder()
-                                .setColor('#FF0000')
-                                .setDescription(`⚠️ <@${message.author.id}>, çok hızlı mesaj gönderiyorsun! Spam yapma.`)
-                        ]}).then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
+                        return message.channel.send({
+                            embeds: [
+                                new EmbedBuilder()
+                                    .setColor('#FF0000')
+                                    .setDescription(`⚠️ <@${message.author.id}>, çok hızlı mesaj gönderiyorsun! Spam yapma.`)
+                            ]
+                        }).then(msg => setTimeout(() => msg.delete().catch(() => { }), 5000));
                     }
                     return;
                 }
@@ -284,7 +313,7 @@ module.exports = {
                 const emojiCount = (message.content.match(emojiRegex) || []).length;
 
                 if (emojiCount > 5) { // 5'ten fazla emoji varsa
-                    await message.delete().catch(() => {});
+                    await message.delete().catch(() => { });
 
                     // Mod-Log Gönder
                     if (settings.logs?.moderation) {
@@ -299,15 +328,17 @@ module.exports = {
                                     { name: 'Emoji Sayısı', value: `${emojiCount}`, inline: true }
                                 )
                                 .setTimestamp();
-                            logChannel.send({ embeds: [logEmbed] }).catch(() => {});
+                            logChannel.send({ embeds: [logEmbed] }).catch(() => { });
                         }
                     }
 
-                    return message.channel.send({ embeds: [
-                        new EmbedBuilder()
-                            .setColor('#FF0000')
-                            .setDescription(`⚠️ <@${message.author.id}>, lütfen aşırı emoji kullanma! (Maks: 5)`)
-                    ]}).then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
+                    return message.channel.send({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setColor('#FF0000')
+                                .setDescription(`⚠️ <@${message.author.id}>, lütfen aşırı emoji kullanma! (Maks: 5)`)
+                        ]
+                    }).then(msg => setTimeout(() => msg.delete().catch(() => { }), 5000));
                 }
             }
         }
@@ -319,9 +350,9 @@ module.exports = {
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
 
-        const command = client.commands.get(commandName) || 
-                        client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-        
+        const command = client.commands.get(commandName) ||
+            client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
         if (!command) return;
 
         // Bakım Modu Kontrolü
@@ -343,6 +374,11 @@ module.exports = {
         // Komut Yasaklama Kontrolü
         if (settings.disabledCommands.includes(command.name)) {
             return message.reply(`❌ **${command.name}** komutu bu sunucuda devre dışı bırakılmış.`);
+        }
+
+        // Ekonomi Sistemi Kontrolü
+        if (command.category === 'Ekonomi' && !settings.economy?.status && !isOwner) {
+            return message.reply('❌ Bu sunucuda ekonomi sistemi devre dışı bırakılmış.');
         }
 
         try {

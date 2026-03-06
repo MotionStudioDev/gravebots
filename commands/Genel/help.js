@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
 const Guild = require('../../models/Guild');
 
 module.exports = {
@@ -14,12 +14,12 @@ module.exports = {
         // Belirli bir komut yardımı istenmiş mi?
         if (args[0]) {
             const commandName = args[0].toLowerCase();
-            const command = client.commands.get(commandName) || 
-                          client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+            const command = client.commands.get(commandName) ||
+                client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
             if (!command) {
-                return message.reply({ 
-                    embeds: [new EmbedBuilder().setColor('Red').setDescription(`❌ **${commandName}** adında bir komut bulamadım.`)] 
+                return message.reply({
+                    embeds: [new EmbedBuilder().setColor('Red').setDescription(`❌ **${commandName}** adında bir komut bulamadım.`)]
                 });
             }
 
@@ -31,7 +31,7 @@ module.exports = {
                     { name: '📝 Açıklama', value: command.description || 'Açıklama yok.', inline: false },
                     { name: '📁 Kategori', value: command.category || 'Genel', inline: true },
                     { name: '⌨️ Kullanım', value: `\`${command.usage || prefix + command.name}\``, inline: true },
-                    { name: '🔀 Takma Adlar', value: command.aliases ? command.aliases.map(a => `\`${a}\``).join(', ') : 'Yok.', inline: true }
+                    { name: '🔀 Takma Adlar', value: command.aliases && command.aliases.length > 0 ? command.aliases.map(a => `\`${a}\``).join(', ') : 'Yok.', inline: true }
                 )
                 .setFooter({ text: 'Parantez içindeki kısımlar isteğe bağlıdır.' })
                 .setTimestamp();
@@ -39,35 +39,115 @@ module.exports = {
             return message.reply({ embeds: [cmdEmbed] });
         }
 
-        // Genel yardım listesi
+        // Genel yardım listesi hazırlığı
         const categories = {};
+        const categoryIcons = {
+            'Genel': '🌏',
+            'Ekonomi': '💰',
+            'Eğlence': '🎭',
+            'Koruma': '🛡️',
+            'Moderasyon': '🔨',
+            'Müzik': '🎵',
+            'Sistem': '⚙️'
+        };
+
         client.commands.forEach(cmd => {
-            if (!categories[cmd.category]) categories[cmd.category] = [];
-            categories[cmd.category].push(`\`${cmd.name}\``);
+            const cat = cmd.category || 'Genel';
+            if (!categories[cat]) categories[cat] = [];
+            categories[cat].push(cmd);
         });
 
-        const helpEmbed = new EmbedBuilder()
+        const categoryNames = Object.keys(categories);
+
+        const initialEmbed = new EmbedBuilder()
             .setColor('#5865F2')
-            .setTitle('📚 GraveBOT Yardım Merkezi')
+            .setTitle(`📚 GraveBOT Yardım Merkezi`)
             .setAuthor({ name: client.user.username, iconURL: client.user.displayAvatarURL() })
-            .setDescription(`Aşağıda kategorilere ayrılmış tüm komutlarımı görebilirsin.\nBelirli bir komut hakkında detaylı bilgi için: \`${prefix}yardım [komut]\` yazabilirsin.`)
             .setThumbnail(client.user.displayAvatarURL())
-            .addFields(
-                { name: '✨ Toplam Komut', value: `\`${client.commands.size}\``, inline: true },
-                { name: '🌐 Dashboard', value: '[Buraya Tıkla](http://localhost:3000)', inline: true },
-                { name: '❓ Nasıl Kullanılır?', value: `Komutları kullanmak için başına \`${prefix}\` koymalısın.`, inline: false }
+            .setDescription(
+                `Selam <@${message.author.id}>! Aşağıdaki menüden bir kategori seçerek komutlarımı inceleyebilirsin.\n\n` +
+                `✨ **Toplam Komut:** \`${client.commands.size}\` adet\n` +
+                `⌨️ **Prefix:** \`${prefix}\` (Bu sunucuda)\n\n` +
+                `💡 *Kategoriler arasında geçiş yapmak için aşağıdaki menüyü kullan!*`
             )
-            .setTimestamp()
-            .setFooter({ text: `${message.author.tag} tarafından istendi.`, iconURL: message.author.displayAvatarURL() });
+            .addFields(
+                { name: '🔗 Hızlı Linkler', value: `[Botu Ekle](https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands) | [Web Panel](http://localhost:3000) | [Destek Sunucusu](https://discord.gg/gravebot)` }
+            )
+            .setFooter({ text: `${message.author.tag} tarafından istendi.`, iconURL: message.author.displayAvatarURL() })
+            .setTimestamp();
 
-        for (const category in categories) {
-            helpEmbed.addFields({ 
-                name: `📂 ${category}`, 
-                value: categories[category].join(', '), 
-                inline: false 
-            });
-        }
+        // Butonlar
+        const buttons = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+                .setLabel('Botu Ekle!')
+                .setStyle(ButtonStyle.Link)
+                .setURL(`https://discord.com/api/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot%20applications.commands`),
+            new ButtonBuilder()
+                .setLabel('Web Panel')
+                .setStyle(ButtonStyle.Link)
+                .setURL('http://localhost:3000'),
+            new ButtonBuilder()
+                .setLabel('Destek Al')
+                .setStyle(ButtonStyle.Link)
+                .setURL('https://discord.gg/gravebot')
+        );
 
-        message.reply({ embeds: [helpEmbed] });
+        // Seçim Menüsü
+        const menu = new ActionRowBuilder().addComponents(
+            new StringSelectMenuBuilder()
+                .setCustomId('help_menu')
+                .setPlaceholder('📂 Bir kategori seçin...')
+                .addOptions(
+                    { label: 'Anasayfa', value: 'home', description: 'Yardım merkezi ana sayfasına dön.', emoji: '🏠' },
+                    ...categoryNames.map(cat => ({
+                        label: cat,
+                        value: cat,
+                        description: `${cat} kategorisindeki komutları gör.`,
+                        emoji: categoryIcons[cat] || '📁'
+                    }))
+                )
+        );
+
+        const helpMsg = await message.reply({ embeds: [initialEmbed], components: [menu, buttons] });
+
+        // Collector Kurulumu
+        const filter = i => i.user.id === message.author.id;
+        const collector = helpMsg.createMessageComponentCollector({ filter, time: 60000 });
+
+        collector.on('collect', async i => {
+            if (i.customId === 'help_menu') {
+                const selected = i.values[0];
+
+                if (selected === 'home') {
+                    await i.update({ embeds: [initialEmbed], components: [menu, buttons] });
+                } else {
+                    const cmds = categories[selected];
+                    const catEmbed = new EmbedBuilder()
+                        .setColor('#5865F2')
+                        .setTitle(`${categoryIcons[selected] || '📁'} ${selected} Komutları`)
+                        .setDescription(`Aşağıda **${selected}** kategorisindeki tüm komutlar listelenmiştir.\nDetaylı bilgi için: \`${prefix}yardım [komut]\``)
+                        .setThumbnail(client.user.displayAvatarURL())
+                        .addFields(
+                            {
+                                name: 'Komutlar',
+                                value: cmds.map(c => `\`${c.name}\``).join(', ') || 'Bu kategoride komut bulunmuyor.'
+                            }
+                        )
+                        .setTimestamp()
+                        .setFooter({ text: `${message.author.tag} tarafından istendi.`, iconURL: message.author.displayAvatarURL() });
+
+                    await i.update({ embeds: [catEmbed], components: [menu, buttons] });
+                }
+            }
+        });
+
+        collector.on('end', () => {
+            // Süre dolduğunda menüyü devre dışı bırak
+            const disabledMenu = new ActionRowBuilder().addComponents(
+                StringSelectMenuBuilder.from(menu.components[0]).setDisabled(true)
+            );
+            helpMsg.edit({ components: [disabledMenu, buttons] }).catch(() => { });
+        });
     }
 };
+

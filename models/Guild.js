@@ -4,6 +4,7 @@ const GuildSchema = new mongoose.Schema({
     guildId: { type: String, required: true, unique: true },
     prefix: { type: String, default: 'g!' },
     language: { type: String, default: 'tr' },
+    saas: { type: Boolean, default: false },
     welcomeChannel: { type: String, default: null },
     welcomeMessage: { type: String, default: 'Hoşgeldin {user}, sunucumuza katıldı!' },
     leaveChannel: { type: String, default: null },
@@ -12,6 +13,10 @@ const GuildSchema = new mongoose.Schema({
     ticketLogChannel: { type: String, default: null },
     ticketMessage: { type: String, default: 'Bir sorun yaşıyorsanız veya yardıma ihtiyacınız varsa aşağıdaki butona tıklayarak bir destek talebi açabilirsiniz.' },
     autorole: { type: String, default: null },
+    inviteSystem: {
+        status: { type: Boolean, default: false },
+        channel: { type: String, default: null }
+    },
     disabledCommands: { type: Array, default: [] },
     adminRoles: { type: Array, default: [] },
     protections: {
@@ -33,7 +38,19 @@ const GuildSchema = new mongoose.Schema({
         status: { type: Boolean, default: false },
         channel: { type: String, default: null }, // Level up mesajının gideceği kanal (null = o anki kanal)
         xpRate: { type: Number, default: 1 } // XP çarpanı
-    }
+    },
+    economy: {
+        status: { type: Boolean, default: false },
+        dailyMin: { type: Number, default: 500 },
+        dailyMax: { type: Number, default: 1000 },
+        currency: { type: String, default: '💸' }
+    },
+    shop: [{
+        name: { type: String, required: true },
+        price: { type: Number, required: true },
+        description: { type: String, default: '' },
+        roleId: { type: String, default: null } // Satın alınca verilecek rol (opsiyonel)
+    }]
 });
 
 module.exports = mongoose.model('Guild', GuildSchema);

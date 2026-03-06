@@ -1,9 +1,12 @@
 const ReactionRole = require('../models/ReactionRole');
+const Giveaway = require('../models/Giveaway');
 
 module.exports = {
     name: 'messageReactionAdd',
     async execute(reaction, user, client) {
         if (user.bot) return;
+
+        // Fetch partials
         if (reaction.partial) {
             try {
                 await reaction.fetch();
@@ -12,7 +15,35 @@ module.exports = {
                 return;
             }
         }
+        if (reaction.message.partial) {
+            try {
+                await reaction.message.fetch();
+            } catch (error) {
+                console.error('Mesaj çekilirken hata oluştu:', error);
+            }
+        }
 
+        // --- ÇEKİLİŞ KATILIMI ---
+        // Emoji kontrolü (Hem karakter hem de unicode olarak)
+        if (reaction.emoji.name === '🎉' || reaction.emoji.name === '\uD83C\uDF89') {
+            const giveaway = await Giveaway.findOne({
+                messageId: reaction.message.id,
+                ended: false
+            });
+
+            if (giveaway) {
+                if (!giveaway.participants.includes(user.id)) {
+                    // Array update'i garantilemek için copy-and-push
+                    const newParticipants = [...giveaway.participants, user.id];
+                    giveaway.participants = newParticipants;
+                    await giveaway.save();
+                    console.log(`🎉 [BOT] ${user.tag} çekilişe katıldı: ${giveaway.prize} (Sunucu: ${reaction.message.guild.name})`);
+                }
+                return; // Çekilişse başka kontrol yapma
+            }
+        }
+
+        // --- EMOJİ ROL ---
         const data = await ReactionRole.findOne({
             guildId: reaction.message.guildId,
             messageId: reaction.message.id,
@@ -21,13 +52,13 @@ module.exports = {
 
         if (data) {
             const guild = reaction.message.guild;
-            const member = guild.members.cache.get(user.id);
+            const member = await guild.members.fetch(user.id).catch(() => null);
             const role = guild.roles.cache.get(data.roleId);
 
             if (member && role) {
                 try {
                     await member.roles.add(role);
-                    // Kullanıcıya bilgi mesajı atılabilir (opsiyonel)
+                    console.log(`✅ [BOT] ${user.tag} için rol verildi: ${role.name}`);
                 } catch (e) {
                     console.error('Emoji rol verme hatası:', e);
                 }

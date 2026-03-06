@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, ActivityType, PermissionsBitField, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, ActivityType, PermissionsBitField, Partials, EmbedBuilder } = require('discord.js');
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
@@ -13,12 +13,17 @@ const Guild = require('./models/Guild');
 const GlobalConfig = require('./models/GlobalConfig');
 const ReactionRole = require('./models/ReactionRole');
 const Level = require('./models/Level');
+const User = require('./models/User');
+const Infraction = require('./models/Infraction');
+const Log = require('./models/Log');
+const Giveaway = require('./models/Giveaway');
+const Blacklist = require('./models/Blacklist');
 const fs = require('fs');
 const { Collection } = require('discord.js');
 
 // Global Değişkenler
 let maintenanceMode = false;
-global.maintenanceMode = maintenanceMode; 
+global.maintenanceMode = maintenanceMode;
 
 // Başlangıçta Bakım Modunu Veritabanından Yükle
 async function loadConfig() {
@@ -33,8 +38,8 @@ async function loadConfig() {
     }
 }
 loadConfig();
-let commandCount = 0; 
-const HARDCODED_ADMIN_ID = "336814068595818497"; 
+let commandCount = 0;
+const HARDCODED_ADMIN_ID = "336814068595818497";
 
 // MongoDB Bağlantısı
 mongoose.connect(process.env.MONGODB_URI)
@@ -136,7 +141,7 @@ function checkAdmin(req, res, next) {
     res.status(403).json({ error: "Bu işlem için yetkiniz yok." });
 }
 
-app.use(express.json()); 
+app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -153,7 +158,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage,
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
@@ -190,20 +195,48 @@ app.get('/api/user', (req, res) => {
 
 
 // API: Gerçek Bot Verilerini Döndür (Herkes Görebilir, İstatistikler İçin)
-app.get('/api/stats', checkAuth, (req, res) => {
+app.get('/api/stats', checkAuth, async (req, res) => {
     if (!client.user) {
         return res.status(503).json({ error: "Bot henüz hazır değil" });
     }
 
+    // Gerçek sunucu sayısı
+    const serverCount = client.guilds.cache.size;
+    
+    // Gerçek kullanıcı sayısı - Member intents yoksa approximate kullan
+    let userCount = 0;
+    try {
+        // Her sunucunun üye sayısını tek tek al (daha güvenilir)
+        client.guilds.cache.forEach(guild => {
+            userCount += guild.memberCount;
+        });
+    } catch (e) {
+        console.error('Kullanıcı sayısı hesaplama hatası:', e);
+        userCount = client.guilds.cache.reduce((a, g) => a + (g.approximateMemberCount || g.memberCount || 0), 0);
+    }
+
+    // Aktif çekiliş sayısı
+    const activeGiveaways = await Giveaway.countDocuments({ ended: false });
+    
+    // Toplam ceza kaydı
+    const totalInfractions = await Infraction.countDocuments();
+    
+    // Kara listedeki hedefler
+    const blacklistedCount = await Blacklist.countDocuments();
+
     const stats = {
-        servers: client.guilds.cache.size,
-        users: client.guilds.cache.reduce((a, g) => a + g.memberCount, 0),
+        servers: serverCount,
+        users: userCount,
         commands: commandCount,
         ping: client.ws.ping,
         uptime: formatUptime(client.uptime),
-        maintenance: maintenanceMode
+        maintenance: maintenanceMode,
+        activeGiveaways: activeGiveaways,
+        totalInfractions: totalInfractions,
+        blacklistedCount: blacklistedCount,
+        averageMembersPerGuild: serverCount > 0 ? Math.round(userCount / serverCount) : 0
     };
-    
+
     res.json(stats);
 });
 
@@ -211,6 +244,90 @@ app.get('/api/stats', checkAuth, (req, res) => {
 app.get('/api/activities', checkAdmin, (req, res) => {
     res.json(activityLog);
 });
+
+// API: İstatistiksel Veriler (Grafikler için)
+app.get('/api/stats/analytics', checkAuth, async (req, res) => {
+    try {
+        // Sunucu büyüme verileri (simüle edilmiş - gerçek veri için database gerekli)
+        const serverGrowth = [];
+        const now = Date.now();
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(now - i * 24 * 60 * 60 * 1000);
+            const dayName = date.toLocaleDateString('tr-TR', { weekday: 'short' });
+            // Simüle edilmiş veri (gerçek implementasyon için database'den çekilmeli)
+            const baseCount = client.guilds.cache.size;
+            const randomFactor = Math.floor(Math.random() * 3) - 1; // -1, 0, +1
+            serverGrowth.push({
+                day: dayName,
+                servers: Math.max(1, baseCount + randomFactor),
+                users: Math.floor((client.guilds.cache.reduce((a, g) => a + g.memberCount, 0) / baseCount) * (baseCount + randomFactor))
+            });
+        }
+
+        // Komut kullanım istatistikleri
+        const commandUsage = [];
+        const categories = {};
+        client.commands.forEach(cmd => {
+            const cat = cmd.category || 'Genel';
+            if (!categories[cat]) categories[cat] = 0;
+            categories[cat]++;
+        });
+        
+        // Her kategori için simüle edilmiş kullanım sayısı
+        Object.entries(categories).forEach(([category, count]) => {
+            commandUsage.push({
+                category,
+                count: Math.floor(count * (Math.random() * 50 + 10)), // Simüle edilmiş
+                color: getRandomColor()
+            });
+        });
+
+        // Level dağılımı (simüle edilmiş)
+        const levelDistribution = [];
+        const totalLevels = await Level.countDocuments();
+        const levelRanges = [
+            { min: 1, max: 5, label: '1-5' },
+            { min: 6, max: 10, label: '6-10' },
+            { min: 11, max: 20, label: '11-20' },
+            { min: 21, max: 50, label: '21-50' },
+            { min: 51, max: 100, label: '51+' }
+        ];
+
+        for (const range of levelRanges) {
+            // Simüle edilmiş dağılım
+            const percentage = Math.random() * 30 + 10;
+            levelDistribution.push({
+                range: range.label,
+                count: Math.floor(totalLevels * (percentage / 100)),
+                percentage: Math.round(percentage)
+            });
+        }
+
+        // Aktif kullanıcı analizi (son 24 saat)
+        const activeUsers = {
+            last24h: Math.floor(client.guilds.cache.reduce((a, g) => a + g.memberCount, 0) * 0.1), // %10 aktif
+            last7d: Math.floor(client.guilds.cache.reduce((a, g) => a + g.memberCount, 0) * 0.3), // %30 aktif
+            last30d: Math.floor(client.guilds.cache.reduce((a, g) => a + g.memberCount, 0) * 0.6)  // %60 aktif
+        };
+
+        res.json({
+            serverGrowth,
+            commandUsage,
+            levelDistribution,
+            activeUsers,
+            timestamp: Date.now()
+        });
+    } catch (error) {
+        console.error('Analytics hatası:', error);
+        res.status(500).json({ error: 'Analytics verileri alınamadı' });
+    }
+});
+
+// Yardımcı fonksiyon: Rastgele renk
+function getRandomColor() {
+    const colors = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
 
 // API: Genel Sağlık Kontrolü (Uptime servisleri için)
 app.get('/ping', (req, res) => {
@@ -223,14 +340,14 @@ app.get('/api/health', checkAdmin, (req, res) => {
     const freeMem = os.freemem();
     const usedMem = totalMem - freeMem;
     const memUsage = Math.round((usedMem / totalMem) * 100);
-    
+
     // CPU Yükü (Basit hesaplama)
     const cpus = os.cpus();
     const cpuUsage = Math.round(Math.random() * 20 + 10); // Windows'ta loadavg çalışmadığı için simüle ediyoruz veya karmaşık hesaplama gerekir.
     // Gerçekçi görünmesi için 10-30% arası random veriyoruz.
-    
+
     // Disk Alanı (Node.js ile doğrudan almak zordur, o yüzden sabit veya simüle)
-    const diskUsage = 28; 
+    const diskUsage = 28;
 
     res.json({
         cpu: cpuUsage,
@@ -240,11 +357,40 @@ app.get('/api/health', checkAdmin, (req, res) => {
 });
 
 // API: Sunucu Listesi (Kullanıcıya Göre Filtreli)
-app.get('/api/servers', checkAuth, (req, res) => {
+app.get('/api/servers', checkAuth, async (req, res) => {
     if (!client.user) return res.status(503).json([]);
-    
+
+    // Bot sahiplerini yükle (eğer henüz yüklenmediyse)
+    if (client.botOwnerIds.length === 0) {
+        try {
+            const app = await client.application.fetch();
+            if (app.owner.members) {
+                app.owner.members.forEach(m => {
+                    if (!client.botOwnerIds.includes(m.id)) {
+                        client.botOwnerIds.push(m.id);
+                    }
+                });
+            } else {
+                if (!client.botOwnerIds.includes(app.owner.id)) {
+                    client.botOwnerIds.push(app.owner.id);
+                }
+            }
+            console.log(`🔑 Bot Sahipleri Yüklendi: ${client.botOwnerIds.join(', ')}`);
+        } catch (e) {
+            console.error('Bot sahibi yüklenemedi:', e);
+        }
+    }
+
+    // Debug: Kullanıcı bilgilerini logla
+    console.log(`📊 /api/servers isteği:`);
+    console.log(`   - İstek yapan: ${req.user.tag} (${req.user.id})`);
+    console.log(`   - Bot sahipleri: ${client.botOwnerIds.join(', ')}`);
+    console.log(`   - Admin mi? ${client.botOwnerIds.includes(req.user.id)}`);
+    console.log(`   - Toplam sunucu: ${client.guilds.cache.size}`);
+
     // Admin (Bot Sahibi) ise tüm sunucuları görsün
     if (client.botOwnerIds.includes(req.user.id)) {
+        console.log(`✅ Admin erişimi - Tüm sunucular gösteriliyor`);
         const servers = client.guilds.cache.map(guild => ({
             id: guild.id,
             name: guild.name,
@@ -256,44 +402,43 @@ app.get('/api/servers', checkAuth, (req, res) => {
         return res.json(servers);
     }
 
-    // Normal kullanıcı ise sadece yetkili olduğu ORTAK sunucuları görsün
-    // Kullanıcının sunucularını Discord API zaten session'da veriyor (req.user.guilds)
-    // Ancak bu liste kullanıcının TÜM sunucuları. Biz sadece botun da olduğu ve kullanıcının yetkili olduğu sunucuları istiyoruz.
-    
+    console.log(`⚠️ Normal kullanıcı erişimi - Filtreleniyor`);
+    // Kullanıcının yönetici olmasına gerek yok - sadece botun olduğu sunucular
     const userGuilds = req.user.guilds || [];
     const sharedGuilds = [];
 
     userGuilds.forEach(uGuild => {
         // 1. Bot bu sunucuda var mı?
         const botGuild = client.guilds.cache.get(uGuild.id);
-        
-        // 2. Kullanıcının bu sunucuda "Yönetici" veya "Sunucuyu Yönet" yetkisi var mı?
-        // Discord API'den gelen permissions bir bitfield stringidir.
-        const PERMISSIONS = BigInt(uGuild.permissions);
-        const MANAGE_GUILD = 0x20n;
-        const ADMINISTRATOR = 0x8n;
-        
-        const hasPerms = (PERMISSIONS & ADMINISTRATOR) === ADMINISTRATOR || (PERMISSIONS & MANAGE_GUILD) === MANAGE_GUILD;
 
-        if (botGuild && hasPerms) {
-            sharedGuilds.push({
-                id: botGuild.id,
-                name: botGuild.name,
-                memberCount: botGuild.memberCount,
-                icon: botGuild.iconURL() || 'https://cdn.discordapp.com/embed/avatars/0.png',
-                owner: client.botOwnerIds.includes(botGuild.ownerId), // Bot sahibi mi?
-                isAdmin: false
-            });
+        if (botGuild) {
+            // 2. Kullanıcının bu sunucuda herhangi bir yetkisi var mı? (Bot sahibi değilse)
+            // ViewChannel yetkisi olsun yeter (temel yetki)
+            const PERMISSIONS = BigInt(uGuild.permissions);
+            const VIEW_CHANNEL = 0x400n;
+            const hasViewPermission = (PERMISSIONS & VIEW_CHANNEL) === VIEW_CHANNEL;
+
+            if (hasViewPermission) {
+                sharedGuilds.push({
+                    id: botGuild.id,
+                    name: botGuild.name,
+                    memberCount: botGuild.memberCount,
+                    icon: botGuild.iconURL() || 'https://cdn.discordapp.com/embed/avatars/0.png',
+                    owner: botGuild.ownerId === req.user.id, // Discord API'den gelen ownerId ile karşılaştır
+                    isAdmin: false
+                });
+            }
         }
     });
-    
+
+    console.log(`📦 Kullanıcıya ${sharedGuilds.length} sunucu gönderiliyor`);
     res.json(sharedGuilds);
 });
 
 // API: Tekil Sunucu Detayı (Yönetim İçin)
 app.get('/api/server/:id', checkAuth, async (req, res) => {
     if (!client.user) return res.status(503).json({ error: "Bot hazır değil" });
-    
+
     // YETKİ KONTROLÜ
     const targetGuildId = req.params.id;
     let isAuthorized = false;
@@ -304,10 +449,10 @@ app.get('/api/server/:id', checkAuth, async (req, res) => {
         const userGuilds = req.user.guilds || [];
         const uGuild = userGuilds.find(g => g.id === targetGuildId);
         if (uGuild) {
-             const PERMISSIONS = BigInt(uGuild.permissions);
-             const MANAGE_GUILD = 0x20n;
-             const ADMINISTRATOR = 0x8n;
-             isAuthorized = (PERMISSIONS & ADMINISTRATOR) === ADMINISTRATOR || (PERMISSIONS & MANAGE_GUILD) === MANAGE_GUILD;
+            const PERMISSIONS = BigInt(uGuild.permissions);
+            const MANAGE_GUILD = 0x20n;
+            const ADMINISTRATOR = 0x8n;
+            isAuthorized = (PERMISSIONS & ADMINISTRATOR) === ADMINISTRATOR || (PERMISSIONS & MANAGE_GUILD) === MANAGE_GUILD;
         }
     }
 
@@ -324,7 +469,7 @@ app.get('/api/server/:id', checkAuth, async (req, res) => {
     const textChannels = guild.channels.cache
         .filter(c => c.type === 0) // 0 = GuildText
         .map(c => ({ id: c.id, name: c.name }));
-    
+
     // Rolleri al (Autorole için)
     const guildRoles = guild.roles.cache
         .filter(r => !r.managed && r.name !== '@everyone')
@@ -338,7 +483,7 @@ app.get('/api/server/:id', checkAuth, async (req, res) => {
 
     // Reaction Roles
     const reactionRoles = await ReactionRole.find({ guildId: targetGuildId });
-    
+
     // User Level Info
     const userLevel = await Level.findOne({ guildId: targetGuildId, userId: req.user.id }) || new Level({ guildId: targetGuildId, userId: req.user.id });
 
@@ -373,7 +518,7 @@ app.get('/api/server/:id', checkAuth, async (req, res) => {
 app.post('/api/server/:id/user-level-config', checkAuth, async (req, res) => {
     try {
         const { background } = req.body;
-        
+
         await Level.findOneAndUpdate(
             { guildId: req.params.id, userId: req.user.id },
             { background: background },
@@ -409,13 +554,13 @@ app.post('/api/server/:id/user-level-upload', checkAuth, upload.single('backgrou
 app.post('/api/server/:id/reaction-role', checkAuth, async (req, res) => {
     try {
         const { channelId, messageId, emoji, roleId } = req.body;
-        
+
         const guild = client.guilds.cache.get(req.params.id);
         const channel = guild.channels.cache.get(channelId);
         const message = await channel.messages.fetch(messageId);
-        
+
         await message.react(emoji);
-        
+
         await ReactionRole.create({
             guildId: guild.id,
             channelId,
@@ -423,7 +568,7 @@ app.post('/api/server/:id/reaction-role', checkAuth, async (req, res) => {
             emoji,
             roleId
         });
-        
+
         res.json({ success: true });
     } catch (error) {
         console.error(error);
@@ -447,7 +592,7 @@ app.post('/api/server/:id/ticket-send', checkAuth, async (req, res) => {
         const { channelId } = req.body;
         const guild = client.guilds.cache.get(req.params.id);
         const channel = guild.channels.cache.get(channelId);
-        
+
         if (!channel) throw new Error("Kanal bulunamadı.");
 
         const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
@@ -478,7 +623,7 @@ app.post('/api/server/:id/ticket-send', checkAuth, async (req, res) => {
 app.post('/api/server/:id/config', checkAuth, async (req, res) => {
     const targetGuildId = req.params.id;
     const newSettings = req.body;
-    
+
     // YETKİ KONTROLÜ
     let isAuthorized = false;
     if (client.botOwnerIds.includes(req.user.id)) {
@@ -487,10 +632,10 @@ app.post('/api/server/:id/config', checkAuth, async (req, res) => {
         const userGuilds = req.user.guilds || [];
         const uGuild = userGuilds.find(g => g.id === targetGuildId);
         if (uGuild) {
-             const PERMISSIONS = BigInt(uGuild.permissions);
-             const MANAGE_GUILD = 0x20n;
-             const ADMINISTRATOR = 0x8n;
-             isAuthorized = (PERMISSIONS & ADMINISTRATOR) === ADMINISTRATOR || (PERMISSIONS & MANAGE_GUILD) === MANAGE_GUILD;
+            const PERMISSIONS = BigInt(uGuild.permissions);
+            const MANAGE_GUILD = 0x20n;
+            const ADMINISTRATOR = 0x8n;
+            isAuthorized = (PERMISSIONS & ADMINISTRATOR) === ADMINISTRATOR || (PERMISSIONS & MANAGE_GUILD) === MANAGE_GUILD;
         }
     }
 
@@ -525,7 +670,7 @@ app.post('/api/server/leave', checkAuth, async (req, res) => {
 
     // 1. Bot Sahibi ise her türlü ayrılabilir
     if (client.botOwnerIds.includes(req.user.id)) isAuthorized = true;
-    
+
     // 2. Sunucu Sahibi ise ayrılabilir
     if (guild.ownerId === req.user.id) isAuthorized = true;
 
@@ -547,16 +692,328 @@ app.get('/api/commands', (req, res) => {
         name: cmd.name,
         description: cmd.description,
         category: cmd.category,
-        usage: cmd.usage
+        usage: cmd.usage,
+        aliases: cmd.aliases || []
     }));
     res.json(commands);
+});
+
+// API: Sunucudaki Yasaklı Komutları Al
+app.get('/api/server/:id/disabled-commands', checkAuth, async (req, res) => {
+    try {
+        const settings = await Guild.findOne({ guildId: req.params.id });
+        if (!settings) {
+            return res.json({ disabledCommands: [] });
+        }
+        res.json({ disabledCommands: settings.disabledCommands || [] });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Komutu Yasakla veya Yasağı Kaldır
+app.post('/api/server/:id/toggle-command', checkAuth, async (req, res) => {
+    try {
+        const { commandName, action } = req.body; // action: 'disable' | 'enable'
+        
+        if (!commandName) {
+            return res.status(400).json({ error: 'Komut adı gerekli' });
+        }
+
+        // Komutun var olup olmadığını kontrol et
+        const command = client.commands.get(commandName.toLowerCase()) || 
+                       client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName.toLowerCase()));
+        
+        if (!command) {
+            return res.status(404).json({ error: 'Böyle bir komut bulunamadı' });
+        }
+
+        const settings = await Guild.findOne({ guildId: req.params.id });
+        if (!settings) {
+            await Guild.create({ guildId: req.params.id, disabledCommands: [] });
+        }
+
+        let updatedSettings;
+        if (action === 'disable') {
+            // Komutu yasaklı listesine ekle
+            if (!settings.disabledCommands.includes(commandName)) {
+                updatedSettings = await Guild.findOneAndUpdate(
+                    { guildId: req.params.id },
+                    { $addToSet: { disabledCommands: commandName } },
+                    { new: true }
+                );
+                addActivity('warning', 'Komut Yasaklandı', `${commandName}`, 'orange', 'fa-ban');
+            } else {
+                updatedSettings = settings;
+            }
+        } else if (action === 'enable') {
+            // Komutu yasaklı listesinden çıkar
+            updatedSettings = await Guild.findOneAndUpdate(
+                { guildId: req.params.id },
+                { $pull: { disabledCommands: commandName } },
+                { new: true }
+            );
+            addActivity('info', 'Komut Serbest Bırakıldı', `${commandName}`, 'green', 'fa-check');
+        } else {
+            return res.status(400).json({ error: 'Geçersiz işlem. action: "disable" veya "enable" olmalı' });
+        }
+
+        res.json({ 
+            success: true, 
+            disabledCommands: updatedSettings.disabledCommands,
+            message: action === 'disable' 
+                ? `${commandName} komutu yasaklandı` 
+                : `${commandName} komudu serbest bırakıldı`
+        });
+    } catch (error) {
+        console.error('Komut yasaklama hatası:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Tüm Komutları Tek Seferde Güncelle
+app.post('/api/server/:id/disabled-commands', checkAuth, async (req, res) => {
+    try {
+        const { disabledCommands } = req.body; // Array of command names
+        
+        if (!Array.isArray(disabledCommands)) {
+            return res.status(400).json({ error: 'disabledCommands bir array olmalı' });
+        }
+
+        const updatedSettings = await Guild.findOneAndUpdate(
+            { guildId: req.params.id },
+            { disabledCommands: disabledCommands },
+            { new: true, upsert: true }
+        );
+
+        addActivity('update', 'Yasaklı Komutlar Güncellendi', `${disabledCommands.length} komut`, 'blue', 'fa-list');
+        res.json({ success: true, disabledCommands: updatedSettings.disabledCommands });
+    } catch (error) {
+        console.error('Komut listesi güncelleme hatası:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Sunucu Cezalarını Al (Moderasyon)
+app.get('/api/server/:id/infractions', checkAuth, async (req, res) => {
+    const targetGuildId = req.params.id;
+    try {
+        const infractions = await Infraction.find({ guildId: targetGuildId }).sort({ timestamp: -1 });
+
+        // Kullanıcı ve Moderatör bilgilerini ekleyelim
+        const detailedInfractions = await Promise.all(infractions.map(async (inf) => {
+            const user = await client.users.fetch(inf.userId).catch(() => ({ tag: 'Bilinmiyor', avatar: null }));
+            const moderator = await client.users.fetch(inf.moderatorId).catch(() => ({ tag: 'Bilinmiyor' }));
+            return {
+                ...inf._doc,
+                userTag: user.tag,
+                userAvatar: user.displayAvatarURL ? user.displayAvatarURL() : null,
+                moderatorTag: moderator.tag
+            };
+        }));
+
+        res.json(detailedInfractions);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Ceza Sil
+app.delete('/api/server/:id/infraction/:infId', checkAuth, async (req, res) => {
+    try {
+        await Infraction.findByIdAndDelete(req.params.infId);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Market Ürünlerini Al
+app.get('/api/server/:id/shop', checkAuth, async (req, res) => {
+    try {
+        const guild = await Guild.findOne({ guildId: req.params.id });
+        res.json(guild ? guild.shop : []);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Market Ürünü Ekle
+app.post('/api/server/:id/shop', checkAuth, async (req, res) => {
+    try {
+        const guild = await Guild.findOne({ guildId: req.params.id });
+        if (!guild) throw new Error("Sunucu ayarları bulunamadı.");
+
+        guild.shop.push(req.body);
+        await guild.save();
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Market Ürünü Sil
+app.delete('/api/server/:id/shop/:itemId', checkAuth, async (req, res) => {
+    try {
+        const guild = await Guild.findOne({ guildId: req.params.id });
+        if (!guild) throw new Error("Sunucu ayarları bulunamadı.");
+
+        guild.shop = guild.shop.filter(item => item._id.toString() !== req.params.itemId);
+        await guild.save();
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Audit Logları Al
+app.get('/api/server/:id/audit-logs', checkAuth, async (req, res) => {
+    try {
+        const logs = await Log.find({ guildId: req.params.id }).sort({ timestamp: -1 }).limit(50);
+        res.json(logs);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Çekilişleri Al
+app.get('/api/server/:id/giveaways', checkAuth, async (req, res) => {
+    try {
+        const giveaways = await Giveaway.find({ guildId: req.params.id }).sort({ endTime: -1 });
+        res.json(giveaways);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Çekiliş Sil
+app.delete('/api/server/:id/giveaway/:gaId', checkAuth, async (req, res) => {
+    try {
+        await Giveaway.findByIdAndDelete(req.params.gaId);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Çekiliş Başlat
+app.post('/api/server/:id/giveaway', checkAuth, async (req, res) => {
+    try {
+        const { prize, channelId, duration, winnerCount } = req.body;
+        const channel = client.channels.cache.get(channelId);
+        if (!channel) throw new Error("Kanal bulunamadı.");
+
+        const endTime = new Date(Date.now() + duration * 60000);
+
+        const embed = new EmbedBuilder()
+            .setColor('#FF69B4')
+            .setTitle('\uD83C\uDF89 ÇEKİLİŞ BAŞLADI!')
+            .setDescription(
+                `**Ödül:** ${prize}\n` +
+                `**Süre:** ${duration} Dakika\n` +
+                `**Kazanan Sayısı:** ${winnerCount}\n\n` +
+                `Katılmak için \uD83C\uDF89 tepkisine tıkla!\n` +
+                `\u23F0 Bitiş: <t:${Math.floor(endTime.getTime() / 1000)}:R>`
+            )
+            .setFooter({ text: `Bitiş: ${endTime.toLocaleString('tr-TR')}` })
+            .setTimestamp();
+
+        const msg = await channel.send({ embeds: [embed] });
+        await msg.react('\uD83C\uDF89');
+
+        const newGiveaway = await Giveaway.create({
+            guildId: req.params.id,
+            channelId,
+            messageId: msg.id,
+            prize,
+            winnerCount,
+            endTime
+        });
+
+        // Otomatik bitirme zamanlayıcısı kur
+        const delay = endTime.getTime() - Date.now();
+        setTimeout(async () => {
+            try {
+                const freshGiveaway = await Giveaway.findById(newGiveaway._id);
+                if (!freshGiveaway || freshGiveaway.ended) return;
+
+                let winnerIds = [];
+                if (freshGiveaway.participants.length > 0) {
+                    const shuffled = [...freshGiveaway.participants].sort(() => Math.random() - 0.5);
+                    winnerIds = shuffled.slice(0, freshGiveaway.winnerCount);
+                }
+
+                freshGiveaway.ended = true;
+                freshGiveaway.winners = winnerIds;
+                await freshGiveaway.save();
+
+                const ch = await client.channels.fetch(freshGiveaway.channelId).catch(() => null);
+                if (ch) {
+                    const endMsg = await ch.messages.fetch(freshGiveaway.messageId).catch(() => null);
+                    const winnerMentions = winnerIds.length > 0
+                        ? winnerIds.map(id => `<@${id}>`).join(', ')
+                        : 'Kimse katılmadı \uD83D\uDE22';
+
+                    if (endMsg) {
+                        const endEmbed = new EmbedBuilder()
+                            .setColor('#808080')
+                            .setTitle('\uD83C\uDF8A ÇEKİLİŞ BİTTİ!')
+                            .setDescription(
+                                `**Ödül:** ${freshGiveaway.prize}\n` +
+                                `**Katılımcı:** ${freshGiveaway.participants.length} kişi\n` +
+                                `**Kazanan(lar):** ${winnerMentions}`
+                            )
+                            .setFooter({ text: `Bitiş: ${new Date(freshGiveaway.endTime).toLocaleString('tr-TR')}` })
+                            .setTimestamp();
+                        await endMsg.edit({ embeds: [endEmbed] });
+                    }
+
+                    if (winnerIds.length > 0) {
+                        await ch.send(`\uD83C\uDF89 Tebrikler ${winnerIds.map(id => `<@${id}>`).join(', ')}! **${freshGiveaway.prize}** çekilişini kazandın!`);
+                    } else {
+                        await ch.send(`\uD83D\uDE22 **${freshGiveaway.prize}** çekilişi bitti ama kimse katılmadı.`);
+                    }
+                }
+
+                console.log(`\u2705 Çekiliş bitti: ${freshGiveaway.prize} | Kazananlar: ${winnerIds.join(', ') || 'Yok'}`);
+                addActivity('gift', `Çekiliş Bitti: ${freshGiveaway.prize}`, `${winnerIds.length} kazanan`, 'pink', 'fa-gift');
+            } catch (err) {
+                console.error('Çekiliş otomatik bitirme hatası:', err);
+            }
+        }, delay);
+
+        console.log(`\u23F1\uFE0F "${prize}" çekilişi ${duration} dakika sonra otomatik bitecek.`);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Davet Liderlik Tablosunu Al
+app.get('/api/server/:id/invites', checkAuth, async (req, res) => {
+    try {
+        const topInviters = await User.find({ invites: { $gt: 0 } }).sort({ invites: -1 }).limit(10);
+
+        const detailedInvites = await Promise.all(topInviters.map(async (u) => {
+            const user = await client.users.fetch(u.userId).catch(() => ({ tag: 'Bilinmiyor', avatar: null }));
+            return {
+                tag: user.tag,
+                avatar: user.displayAvatarURL ? user.displayAvatarURL() : null,
+                count: u.invites
+            };
+        }));
+
+        res.json(detailedInvites);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // API: Yönetim İşlemleri (Hızlı İşlemler)
 app.post('/api/action', checkAdmin, async (req, res) => {
     const { action } = req.body;
-    
-    switch(action) {
+
+    switch (action) {
         case 'restart':
             addActivity('system', 'Bot Yeniden Başlatıldı', 'Panel İsteği', 'orange', 'fa-rotate');
             res.json({ success: true, message: "Bot yeniden başlatılıyor..." });
@@ -564,18 +1021,18 @@ app.post('/api/action', checkAdmin, async (req, res) => {
                 process.exit(0); // Render/PM2 gibi sistemler otomatik yeniden başlatır
             }, 1000);
             return;
-            
+
         case 'cache':
             // Cache temizleme simülasyonu
             const oldSize = client.users.cache.size;
             client.users.cache.sweep(u => !client.guilds.cache.some(g => g.members.cache.has(u.id)));
             addActivity('system', 'Önbellek Temizlendi', `${oldSize - client.users.cache.size} gereksiz veri silindi`, 'blue', 'fa-broom');
             return res.json({ success: true, message: "Önbellek başarıyla temizlendi." });
-            
+
         case 'maintenance':
             maintenanceMode = !maintenanceMode;
-            global.maintenanceMode = maintenanceMode; 
-            
+            global.maintenanceMode = maintenanceMode;
+
             // Veritabanını güncelle
             await GlobalConfig.findOneAndUpdate(
                 { configId: 'GLOBAL' },
@@ -584,13 +1041,13 @@ app.post('/api/action', checkAdmin, async (req, res) => {
             );
 
             const status = maintenanceMode ? 'Bakım Modu AÇIK' : 'Bakım Modu KAPALI';
-            client.user.setPresence({ 
+            client.user.setPresence({
                 status: maintenanceMode ? 'dnd' : 'online',
                 activities: [{ name: maintenanceMode ? 'Bakım Modu...' : `g!help`, type: ActivityType.Custom }]
             });
             addActivity('warning', status, 'Yönetici', 'yellow', 'fa-triangle-exclamation');
             return res.json({ success: true, message: status, mode: maintenanceMode });
-            
+
         case 'announce':
             const { message: announceMsg } = req.body;
             if (!announceMsg) return res.status(400).json({ error: "Duyuru metni boş olamaz" });
@@ -613,9 +1070,58 @@ app.post('/api/action', checkAdmin, async (req, res) => {
 
             addActivity('info', 'Duyuru Yapıldı', `${sentCount} sunucu sahibine ulaşıldı`, 'purple', 'fa-bullhorn');
             return res.json({ success: true, message: `Duyuru ${sentCount} benzersiz sunucu sahibine gönderildi.` });
-            
+
         default:
             return res.status(400).json({ error: "Geçersiz işlem" });
+    }
+});
+
+// API: Kara Liste Listesini Getir (Sadece Admin)
+app.get('/api/admin/blacklist', checkAdmin, async (req, res) => {
+    try {
+        const blacklist = await Blacklist.find().sort({ timestamp: -1 });
+        res.json(blacklist);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Kara Listeye Ekle (Sadece Admin)
+app.post('/api/admin/blacklist', checkAdmin, async (req, res) => {
+    try {
+        const { targetId, type, reason } = req.body;
+        if (!targetId || !type) return res.status(400).json({ error: "ID ve Tür gerekli." });
+
+        const existing = await Blacklist.findOne({ targetId });
+        if (existing) return res.status(400).json({ error: "Bu hedef zaten kara listede." });
+
+        await Blacklist.create({ targetId, type, reason: reason || 'Belirtilmedi' });
+
+        // Eğer sunucu kara listeye alındıysa botu o sunucudan çıkart
+        if (type === 'guild') {
+            const guild = client.guilds.cache.get(targetId);
+            if (guild) {
+                await guild.leave();
+                addActivity('remove', 'Sunucu Kara Listeye Alındı', guild.name, 'black', 'fa-ban');
+            }
+        } else {
+            addActivity('remove', 'Kullanıcı Kara Listeye Alındı', targetId, 'black', 'fa-user-slash');
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Kara Listeden Çıkar (Sadece Admin)
+app.delete('/api/admin/blacklist/:id', checkAdmin, async (req, res) => {
+    try {
+        await Blacklist.findByIdAndDelete(req.params.id);
+        addActivity('info', 'Kara Liste Kaydı Silindi', req.params.id, 'gray', 'fa-trash');
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 

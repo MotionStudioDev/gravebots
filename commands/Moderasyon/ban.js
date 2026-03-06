@@ -1,4 +1,5 @@
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+const Infraction = require('../../models/Infraction');
 
 module.exports = {
     name: 'ban',
@@ -29,13 +30,24 @@ module.exports = {
         
         try {
             await member.ban({ reason });
+            
+            // Veritabanına Kaydet
+            await Infraction.create({
+                guildId: message.guild.id,
+                userId: member.id,
+                type: 'ban',
+                reason: reason,
+                moderatorId: message.author.id
+            });
+
             const embed = new EmbedBuilder()
-                .setColor('#00FF00')
+                .setColor('#FF0000')
                 .setTitle('🔨 Kullanıcı Yasaklandı')
+                .setThumbnail(member.user.displayAvatarURL())
                 .addFields(
-                    { name: 'Kullanıcı', value: `${member.user.tag}`, inline: true },
-                    { name: 'Yetkili', value: `${message.author.tag}`, inline: true },
-                    { name: 'Sebep', value: reason }
+                    { name: '👤 Kullanıcı', value: `${member.user.tag} (\`${member.id}\`)`, inline: true },
+                    { name: '🛡️ Yetkili', value: `${message.author.tag}`, inline: true },
+                    { name: '📝 Sebep', value: reason, inline: false }
                 )
                 .setTimestamp();
 

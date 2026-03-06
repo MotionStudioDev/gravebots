@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0f0f13;
@@ -23,13 +26,16 @@
             width: 8px;
             height: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: #0f0f13;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #3b3b4f;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #a855f7;
         }
@@ -53,44 +59,53 @@
         }
     </style>
 </head>
+
 <body class="bg-[#0f0f13] min-h-screen flex">
 
     <!-- Login Overlay -->
     <div id="login-overlay" class="fixed inset-0 z-[100] bg-[#0f0f13] flex items-center justify-center hidden">
-        <div class="glass-panel p-8 rounded-3xl w-full max-w-md text-center border border-white/10 shadow-2xl relative overflow-hidden">
+        <div
+            class="glass-panel p-8 rounded-3xl w-full max-w-md text-center border border-white/10 shadow-2xl relative overflow-hidden">
             <!-- Background Glow -->
             <div class="absolute -top-20 -left-20 w-60 h-60 bg-purple-600/20 rounded-full blur-[100px]"></div>
             <div class="absolute -bottom-20 -right-20 w-60 h-60 bg-blue-600/20 rounded-full blur-[100px]"></div>
 
             <div class="relative z-10">
-                <div class="w-20 h-20 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                <div
+                    class="w-20 h-20 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-purple-500/30">
                     <img src="logo.png" alt="Logo" class="w-16 h-16 object-contain">
                 </div>
-                
+
                 <h2 class="text-3xl font-black text-white mb-2 tracking-tight">GraveBOT Panel</h2>
-                <p class="text-gray-400 mb-8 font-medium">Sunucularınızı yönetmek için Discord hesabınızla giriş yapın.</p>
-                
-                <a href="/auth/discord" class="group flex items-center justify-center gap-3 bg-[#5865F2] hover:bg-[#4752C4] text-white py-4 px-6 rounded-xl font-bold transition-all transform hover:scale-[1.02] shadow-xl shadow-[#5865F2]/20">
+                <p class="text-gray-400 mb-8 font-medium">Sunucularınızı yönetmek için Discord hesabınızla giriş yapın.
+                </p>
+
+                <a href="/auth/discord"
+                    class="group flex items-center justify-center gap-3 bg-[#5865F2] hover:bg-[#4752C4] text-white py-4 px-6 rounded-xl font-bold transition-all transform hover:scale-[1.02] shadow-xl shadow-[#5865F2]/20">
                     <i class="fa-brands fa-discord text-2xl group-hover:rotate-12 transition-transform"></i>
                     <span>Discord ile Giriş Yap</span>
                 </a>
-                
+
                 <p class="mt-6 text-xs text-gray-500">
-                    Giriş yaparak <a href="#" class="text-gray-400 hover:text-white underline">Hizmet Şartları</a>'nı kabul etmiş olursunuz.
+                    Giriş yaparak <a href="#" class="text-gray-400 hover:text-white underline">Hizmet Şartları</a>'nı
+                    kabul etmiş olursunuz.
                 </p>
             </div>
         </div>
     </div>
 
     <!-- Sidebar -->
-    <aside class="fixed inset-y-0 left-0 w-64 bg-[#0a0a0c] border-r border-white/5 flex flex-col z-50 transition-transform duration-300 transform -translate-x-full md:translate-x-0" id="sidebar">
+    <aside
+        class="fixed inset-y-0 left-0 w-64 bg-[#0a0a0c] border-r border-white/5 flex flex-col z-50 transition-transform duration-300 transform -translate-x-full md:translate-x-0"
+        id="sidebar">
         <!-- Logo -->
         <div class="h-20 flex items-center px-8 border-b border-white/5">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center overflow-hidden">
                     <img src="logo.png" alt="Logo" class="w-full h-full object-cover">
                 </div>
-                <span class="font-bold text-lg tracking-wide">GraveBOT <span class="text-xs text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded ml-1">PANEL</span></span>
+                <span class="font-bold text-lg tracking-wide">GraveBOT <span
+                        class="text-xs text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded ml-1">PANEL</span></span>
             </div>
         </div>
 
@@ -110,16 +125,19 @@
         <!-- Navigation -->
         <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
             <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Genel</p>
-            
-            <a href="#" data-page="overview" class="sidebar-link active flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-white transition-all hover:bg-white/5">
+
+            <a href="#" data-page="overview"
+                class="sidebar-link active flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-white transition-all hover:bg-white/5">
                 <i class="fa-solid fa-chart-line w-5 text-center"></i>
                 Genel Bakış
             </a>
-            <a href="#" data-page="servers" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
+            <a href="#" data-page="servers"
+                class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
                 <i class="fa-solid fa-server w-5 text-center"></i>
                 Sunucularım
             </a>
-            <a href="#" data-page="commands" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
+            <a href="#" data-page="commands"
+                class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
                 <i class="fa-solid fa-terminal w-5 text-center"></i>
                 Komutlar
             </a>
@@ -127,15 +145,23 @@
             <div id="admin-menu" style="display: none;">
                 <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-8 mb-4">Yönetim</p>
 
-                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
+                <a href="#"
+                    class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
                     <i class="fa-solid fa-shield-halved w-5 text-center"></i>
                     Moderasyon
                 </a>
-                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
+                <a href="#"
+                    class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
                     <i class="fa-solid fa-music w-5 text-center"></i>
                     Müzik Ayarları
                 </a>
-                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
+                <a href="#" data-page="blacklist"
+                    class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
+                    <i class="fa-solid fa-user-slash w-5 text-center"></i>
+                    Kara Liste
+                </a>
+                <a href="#"
+                    class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
                     <i class="fa-solid fa-gear w-5 text-center"></i>
                     Bot Ayarları
                 </a>
@@ -146,7 +172,8 @@
     <!-- Main Content -->
     <main class="flex-1 md:ml-64 min-h-screen flex flex-col relative">
         <!-- Header -->
-        <header class="h-20 bg-[#0f0f13]/80 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-8 sticky top-0 z-40">
+        <header
+            class="h-20 bg-[#0f0f13]/80 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-8 sticky top-0 z-40">
             <div class="flex items-center gap-4">
                 <button id="mobile-menu-btn" class="md:hidden text-gray-400 hover:text-white">
                     <i class="fa-solid fa-bars text-xl"></i>
@@ -156,20 +183,26 @@
 
             <div class="flex items-center gap-6">
                 <div class="relative hidden sm:block">
-                    <input type="text" id="global-search" placeholder="Sunucu veya komut ara..." class="bg-[#1a1a20] border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 w-64 transition-all">
+                    <input type="text" id="global-search" placeholder="Sunucu veya komut ara..."
+                        class="bg-[#1a1a20] border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 w-64 transition-all">
                     <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
                 </div>
                 <div class="relative">
-                    <button id="notification-btn" class="relative text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5">
+                    <button id="notification-btn"
+                        class="relative text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5">
                         <i class="fa-solid fa-bell text-lg"></i>
-                        <span id="notification-badge" class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0f0f13] hidden"></span>
+                        <span id="notification-badge"
+                            class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0f0f13] hidden"></span>
                     </button>
-                    
+
                     <!-- Notification Dropdown -->
-                    <div id="notification-dropdown" class="absolute right-0 mt-3 w-80 bg-[#16161d] border border-white/10 rounded-2xl shadow-2xl hidden z-50 overflow-hidden">
+                    <div id="notification-dropdown"
+                        class="absolute right-0 mt-3 w-80 bg-[#16161d] border border-white/10 rounded-2xl shadow-2xl hidden z-50 overflow-hidden">
                         <div class="p-4 border-b border-white/5 flex justify-between items-center bg-white/5">
                             <h4 class="text-sm font-bold text-white">Bildirimler</h4>
-                            <button onclick="clearNotifications()" class="text-[10px] text-purple-400 hover:text-purple-300 font-bold uppercase tracking-wider">Tümünü Temizle</button>
+                            <button onclick="clearNotifications()"
+                                class="text-[10px] text-purple-400 hover:text-purple-300 font-bold uppercase tracking-wider">Tümünü
+                                Temizle</button>
                         </div>
                         <div id="notification-list" class="max-h-96 overflow-y-auto py-2">
                             <!-- Notifications will be here -->
@@ -179,11 +212,14 @@
                             </div>
                         </div>
                         <div class="p-3 border-t border-white/5 bg-white/5 text-center">
-                            <button class="text-xs text-gray-400 hover:text-white transition-colors">Tüm Bildirimleri Gör</button>
+                            <button class="text-xs text-gray-400 hover:text-white transition-colors">Tüm Bildirimleri
+                                Gör</button>
                         </div>
                     </div>
+
                 </div>
-                <a href="index.html" class="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors">
+                <a href="index.html"
+                    class="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors">
                     Siteye Dön <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
                 </a>
             </div>
@@ -191,57 +227,121 @@
 
         <!-- Content Body -->
         <div class="p-8">
-            
+
             <!-- PAGE: OVERVIEW -->
             <div id="page-overview" class="page-content space-y-8 animate-fade-in">
                 <!-- Stats Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Stat Card 1 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                    <!-- Stat Card 1 - Sunucular -->
                     <div class="glass-panel p-6 rounded-2xl stat-card transition-all duration-300">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
                                 <i class="fa-solid fa-server text-xl"></i>
                             </div>
-                            <span class="text-xs font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded-full">+12%</span>
                         </div>
                         <h3 class="text-3xl font-bold text-white mb-1" id="stat-servers">...</h3>
                         <p class="text-sm text-gray-400">Aktif Sunucu</p>
+                        <p class="text-xs text-gray-500 mt-2" id="stat-avg-members">Ort. 0 üye</p>
                     </div>
 
-                    <!-- Stat Card 2 -->
+                    <!-- Stat Card 2 - Kullanıcılar -->
                     <div class="glass-panel p-6 rounded-2xl stat-card transition-all duration-300">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500">
                                 <i class="fa-solid fa-users text-xl"></i>
                             </div>
-                            <span class="text-xs font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded-full">+5.4%</span>
                         </div>
                         <h3 class="text-3xl font-bold text-white mb-1" id="stat-users">...</h3>
                         <p class="text-sm text-gray-400">Toplam Kullanıcı</p>
+                        <p class="text-xs text-gray-500 mt-2">Gerçek zamanlı</p>
                     </div>
 
-                    <!-- Stat Card 3 -->
+                    <!-- Stat Card 3 - Komutlar -->
                     <div class="glass-panel p-6 rounded-2xl stat-card transition-all duration-300">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
                                 <i class="fa-solid fa-terminal text-xl"></i>
                             </div>
-                            <span class="text-xs font-bold text-gray-500 bg-gray-500/10 px-2 py-1 rounded-full">24s</span>
                         </div>
                         <h3 class="text-3xl font-bold text-white mb-1" id="stat-commands">...</h3>
-                        <p class="text-sm text-gray-400">Komut Kullanımı</p>
+                        <p class="text-sm text-gray-400">Toplam Komut</p>
+                        <p class="text-xs text-gray-500 mt-2">Yüklenmiş</p>
                     </div>
 
-                    <!-- Stat Card 4 -->
+                    <!-- Stat Card 4 - Ping -->
                     <div class="glass-panel p-6 rounded-2xl stat-card transition-all duration-300">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
                                 <i class="fa-solid fa-signal text-xl"></i>
                             </div>
-                            <span class="text-xs font-bold text-green-400">Online</span>
                         </div>
                         <h3 class="text-3xl font-bold text-white mb-1" id="stat-ping">...</h3>
                         <p class="text-sm text-gray-400">Ortalama Ping</p>
+                        <p class="text-xs text-gray-500 mt-2" id="stat-status">Online</p>
+                    </div>
+
+                    <!-- Stat Card 5 - Çekilişler -->
+                    <div class="glass-panel p-6 rounded-2xl stat-card transition-all duration-300">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                                <i class="fa-solid fa-gift text-xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-3xl font-bold text-white mb-1" id="stat-giveaways">...</h3>
+                        <p class="text-sm text-gray-400">Aktif Çekiliş</p>
+                        <p class="text-xs text-gray-500 mt-2">Devam eden</p>
+                    </div>
+                </div>
+
+                <!-- Analytics Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+                    <!-- Sunucu Büyüme Grafiği -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">📈 Sunucu Büyüme (Son 7 Gün)</h3>
+                            <span class="text-xs text-purple-400"><i class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
+                        </div>
+                        <div class="relative h-64">
+                            <canvas id="serverGrowthChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Komut Kullanımı Grafiği -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">🎯 Komut Kullanımı</h3>
+                            <span class="text-xs text-green-400"><i class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
+                        </div>
+                        <div class="relative h-64">
+                            <canvas id="commandUsageChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Level Dağılımı Grafiği -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">⭐ Level Dağılımı</h3>
+                            <span class="text-xs text-blue-400"><i class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
+                        </div>
+                        <div class="relative h-64">
+                            <canvas id="levelDistributionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Aktif Kullanıcı Grafiği -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">👥 Aktif Kullanıcı Analizi</h3>
+                            <span class="text-xs text-yellow-400"><i class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
+                        </div>
+                        <div class="relative h-64">
+                            <canvas id="activeUsersChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
@@ -251,9 +351,11 @@
                     <div id="admin-activities" class="lg:col-span-2 glass-panel p-6 rounded-2xl">
                         <div class="flex items-center justify-between mb-6">
                             <h2 class="text-lg font-bold text-white">Son Aktiviteler</h2>
-                            <button class="text-xs text-purple-400 hover:text-purple-300 font-medium transition-colors">Tümünü Gör</button>
+                            <button
+                                class="text-xs text-purple-400 hover:text-purple-300 font-medium transition-colors">Tümünü
+                                Gör</button>
                         </div>
-                        
+
                         <div class="space-y-4" id="activity-list">
                             <!-- Activities will be loaded here -->
                             <div class="text-center text-gray-500 py-4">Yükleniyor...</div>
@@ -265,26 +367,34 @@
                         <div>
                             <h2 class="text-lg font-bold text-white mb-6">Hızlı İşlemler</h2>
                             <div class="grid grid-cols-2 gap-4">
-                                <button data-action="restart" class="quick-action-btn glass-panel p-4 rounded-xl hover:bg-white/5 transition-all text-left group">
-                                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-500 mb-3 group-hover:scale-110 transition-transform">
+                                <button data-action="restart"
+                                    class="quick-action-btn glass-panel p-4 rounded-xl hover:bg-white/5 transition-all text-left group">
+                                    <div
+                                        class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-500 mb-3 group-hover:scale-110 transition-transform">
                                         <i class="fa-solid fa-rotate"></i>
                                     </div>
                                     <h4 class="font-bold text-white text-sm">Yeniden Başlat</h4>
                                 </button>
-                                <button data-action="cache" class="quick-action-btn glass-panel p-4 rounded-xl hover:bg-white/5 transition-all text-left group">
-                                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-500 mb-3 group-hover:scale-110 transition-transform">
+                                <button data-action="cache"
+                                    class="quick-action-btn glass-panel p-4 rounded-xl hover:bg-white/5 transition-all text-left group">
+                                    <div
+                                        class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-500 mb-3 group-hover:scale-110 transition-transform">
                                         <i class="fa-solid fa-broom"></i>
                                     </div>
                                     <h4 class="font-bold text-white text-sm">Önbelleği Temizle</h4>
                                 </button>
-                                <button data-action="maintenance" class="quick-action-btn glass-panel p-4 rounded-xl hover:bg-white/5 transition-all text-left group">
-                                    <div class="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center text-yellow-500 mb-3 group-hover:scale-110 transition-transform">
+                                <button data-action="maintenance"
+                                    class="quick-action-btn glass-panel p-4 rounded-xl hover:bg-white/5 transition-all text-left group">
+                                    <div
+                                        class="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center text-yellow-500 mb-3 group-hover:scale-110 transition-transform">
                                         <i class="fa-solid fa-triangle-exclamation"></i>
                                     </div>
                                     <h4 class="font-bold text-white text-sm">Bakım Modu</h4>
                                 </button>
-                                <button data-action="announce" class="quick-action-btn glass-panel p-4 rounded-xl hover:bg-white/5 transition-all text-left group">
-                                    <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-500 mb-3 group-hover:scale-110 transition-transform">
+                                <button data-action="announce"
+                                    class="quick-action-btn glass-panel p-4 rounded-xl hover:bg-white/5 transition-all text-left group">
+                                    <div
+                                        class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-500 mb-3 group-hover:scale-110 transition-transform">
                                         <i class="fa-solid fa-bullhorn"></i>
                                     </div>
                                     <h4 class="font-bold text-white text-sm">Duyuru Yap</h4>
@@ -303,7 +413,9 @@
                                         <span class="text-xs font-bold text-white" id="cpu-text">%0</span>
                                     </div>
                                     <div class="w-full bg-gray-700 rounded-full h-2">
-                                        <div id="cpu-bar" class="bg-purple-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                        <div id="cpu-bar"
+                                            class="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                                            style="width: 0%"></div>
                                     </div>
                                 </div>
 
@@ -314,7 +426,9 @@
                                         <span class="text-xs font-bold text-white" id="ram-text">%0</span>
                                     </div>
                                     <div class="w-full bg-gray-700 rounded-full h-2">
-                                        <div id="ram-bar" class="bg-yellow-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                        <div id="ram-bar"
+                                            class="bg-yellow-500 h-2 rounded-full transition-all duration-500"
+                                            style="width: 0%"></div>
                                     </div>
                                 </div>
 
@@ -325,7 +439,9 @@
                                         <span class="text-xs font-bold text-white" id="disk-text">%0</span>
                                     </div>
                                     <div class="w-full bg-gray-700 rounded-full h-2">
-                                        <div id="disk-bar" class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                        <div id="disk-bar"
+                                            class="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                                            style="width: 0%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -343,7 +459,7 @@
                             Toplam: <span id="server-count-badge" class="text-purple-400 font-bold">...</span>
                         </span>
                     </div>
-                    
+
                     <div id="server-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div class="text-center text-gray-500 py-12 col-span-full">
                             <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
@@ -357,10 +473,19 @@
             <div id="page-commands" class="page-content hidden animate-fade-in">
                 <div class="glass-panel p-6 rounded-2xl">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold text-white">Komut Listesi</h2>
-                        <div class="relative">
-                            <input type="text" id="command-search" placeholder="Komut ara..." class="bg-[#0f0f13] border border-white/10 rounded-lg py-1.5 pl-8 pr-4 text-xs focus:outline-none focus:border-purple-500 transition-colors">
-                            <i class="fa-solid fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Komut Yönetimi</h2>
+                            <p class="text-xs text-gray-500 mt-1">Sunucunuzda komutları yasaklayabilir veya serbest bırakabilirsiniz</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <select id="command-server-select" 
+                                class="bg-[#0f0f13] border border-white/10 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                <option value="">Sunucu Seçin...</option>
+                            </select>
+                            <input type="text" id="command-search" placeholder="Komut ara..."
+                                class="bg-[#0f0f13] border border-white/10 rounded-lg py-2 pl-8 pr-4 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                            <i
+                                class="fa-solid fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
                         </div>
                     </div>
 
@@ -371,18 +496,132 @@
                                     <th class="px-6 py-4 rounded-l-xl">Komut</th>
                                     <th class="px-6 py-4">Açıklama</th>
                                     <th class="px-6 py-4">Kategori</th>
-                                    <th class="px-6 py-4 rounded-r-xl">Kullanım</th>
+                                    <th class="px-6 py-4">Durum</th>
+                                    <th class="px-6 py-4 rounded-r-xl">İşlem</th>
                                 </tr>
                             </thead>
                             <tbody id="command-list" class="divide-y divide-white/5">
                                 <tr>
-                                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">
                                         <i class="fa-solid fa-spinner fa-spin text-lg mb-2"></i>
                                         <p>Komutlar yükleniyor...</p>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-blacklist" class="page-content hidden animate-fade-in space-y-8">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-red-500">
+                                <i class="fa-solid fa-user-slash text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Kara Liste Yönetimi</h2>
+                                <p class="text-xs text-gray-500 font-medium tracking-wide border-t border-white/5 pt-1">
+                                    GraveBOT Kurucu Paneli</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                        <div class="lg:col-span-1 space-y-6">
+                            <div class="glass-panel p-6 rounded-2xl border border-white/5 space-y-4">
+                                <h5
+                                    class="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                    <i class="fa-solid fa-plus-circle text-purple-500"></i> Yeni Ekle
+                                </h5>
+                                <div class="space-y-4">
+                                    <div class="space-y-2">
+                                        <label
+                                            class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Hedef
+                                            ID</label>
+                                        <div class="relative">
+                                            <input type="text" id="blacklist-target-id"
+                                                class="w-full bg-[#0a0a0c] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-red-500 transition-all"
+                                                placeholder="Kullanıcı veya Sunucu ID...">
+                                            <i
+                                                class="fa-solid fa-fingerprint absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label
+                                            class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Tür</label>
+                                        <div class="relative">
+                                            <select id="blacklist-target-type"
+                                                class="w-full bg-[#0a0a0c] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-red-500 appearance-none transition-all cursor-pointer">
+                                                <option value="user">👤 Kullanıcı</option>
+                                                <option value="guild">🏢 Sunucu</option>
+                                            </select>
+                                            <i
+                                                class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none"></i>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label
+                                            class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Sebep</label>
+                                        <div class="relative">
+                                            <input type="text" id="blacklist-target-reason"
+                                                class="w-full bg-[#0a0a0c] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-red-500 transition-all"
+                                                placeholder="Yasaklama sebebi...">
+                                            <i
+                                                class="fa-solid fa-comment-slash absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"></i>
+                                        </div>
+                                    </div>
+                                    <button onclick="addToBlacklist()"
+                                        class="w-full py-4 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white text-sm font-black rounded-xl transition-all shadow-lg shadow-red-500/20 active:scale-95">
+                                        <i class="fa-solid fa-ban mr-2"></i> KARA LİSTEYE AL
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bg-red-500/5 border border-red-500/10 rounded-2xl p-4 flex gap-3 items-start">
+                                <i class="fa-solid fa-circle-exclamation text-red-500 mt-1"></i>
+                                <div>
+                                    <h6 class="font-bold text-red-500/80 text-xs">Dikkat!</h6>
+                                    <p class="text-[10px] text-gray-500 mt-1 leading-relaxed">Kara listeye alınan
+                                        kullanıcılar hiçbir komutu kullanamaz. Kara listeye alınan sunuculardan bot
+                                        anında ayrılır ve tekrar eklendiğinde otomatik olarak çıkar.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="lg:col-span-2 glass-panel rounded-2xl border border-white/5 overflow-hidden flex flex-col bg-[#0a0a0c]/50">
+                            <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                                <h5 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Mevcut Kayıtlar
+                                </h5>
+                                <button onclick="fetchBlacklist()"
+                                    class="text-[10px] bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-gray-400 transition-all flex items-center gap-2">
+                                    <i class="fa-solid fa-rotate"></i> Yenile
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-sm text-gray-400">
+                                    <thead
+                                        class="bg-white/5 text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+                                        <tr>
+                                            <th class="px-6 py-4">Hedef ID</th>
+                                            <th class="px-6 py-4">Tür</th>
+                                            <th class="px-6 py-4">Sebep</th>
+                                            <th class="px-6 py-4 text-right">İşlem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="blacklist-table-body" class="divide-y divide-white/5">
+                                        <!-- Kara liste verileri buraya yüklenecek -->
+                                        <tr>
+                                            <td colspan="4" class="px-6 py-12 text-center text-gray-600">Yükleniyor...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -394,7 +633,8 @@
     <div id="mobile-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden md:hidden"></div>
 
     <!-- Manage Server Modal -->
-    <div id="manage-modal" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div id="manage-modal"
+        class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-4xl rounded-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <!-- Modal Header -->
             <div class="p-6 border-b border-white/5 flex justify-between items-center bg-[#151518]">
@@ -413,33 +653,80 @@
             <div class="flex flex-1 overflow-hidden">
                 <!-- Modal Sidebar -->
                 <div class="w-64 bg-[#0a0a0c] border-r border-white/5 p-4 space-y-1 hidden md:block">
-                    <button onclick="switchModalTab('general')" class="modal-tab-btn active w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="general">
+                    <button onclick="switchModalTab('general')"
+                        class="modal-tab-btn active w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
+                        data-tab="general">
                         <i class="fa-solid fa-sliders w-5 text-center"></i> Genel Ayarlar
                     </button>
-                    <button onclick="switchModalTab('welcome')" class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="welcome">
+                    <button onclick="switchModalTab('welcome')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
+                        data-tab="welcome">
                         <i class="fa-solid fa-door-open w-5 text-center"></i> Giriş-Çıkış
                     </button>
-                    <button onclick="switchModalTab('ticket')" class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="ticket">
+                    <button onclick="switchModalTab('ticket')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
+                        data-tab="ticket">
                         <i class="fa-solid fa-ticket w-5 text-center"></i> Ticket Sistemi
                     </button>
-                    <button onclick="switchModalTab('autorole')" class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="autorole">
+                    <button onclick="switchModalTab('autorole')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
+                        data-tab="autorole">
                         <i class="fa-solid fa-user-tag w-5 text-center"></i> Oto-Rol
                     </button>
-                    <button onclick="switchModalTab('commands')" class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="commands">
+                    <button onclick="switchModalTab('commands')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
+                        data-tab="commands">
                         <i class="fa-solid fa-ban w-5 text-center"></i> Komut Yasaklama
                     </button>
-                    <button onclick="switchModalTab('protections')" class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="protections">
+                    <button onclick="switchModalTab('protections')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
+                        data-tab="protections">
                         <i class="fa-solid fa-user-shield w-5 text-center"></i> Koruma Ayarları
                     </button>
-                    <button onclick="switchModalTab('levels')" class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="levels">
+                    <button onclick="switchModalTab('levels')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
+                        data-tab="levels">
                         <i class="fa-solid fa-award w-5 text-center"></i> Level Sistemi
                     </button>
-                    <button onclick="switchModalTab('reaction-roles')" class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3" data-tab="reaction-roles">
+                    <button onclick="switchModalTab('reaction-roles')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
+                        data-tab="reaction-roles">
                         <i class="fa-solid fa-icons w-5 text-center"></i> Emoji Roller
                     </button>
-                    
+                    <button onclick="switchModalTab('economy')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                        data-tab="economy">
+                        <i class="fa-solid fa-coins w-5 text-center"></i> Ekonomi Sistemi
+                    </button>
+                    <button onclick="switchModalTab('moderation')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                        data-tab="moderation">
+                        <i class="fa-solid fa-gavel w-5 text-center"></i> Moderasyon Kayıtları
+                    </button>
+                    <button onclick="switchModalTab('shop')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                        data-tab="shop">
+                        <i class="fa-solid fa-store w-5 text-center"></i> Market Sistemi
+                    </button>
+                    <button onclick="switchModalTab('audit-logs')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                        data-tab="audit-logs">
+                        <i class="fa-solid fa-list-check w-5 text-center"></i> Sunucu Logları
+                    </button>
+                    <button onclick="switchModalTab('giveaways')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                        data-tab="giveaways">
+                        <i class="fa-solid fa-gift w-5 text-center"></i> Çekiliş Sistemi
+                    </button>
+                    <button onclick="switchModalTab('invites')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                        data-tab="invites">
+                        <i class="fa-solid fa-user-plus w-5 text-center"></i> Davet Takip
+                    </button>
+
                     <div class="mt-8 pt-4 border-t border-white/5">
-                         <button onclick="leaveServer(currentGuildId)" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all flex items-center gap-3">
+                        <button onclick="leaveServer(currentGuildId)"
+                            class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all flex items-center gap-3">
                             <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Sunucudan Ayrıl
                         </button>
                     </div>
@@ -447,23 +734,40 @@
 
                 <!-- Modal Content -->
                 <div class="flex-1 p-8 overflow-y-auto bg-[#0f0f13]">
-                    
+
                     <!-- TAB: GENERAL -->
                     <div id="tab-general" class="modal-tab-content space-y-6">
                         <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Genel Ayarlar</h4>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label class="text-sm font-medium text-gray-400">Komut Ön eki (Prefix)</label>
-                                <input type="text" id="setting-prefix" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="g!">
+                                <input type="text" id="setting-prefix"
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                    placeholder="g!">
                             </div>
-                            
+
                             <div class="space-y-2">
                                 <label class="text-sm font-medium text-gray-400">Bot Dili</label>
-                                <select id="setting-language" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                                <select id="setting-language"
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
                                     <option value="tr">Türkçe</option>
                                     <option value="en">English</option>
                                 </select>
+                            </div>
+
+                            <div
+                                class="glass-panel p-4 rounded-xl flex items-center justify-between col-span-full md:col-span-1 border border-purple-500/10">
+                                <div>
+                                    <h5 class="text-sm font-bold text-white">SA-AS Sistemi</h5>
+                                    <p class="text-[10px] text-gray-500">"sa" yazıldığında otomatik cevap verir.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="setting-saas" class="sr-only peer">
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                    </div>
+                                </label>
                             </div>
                         </div>
 
@@ -471,7 +775,8 @@
                             <i class="fa-solid fa-circle-info text-blue-500 mt-1"></i>
                             <div>
                                 <h5 class="font-bold text-blue-400 text-sm">Bilgi</h5>
-                                <p class="text-xs text-gray-400 mt-1">Prefix değişikliği anında uygulanır. Botun komutlarına erişmek için yeni prefixi kullanmanız gerekecektir.</p>
+                                <p class="text-xs text-gray-400 mt-1">Prefix değişikliği anında uygulanır. Botun
+                                    komutlarına erişmek için yeni prefixi kullanmanız gerekecektir.</p>
                             </div>
                         </div>
                     </div>
@@ -479,110 +784,143 @@
                     <!-- TAB: WELCOME/LEAVE -->
                     <div id="tab-welcome" class="modal-tab-content hidden space-y-8">
                         <div>
-                            <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Hoş Geldin Mesajı (Giriş)</h4>
+                            <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Hoş Geldin Mesajı
+                                (Giriş)</h4>
                             <div class="space-y-4">
                                 <div class="space-y-2">
                                     <label class="text-sm font-medium text-gray-400">Kanal</label>
-                                    <select id="setting-welcome-channel" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                                    <select id="setting-welcome-channel"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
                                         <option value="">Devre Dışı</option>
                                     </select>
                                 </div>
                                 <div class="space-y-2">
                                     <label class="text-sm font-medium text-gray-400">Mesaj</label>
-                                    <textarea id="setting-welcome-message" rows="3" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="Hoşgeldin {user}, sunucumuza katıldı!"></textarea>
+                                    <textarea id="setting-welcome-message" rows="3"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                        placeholder="Hoşgeldin {user}, sunucumuza katıldı!"></textarea>
                                 </div>
                             </div>
                         </div>
 
                         <div>
-                            <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Görüşürüz Mesajı (Çıkış)</h4>
+                            <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Görüşürüz Mesajı
+                                (Çıkış)</h4>
                             <div class="space-y-4">
                                 <div class="space-y-2">
                                     <label class="text-sm font-medium text-gray-400">Kanal</label>
-                                    <select id="setting-leave-channel" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                                    <select id="setting-leave-channel"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
                                         <option value="">Devre Dışı</option>
                                     </select>
                                 </div>
                                 <div class="space-y-2">
                                     <label class="text-sm font-medium text-gray-400">Mesaj</label>
-                                    <textarea id="setting-leave-message" rows="3" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="Görüşürüz {user}, sunucumuzdan ayrıldı."></textarea>
+                                    <textarea id="setting-leave-message" rows="3"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                        placeholder="Görüşürüz {user}, sunucumuzdan ayrıldı."></textarea>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 flex gap-3 items-start">
                             <i class="fa-solid fa-circle-info text-blue-500 mt-1"></i>
                             <div>
                                 <h5 class="font-bold text-blue-400 text-sm">Değişkenler</h5>
-                                <p class="text-xs text-gray-400 mt-1">{user}: Kullanıcıyı etiketler, {server}: Sunucu adı, {memberCount}: Toplam üye sayısı.</p>
+                                <p class="text-xs text-gray-400 mt-1">{user}: Kullanıcıyı etiketler, {server}: Sunucu
+                                    adı, {memberCount}: Toplam üye sayısı.</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- TAB: TICKET -->
                     <div id="tab-ticket" class="modal-tab-content hidden space-y-6">
-                        <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Ticket (Destek) Sistemi</h4>
-                        
+                        <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Ticket (Destek)
+                            Sistemi</h4>
+
                         <div class="space-y-4">
                             <div class="space-y-2">
                                 <label class="text-sm font-medium text-gray-400">Ticket Kategorisi (ID)</label>
-                                <input type="text" id="setting-ticket-category" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="Kategori ID girin (Örn: 8472...)">
-                                <p class="text-[10px] text-gray-500 italic">Ticket kanallarının hangi kategoride açılacağını belirler.</p>
+                                <input type="text" id="setting-ticket-category"
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                    placeholder="Kategori ID girin (Örn: 8472...)">
+                                <p class="text-[10px] text-gray-500 italic">Ticket kanallarının hangi kategoride
+                                    açılacağını belirler.</p>
                             </div>
 
                             <div class="space-y-2">
                                 <label class="text-sm font-medium text-gray-400">Log Kanalı</label>
-                                <select id="setting-ticket-log" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                                <select id="setting-ticket-log"
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
                                     <option value="">Devre Dışı</option>
                                 </select>
                             </div>
 
                             <div class="space-y-2">
                                 <label class="text-sm font-medium text-gray-400">Ticket Mesajı</label>
-                                <textarea id="setting-ticket-message" rows="3" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="Ticket butonunun üzerindeki açıklama metni..."></textarea>
+                                <textarea id="setting-ticket-message" rows="3"
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                    placeholder="Ticket butonunun üzerindeki açıklama metni..."></textarea>
                             </div>
                         </div>
-                        
+
                         <div class="glass-panel p-4 rounded-xl border border-purple-500/20 bg-purple-500/5 space-y-3">
                             <h5 class="text-xs font-bold text-purple-400 uppercase tracking-widest">Hızlı Kurulum</h5>
                             <div class="flex gap-2">
-                                <select id="ticket-setup-channel" class="flex-1 bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors">
+                                <select id="ticket-setup-channel"
+                                    class="flex-1 bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors">
                                     <option value="">Kanal Seçin...</option>
                                 </select>
-                                <button onclick="sendTicketMessage()" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                                <button onclick="sendTicketMessage()"
+                                    class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
                                     Butonu Gönder
                                 </button>
                             </div>
-                            <p class="text-[10px] text-gray-500 italic">Seçtiğiniz kanala ticket açma butonunu anında gönderir.</p>
+                            <p class="text-[10px] text-gray-500 italic">Seçtiğiniz kanala ticket açma butonunu anında
+                                gönderir.</p>
                         </div>
                     </div>
 
                     <!-- TAB: AUTOROLE -->
                     <div id="tab-autorole" class="modal-tab-content hidden space-y-6">
                         <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Oto-Rol Sistemi</h4>
-                        
+
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-400">Verilecek Rol</label>
-                            <select id="setting-autorole" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                            <select id="setting-autorole"
+                                class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
                                 <option value="">Devre Dışı</option>
                                 <!-- Roller JS ile doldurulacak -->
                             </select>
-                            <p class="text-xs text-gray-500">Yeni gelen üyelere otomatik olarak bu rol verilecektir. Botun rolü, verilecek rolden daha yüksekte olmalıdır.</p>
+                            <p class="text-xs text-gray-500">Yeni gelen üyelere otomatik olarak bu rol verilecektir.
+                                Botun rolü, verilecek rolden daha yüksekte olmalıdır.</p>
                         </div>
                     </div>
 
                     <!-- TAB: COMMANDS -->
                     <div id="tab-commands" class="modal-tab-content hidden space-y-6">
-                        <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center justify-between mb-4">
                             <h4 class="text-lg font-bold text-white">Komut Yönetimi</h4>
-                            <span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 py-1 rounded-md border border-purple-500/30">Gelişmiş Denetim</span>
+                            <div class="flex gap-2">
+                                <button onclick="toggleAllCommands(false)"
+                                    class="text-[10px] bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-lg border border-red-500/20 transition-all font-bold">
+                                    <i class="fa-solid fa-lock mr-1"></i> Tümünü Yasakla
+                                </button>
+                                <button onclick="toggleAllCommands(true)"
+                                    class="text-[10px] bg-green-500/10 text-green-400 hover:bg-green-500/20 px-3 py-1.5 rounded-lg border border-green-500/20 transition-all font-bold">
+                                    <i class="fa-solid fa-lock-open mr-1"></i> Tümünü Aktif Et
+                                </button>
+                            </div>
                         </div>
-                        
-                        <div class="bg-yellow-500/5 border border-yellow-500/10 rounded-xl p-4 flex gap-3 items-start mb-6">
+
+                        <div
+                            class="bg-yellow-500/5 border border-yellow-500/10 rounded-xl p-4 flex gap-3 items-start mb-6">
                             <i class="fa-solid fa-shield-halved text-yellow-500 mt-1"></i>
                             <div>
                                 <h5 class="font-bold text-yellow-500/80 text-xs">Komut Kısıtlama Bilgisi</h5>
-                                <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">Kapatılan komutlar tüm sunucu üyeleri için (Yöneticiler dahil) devre dışı kalır. Komutu tekrar aktif etmek için buradan açmanız yeterlidir.</p>
+                                <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">Kapatılan komutlar tüm sunucu
+                                    üyeleri için (Yöneticiler dahil) devre dışı kalır. Komutu tekrar aktif etmek için
+                                    buradan açmanız yeterlidir.</p>
                             </div>
                         </div>
 
@@ -594,7 +932,7 @@
                     <!-- TAB: PROTECTIONS -->
                     <div id="tab-protections" class="modal-tab-content hidden space-y-6">
                         <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Koruma Ayarları</h4>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
                                 <div>
@@ -603,7 +941,9 @@
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="setting-anti-swear" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                    </div>
                                 </label>
                             </div>
 
@@ -614,7 +954,9 @@
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="setting-anti-link" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                    </div>
                                 </label>
                             </div>
 
@@ -625,7 +967,9 @@
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="setting-anti-spam" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                    </div>
                                 </label>
                             </div>
 
@@ -636,7 +980,9 @@
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="setting-anti-caps" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                    </div>
                                 </label>
                             </div>
 
@@ -647,7 +993,9 @@
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="setting-anti-bot" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                    </div>
                                 </label>
                             </div>
 
@@ -658,7 +1006,9 @@
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="setting-anti-url" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                    </div>
                                 </label>
                             </div>
 
@@ -669,13 +1019,17 @@
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="setting-anti-emoji" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                    </div>
                                 </label>
                             </div>
 
                             <div class="glass-panel p-4 rounded-xl space-y-2">
                                 <h5 class="text-sm font-bold text-white">Yaş Sınırı (Gün)</h5>
-                                <input type="number" id="setting-age-limit" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-purple-500" placeholder="0 (Kapalı)">
+                                <input type="number" id="setting-age-limit"
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-purple-500"
+                                    placeholder="0 (Kapalı)">
                                 <p class="text-[10px] text-gray-500">Hesap bu günden yeniyse atılır.</p>
                             </div>
                         </div>
@@ -683,62 +1037,77 @@
                         <div class="mt-6 space-y-4">
                             <div class="flex items-center justify-between mb-2">
                                 <h5 class="text-sm font-bold text-white">Mod-Log Sistemi</h5>
-                                <button onclick="resetModLog()" class="text-[10px] text-red-400 hover:text-red-300 transition-colors flex items-center gap-1">
+                                <button onclick="resetModLog()"
+                                    class="text-[10px] text-red-400 hover:text-red-300 transition-colors flex items-center gap-1">
                                     <i class="fa-solid fa-power-off"></i> Sistemi Kapat
                                 </button>
                             </div>
                             <div class="space-y-2">
                                 <label class="text-xs text-gray-400">Mod-Log Kanalı</label>
-                                <select id="setting-mod-log" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                <select id="setting-mod-log"
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors">
                                     <option value="">Devre Dışı</option>
                                 </select>
-                                <p class="text-[10px] text-gray-500">Küfür, Reklam ve URL engellemeleri bu kanala loglanır.</p>
+                                <p class="text-[10px] text-gray-500">Küfür, Reklam ve URL engellemeleri bu kanala
+                                    loglanır.</p>
                             </div>
                         </div>
 
                         <div class="space-y-2 mt-4">
                             <label class="text-sm font-medium text-gray-400">Yasaklı Taglar (Virgül ile ayır)</label>
-                            <input type="text" id="setting-banned-tags" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="TAG1, TAG2, ...">
+                            <input type="text" id="setting-banned-tags"
+                                class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                placeholder="TAG1, TAG2, ...">
                         </div>
                     </div>
 
                     <!-- TAB: REACTION ROLES -->
                     <div id="tab-reaction-roles" class="modal-tab-content hidden space-y-6">
-                        <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Emoji Rol Sistemi</h4>
-                        
+                        <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Emoji Rol Sistemi
+                        </h4>
+
                         <!-- Add New Reaction Role Form -->
                         <div class="glass-panel p-6 rounded-xl space-y-4 border border-white/10">
-                            <h5 class="text-sm font-bold text-purple-400 uppercase tracking-wider">Yeni Emoji Rol Ekle</h5>
+                            <h5 class="text-sm font-bold text-purple-400 uppercase tracking-wider">Yeni Emoji Rol Ekle
+                            </h5>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="space-y-2">
                                     <label class="text-xs font-medium text-gray-500">Kanal</label>
-                                    <select id="rr-channel" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                    <select id="rr-channel"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors">
                                         <!-- Channels will be populated -->
                                     </select>
                                 </div>
                                 <div class="space-y-2">
                                     <label class="text-xs font-medium text-gray-500">Mesaj ID</label>
-                                    <input type="text" id="rr-message-id" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors" placeholder="84729...">
+                                    <input type="text" id="rr-message-id"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                                        placeholder="84729...">
                                 </div>
                                 <div class="space-y-2">
                                     <label class="text-xs font-medium text-gray-500">Emoji</label>
-                                    <input type="text" id="rr-emoji" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors" placeholder="⭐">
+                                    <input type="text" id="rr-emoji"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                                        placeholder="⭐">
                                 </div>
                                 <div class="space-y-2">
                                     <label class="text-xs font-medium text-gray-500">Rol</label>
-                                    <select id="rr-role" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                    <select id="rr-role"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors">
                                         <!-- Roles will be populated -->
                                     </select>
                                 </div>
                             </div>
-                            <button onclick="addReactionRole()" class="w-full bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold py-2 rounded-lg transition-all transform hover:scale-[1.02]">
+                            <button onclick="addReactionRole()"
+                                class="w-full bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold py-2 rounded-lg transition-all transform hover:scale-[1.02]">
                                 <i class="fa-solid fa-plus mr-2"></i> Sistemi Kur
                             </button>
                         </div>
 
                         <!-- Existing Reaction Roles List -->
                         <div class="space-y-3">
-                            <h5 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Mevcut Emoji Roller</h5>
+                            <h5 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Mevcut Emoji Roller
+                            </h5>
                             <div id="rr-list" class="space-y-2">
                                 <!-- RR items will be populated -->
                             </div>
@@ -748,7 +1117,7 @@
                     <!-- TAB: LEVELS -->
                     <div id="tab-levels" class="modal-tab-content hidden space-y-6">
                         <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Seviye Sistemi</h4>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Guild Level Settings -->
                             <div class="glass-panel p-4 rounded-xl space-y-4">
@@ -760,55 +1129,290 @@
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" id="setting-level-status" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                        <div
+                                            class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                        </div>
                                     </label>
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] text-gray-400">Level Up Kanalı</label>
-                                    <select id="setting-level-channel" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors">
+                                    <select id="setting-level-channel"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors">
                                         <option value="">O Anki Kanal</option>
                                     </select>
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] text-gray-400">XP Çarpanı (1-5)</label>
-                                    <input type="number" id="setting-xp-rate" min="1" max="5" value="1" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors">
+                                    <input type="number" id="setting-xp-rate" min="1" max="5" value="1"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors">
                                 </div>
                             </div>
 
                             <!-- User Rank Card Settings -->
                             <div class="glass-panel p-4 rounded-xl space-y-4">
                                 <h5 class="text-sm font-bold text-pink-400">Kişisel Ayarların</h5>
-                                
+
                                 <!-- Drag & Drop Area -->
-                                <div id="drop-zone" class="relative group cursor-pointer border-2 border-dashed border-white/10 hover:border-purple-500/50 rounded-xl p-6 transition-all bg-white/5 hover:bg-purple-500/5 flex flex-col items-center justify-center gap-3 overflow-hidden">
+                                <div id="drop-zone"
+                                    class="relative group cursor-pointer border-2 border-dashed border-white/10 hover:border-purple-500/50 rounded-xl p-6 transition-all bg-white/5 hover:bg-purple-500/5 flex flex-col items-center justify-center gap-3 overflow-hidden">
                                     <input type="file" id="rank-bg-upload" class="hidden" accept="image/*">
                                     <div id="upload-idle" class="flex flex-col items-center">
-                                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-500 group-hover:text-purple-400 transition-colors mb-2"></i>
-                                        <span class="text-xs font-bold text-gray-400 group-hover:text-gray-200">Dosyayı Sürükle veya Seç</span>
+                                        <i
+                                            class="fa-solid fa-cloud-arrow-up text-3xl text-gray-500 group-hover:text-purple-400 transition-colors mb-2"></i>
+                                        <span class="text-xs font-bold text-gray-400 group-hover:text-gray-200">Dosyayı
+                                            Sürükle veya Seç</span>
                                         <span class="text-[10px] text-gray-600 mt-1">PNG, JPG, GIF (Max 5MB)</span>
                                     </div>
                                     <div id="upload-preview" class="hidden absolute inset-0 w-full h-full">
                                         <img id="bg-preview-img" class="w-full h-full object-cover opacity-40">
-                                        <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
+                                        <div
+                                            class="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
                                             <i class="fa-solid fa-check-circle text-2xl text-green-500 mb-1"></i>
-                                            <span class="text-[10px] font-bold text-white uppercase tracking-widest">Resim Seçildi</span>
+                                            <span
+                                                class="text-[10px] font-bold text-white uppercase tracking-widest">Resim
+                                                Seçildi</span>
                                         </div>
                                     </div>
-                                    <div id="upload-loading" class="hidden absolute inset-0 w-full h-full bg-[#0f0f13]/90 flex flex-col items-center justify-center">
+                                    <div id="upload-loading"
+                                        class="hidden absolute inset-0 w-full h-full bg-[#0f0f13]/90 flex flex-col items-center justify-center">
                                         <i class="fa-solid fa-spinner fa-spin text-2xl text-purple-500 mb-2"></i>
                                         <span class="text-[10px] font-bold text-purple-400">Yükleniyor...</span>
                                     </div>
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Veya URL ile Ayarla</label>
-                                    <input type="text" id="user-rank-bg" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors" placeholder="https://...">
+                                    <label class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Veya URL
+                                        ile Ayarla</label>
+                                    <input type="text" id="user-rank-bg"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors"
+                                        placeholder="https://...">
                                 </div>
-                                
-                                <button onclick="saveUserLevelSettings()" class="w-full py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white text-xs font-bold transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-500/20">
+
+                                <button onclick="saveUserLevelSettings()"
+                                    class="w-full py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white text-xs font-bold transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-500/20">
                                     Değişiklikleri Kaydet
                                 </button>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: ECONOMY -->
+                    <div id="tab-economy" class="modal-tab-content hidden space-y-6">
+                        <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Ekonomi Sistemi</h4>
+
+                        <div class="glass-panel p-6 rounded-xl space-y-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h5 class="text-sm font-bold text-white">Sistem Durumu</h5>
+                                    <p class="text-xs text-gray-500">Ekonomi komutlarını aç/kapat.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="setting-economy-status" class="sr-only peer">
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600">
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                                <div class="space-y-2">
+                                    <label class="text-xs font-bold text-gray-400">Günlük Para Miktarı (Min-Max)</label>
+                                    <div class="flex gap-2">
+                                        <input type="number" id="setting-daily-min"
+                                            class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
+                                            placeholder="500">
+                                        <input type="number" id="setting-daily-max"
+                                            class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
+                                            placeholder="1000">
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-xs font-bold text-gray-400">Para Birimi Sembolü</label>
+                                    <input type="text" id="setting-currency-symbol"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
+                                        placeholder="💸">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 flex gap-3 items-start">
+                            <i class="fa-solid fa-coins text-yellow-500 mt-1"></i>
+                            <div>
+                                <h5 class="font-bold text-yellow-400 text-sm">Ekonomi Hakkında</h5>
+                                <p class="text-xs text-gray-400 mt-1">Ekonomi sistemi sunucu genelinde aktiftir. Üyeler
+                                    günlük ödüller alabilir, birbirlerine para transfer edebilir ve yakında eklenecek
+                                    market sisteminden ürün alabilirler.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: MODERATION -->
+                    <div id="tab-moderation" class="modal-tab-content hidden space-y-6">
+                        <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                            <h4 class="text-lg font-bold text-white">Moderasyon Kayıtları (Ceza Listesi)</h4>
+                            <button onclick="fetchInfractions()"
+                                class="text-xs bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-all text-gray-400">
+                                <i class="fa-solid fa-rotate mr-1"></i> Yenile
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-gray-400">
+                                <thead class="text-xs text-gray-500 uppercase bg-white/5">
+                                    <tr>
+                                        <th class="px-4 py-3">Kullanıcı</th>
+                                        <th class="px-4 py-3">Tür</th>
+                                        <th class="px-4 py-3">Sebep</th>
+                                        <th class="px-4 py-3">Yetkili</th>
+                                        <th class="px-4 py-3 text-right">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="infraction-list">
+                                    <!-- Infractions will be populated -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TAB: SHOP -->
+                    <div id="tab-shop" class="modal-tab-content hidden space-y-6">
+                        <h4 class="text-lg font-bold text-white border-b border-white/5 pb-2">Market Yönetimi</h4>
+
+                        <div class="glass-panel p-6 rounded-xl space-y-4">
+                            <h5 class="text-xs font-bold text-purple-400 uppercase tracking-wider">Yeni Ürün Ekle</h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-gray-500 uppercase">Ürün Adı</label>
+                                    <input type="text" id="shop-item-name"
+                                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
+                                        placeholder="Örn: VIP Rolü">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-gray-500 uppercase">Fiyat</label>
+                                    <input type="number" id="shop-item-price"
+                                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
+                                        placeholder="1000">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-gray-500 uppercase">Açıklama</label>
+                                    <input type="text" id="shop-item-desc"
+                                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
+                                        placeholder="Kısa bir açıklama">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-gray-500 uppercase">Rol ID (Opsiyonel)</label>
+                                    <input type="text" id="shop-item-role"
+                                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
+                                        placeholder="ID">
+                                </div>
+                            </div>
+                            <button onclick="addShopItem()"
+                                class="w-full py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-white text-xs font-bold transition-all">
+                                <i class="fa-solid fa-plus mr-2"></i> Ürünü Markete Ekle
+                            </button>
+                        </div>
+
+                        <div id="shop-items-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Shop items will be listed here -->
+                        </div>
+                    </div>
+
+                    <!-- TAB: AUDIT LOGS -->
+                    <div id="tab-audit-logs" class="modal-tab-content hidden space-y-6">
+                        <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                            <h4 class="text-lg font-bold text-white">Sunucu Logları</h4>
+                            <button onclick="fetchAuditLogs()"
+                                class="text-xs bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-all text-gray-400">
+                                <i class="fa-solid fa-rotate mr-1"></i> Yenile
+                            </button>
+                        </div>
+
+                        <div id="audit-logs-list" class="space-y-4">
+                            <!-- Logs will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- TAB: GIVEAWAYS -->
+                    <div id="tab-giveaways" class="modal-tab-content hidden space-y-6">
+                        <h4 class="text-lg font-bold text-white border-b border-white/5 pb-2">Çekiliş Yönetimi</h4>
+
+                        <div class="glass-panel p-6 rounded-xl space-y-4">
+                            <h5 class="text-xs font-bold text-pink-400 uppercase tracking-wider">Yeni Çekiliş Başlat
+                            </h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-gray-500 uppercase">Ödül</label>
+                                    <input type="text" id="ga-prize"
+                                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
+                                        placeholder="Örn: 1 Aylık Nitro">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-gray-500 uppercase">Kanal</label>
+                                    <select id="ga-channel"
+                                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs"></select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-gray-500 uppercase">Süre (Dakika)</label>
+                                    <input type="number" id="ga-duration"
+                                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
+                                        placeholder="60">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] text-gray-500 uppercase">Kazanan Sayısı</label>
+                                    <input type="number" id="ga-winners"
+                                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
+                                        value="1">
+                                </div>
+                            </div>
+                            <button onclick="startGiveaway()"
+                                class="w-full py-2 bg-pink-600 hover:bg-pink-500 rounded-lg text-white text-xs font-bold transition-all">
+                                <i class="fa-solid fa-gift mr-2"></i> Çekilişi Başlat
+                            </button>
+                        </div>
+
+                        <div id="giveaways-list" class="space-y-3">
+                            <!-- Giveaways will be listed here -->
+                        </div>
+                    </div>
+
+                    <div id="tab-invites" class="modal-tab-content hidden space-y-6">
+                        <h4 class="text-lg font-bold text-white border-b border-white/5 pb-2">Davet Takip Sistemi</h4>
+
+                        <div class="glass-panel p-6 rounded-xl space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h5 class="text-sm font-bold text-purple-400">Sistem Durumu</h5>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="setting-invite-status" class="sr-only peer">
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs text-gray-400">Davet Log Kanalı</label>
+                                <select id="setting-invite-channel"
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                    <option value="">Devre Dışı</option>
+                                </select>
+                                <p class="text-[10px] text-gray-500">Sunucuya birisi katıldığında kimin davet ettiği bu
+                                    kanala gönderilir.</p>
+                            </div>
+                        </div>
+
+                        <h5 class="text-sm font-bold text-white mt-4">Davet Liderlik Tablosu</h5>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-gray-400">
+                                <thead class="text-xs text-gray-500 uppercase bg-white/5">
+                                    <tr>
+                                        <th class="px-4 py-3">Kullanıcı</th>
+                                        <th class="px-4 py-3">Toplam Davet</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invites-list">
+                                    <!-- Invites will be populated -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
@@ -817,8 +1421,10 @@
 
             <!-- Modal Footer -->
             <div class="p-6 border-t border-white/5 bg-[#151518] flex justify-end gap-3">
-                <button onclick="closeManageModal()" class="px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-white/5 transition-all">İptal</button>
-                <button onclick="saveGuildSettings()" class="px-6 py-2 rounded-lg text-sm font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-500/20 transition-all transform hover:scale-105">
+                <button onclick="closeManageModal()"
+                    class="px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-white/5 transition-all">İptal</button>
+                <button onclick="saveGuildSettings()"
+                    class="px-6 py-2 rounded-lg text-sm font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-500/20 transition-all transform hover:scale-105">
                     <i class="fa-solid fa-save mr-2"></i> Kaydet
                 </button>
             </div>
@@ -839,12 +1445,12 @@
                     return false;
                 }
                 const user = await response.json();
-                
+
                 // Show user info
                 document.getElementById('user-profile').classList.remove('hidden');
                 document.getElementById('user-name').innerText = user.username;
                 document.getElementById('user-avatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-                
+
                 // Admin değilse panelleri gizle
                 if (!user.isAdmin) {
                     const activityPanel = document.getElementById('admin-activities');
@@ -852,14 +1458,14 @@
                     const systemHealthPanel = document.getElementById('admin-system-health');
                     const adminMenu = document.getElementById('admin-menu');
 
-                    if(activityPanel) activityPanel.style.display = 'none';
-                    if(quickActionsPanel) quickActionsPanel.style.display = 'none';
-                    if(systemHealthPanel) systemHealthPanel.style.display = 'none';
-                    if(adminMenu) adminMenu.style.display = 'none';
+                    if (activityPanel) activityPanel.style.display = 'none';
+                    if (quickActionsPanel) quickActionsPanel.style.display = 'none';
+                    if (systemHealthPanel) systemHealthPanel.style.display = 'none';
+                    if (adminMenu) adminMenu.style.display = 'none';
                 } else {
                     // Admins see everything
                     const adminMenu = document.getElementById('admin-menu');
-                    if(adminMenu) adminMenu.style.display = 'block';
+                    if (adminMenu) adminMenu.style.display = 'block';
                 }
 
                 return true;
@@ -875,13 +1481,13 @@
         async function openManageModal(guildId) {
             currentGuildId = guildId;
             const modal = document.getElementById('manage-modal');
-            
+
             // Show modal
             modal.classList.remove('hidden');
-            
+
             // Loading indicator for header
             document.getElementById('modal-server-name').innerText = "Yükleniyor...";
-            
+
             try {
                 const response = await fetch(`/api/server/${guildId}`);
                 const data = await response.json();
@@ -891,7 +1497,7 @@
                 // Update Header
                 document.getElementById('modal-server-name').innerText = data.name;
                 document.getElementById('modal-server-icon').src = data.icon;
-                
+
                 // Populate Channels
                 const channelSelects = [
                     document.getElementById('setting-welcome-channel'),
@@ -899,10 +1505,14 @@
                     document.getElementById('setting-ticket-log'),
                     document.getElementById('setting-mod-log'),
                     document.getElementById('setting-level-channel'),
+                    document.getElementById('setting-invite-channel'), // Davet Log
                     document.getElementById('ticket-setup-channel'),
                     document.getElementById('rr-channel')
                 ];
-                
+
+                // SA-AS
+                document.getElementById('setting-saas').checked = data.settings.saas || false;
+
                 channelSelects.forEach(select => {
                     if (!select) return;
                     select.innerHTML = '<option value="">Seçiniz...</option>';
@@ -919,7 +1529,7 @@
                     document.getElementById('setting-autorole'),
                     document.getElementById('rr-role')
                 ];
-                
+
                 roleSelects.forEach(select => {
                     if (!select) return;
                     select.innerHTML = '<option value="">Seçiniz...</option>';
@@ -939,7 +1549,7 @@
                 const allCommands = await cmdResponse.json();
                 const container = document.getElementById('command-categories-container');
                 container.innerHTML = '';
-                
+
                 // Kategorilere ayır
                 const categories = {};
                 allCommands.forEach(cmd => {
@@ -950,7 +1560,7 @@
                 for (const catName in categories) {
                     const catSection = document.createElement('div');
                     catSection.className = 'space-y-4';
-                    
+
                     const catHeader = document.createElement('div');
                     catHeader.className = 'flex items-center gap-3 border-b border-white/5 pb-2';
                     catHeader.innerHTML = `
@@ -961,7 +1571,7 @@
 
                     const grid = document.createElement('div');
                     grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
-                    
+
                     categories[catName].forEach(cmd => {
                         const isDisabled = data.settings.disabledCommands && data.settings.disabledCommands.includes(cmd.name);
                         const cmdCard = document.createElement('div');
@@ -995,13 +1605,23 @@
                 document.getElementById('setting-ticket-message').value = data.settings.ticketMessage || '';
                 document.getElementById('setting-autorole').value = data.settings.autorole || '';
                 document.getElementById('setting-mod-log').value = data.settings.logs?.moderation || '';
-                
+
+                // Davet Sistemi
+                document.getElementById('setting-invite-status').checked = data.settings.inviteSystem?.status || false;
+                document.getElementById('setting-invite-channel').value = data.settings.inviteSystem?.channel || '';
+
                 // Level System
                 document.getElementById('setting-level-status').checked = data.settings.levelSystem?.status || false;
                 document.getElementById('setting-level-channel').value = data.settings.levelSystem?.channel || '';
                 document.getElementById('setting-xp-rate').value = data.settings.levelSystem?.xpRate || 1;
                 document.getElementById('user-rank-bg').value = data.userLevel?.background || '';
-                
+
+                // Economy System
+                document.getElementById('setting-economy-status').checked = data.settings.economy?.status || false;
+                document.getElementById('setting-daily-min').value = data.settings.economy?.dailyMin || 500;
+                document.getElementById('setting-daily-max').value = data.settings.economy?.dailyMax || 1000;
+                document.getElementById('setting-currency-symbol').value = data.settings.economy?.currency || '💸';
+
                 // Rank Card Preview Update
                 if (data.userLevel?.background) {
                     const previewImg = document.getElementById('bg-preview-img');
@@ -1046,8 +1666,15 @@
             document.getElementById('manage-modal').classList.add('hidden');
             currentGuildId = null;
             selectedFile = null;
-            if (uploadIdle) uploadIdle.classList.remove('hidden');
-            if (uploadPreview) uploadPreview.classList.add('hidden');
+            // Çekiliş otomatik yenilemeyi durdur
+            if (giveawayRefreshInterval) {
+                clearInterval(giveawayRefreshInterval);
+                giveawayRefreshInterval = null;
+            }
+            const _uploadIdle = document.getElementById('upload-idle');
+            const _uploadPreview = document.getElementById('upload-preview');
+            if (_uploadIdle) _uploadIdle.classList.remove('hidden');
+            if (_uploadPreview) _uploadPreview.classList.add('hidden');
         }
 
         function switchModalTab(tabId) {
@@ -1055,14 +1682,30 @@
             document.querySelectorAll('.modal-tab-content').forEach(tab => {
                 tab.classList.add('hidden');
             });
-            
+
             // Show selected tab
             const selectedTab = document.getElementById(`tab-${tabId}`);
-            if(selectedTab) selectedTab.classList.remove('hidden');
+            if (selectedTab) selectedTab.classList.remove('hidden');
+
+            // Eğer belirli tab açıldıysa verileri çek
+            if (tabId === 'moderation') fetchInfractions();
+            if (tabId === 'shop') fetchShopItems();
+            if (tabId === 'audit-logs') fetchAuditLogs();
+            if (tabId === 'invites') fetchInvites();
+
+            // Çekiliş otomatik yenileme
+            if (giveawayRefreshInterval) {
+                clearInterval(giveawayRefreshInterval);
+                giveawayRefreshInterval = null;
+            }
+            if (tabId === 'giveaways') {
+                fetchGiveaways();
+                giveawayRefreshInterval = setInterval(fetchGiveaways, 10000); // 10 saniyede bir yenile
+            }
 
             // Update sidebar buttons
             document.querySelectorAll('.modal-tab-btn').forEach(btn => {
-                if(btn.dataset.tab === tabId) {
+                if (btn.dataset.tab === tabId) {
                     btn.classList.add('active', 'text-white', 'bg-white/5');
                     btn.classList.remove('text-gray-400');
                 } else {
@@ -1076,7 +1719,7 @@
         function renderReactionRoles(roles) {
             const list = document.getElementById('rr-list');
             list.innerHTML = '';
-            
+
             if (!roles || roles.length === 0) {
                 list.innerHTML = '<p class="text-xs text-gray-500 text-center py-4 italic">Henüz bir emoji rol sistemi kurulmamış.</p>';
                 return;
@@ -1118,7 +1761,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ channelId, messageId, emoji, roleId })
                 });
-                
+
                 const result = await response.json();
                 if (result.success) {
                     showToast('Emoji rol başarıyla eklendi!', 'success');
@@ -1146,6 +1789,346 @@
                 }
             } catch (e) {
                 showToast('Hata oluştu', 'error');
+            }
+        }
+
+        async function fetchInfractions() {
+            const list = document.getElementById('infraction-list');
+            list.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Yükleniyor...</td></tr>';
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/infractions`);
+                const infractions = await response.json();
+
+                if (!infractions || infractions.length === 0) {
+                    list.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Henüz kayıtlı bir ceza bulunmuyor.</td></tr>';
+                    return;
+                }
+
+                list.innerHTML = infractions.map(inf => `
+                    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td class="px-4 py-4 flex items-center gap-3">
+                            <img src="${inf.userAvatar || 'https://cdn.discordapp.com/embed/avatars/0.png'}" class="w-8 h-8 rounded-full border border-white/10">
+                            <div class="flex flex-col">
+                                <span class="text-white font-medium">${inf.userTag}</span>
+                                <span class="text-[10px] text-gray-600">${inf.userId}</span>
+                            </div>
+                        </td>
+                        <td class="px-4 py-4">
+                            <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${getInfractionClass(inf.type)}">
+                                ${inf.type}
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 max-w-[200px] truncate" title="${inf.reason}">${inf.reason}</td>
+                        <td class="px-4 py-4 text-xs font-medium text-purple-400">${inf.moderatorTag}</td>
+                        <td class="px-4 py-4 text-right">
+                            <button onclick="deleteInfraction('${inf._id}')" class="text-red-400 hover:text-red-300 transition-colors p-2">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                list.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-400">Veriler yüklenemedi.</td></tr>';
+            }
+        }
+
+        function getInfractionClass(type) {
+            switch (type) {
+                case 'ban': return 'bg-red-500/20 text-red-400';
+                case 'kick': return 'bg-orange-500/20 text-orange-400';
+                case 'mute': return 'bg-yellow-500/20 text-yellow-400';
+                case 'warn': return 'bg-blue-500/20 text-blue-400';
+                default: return 'bg-gray-500/20 text-gray-400';
+            }
+        }
+
+        async function deleteInfraction(infId) {
+            if (!confirm('Bu cezayı kayıtlardan silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/infraction/${infId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Ceza kaydı başarıyla silindi.', 'success');
+                    fetchInfractions();
+                }
+            } catch (error) {
+                showToast('Kayıt silinirken bir hata oluştu.', 'error');
+            }
+        }
+
+        async function deleteGiveaway(gaId) {
+            if (!confirm('Bu çekilişi silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/giveaway/${gaId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Çekiliş başarıyla silindi.', 'success');
+                    fetchGiveaways();
+                }
+            } catch (error) {
+                showToast('Çekiliş silinirken bir hata oluştu.', 'error');
+            }
+        }
+
+        async function fetchShopItems() {
+            const list = document.getElementById('shop-items-list');
+            list.innerHTML = '<div class="col-span-2 text-center py-8 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Yükleniyor...</div>';
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/shop`);
+                const items = await response.json();
+
+                if (!items || items.length === 0) {
+                    list.innerHTML = '<div class="col-span-2 text-center py-8 text-gray-500">Market henüz boş.</div>';
+                    return;
+                }
+
+                list.innerHTML = items.map(item => `
+                    <div class="glass-panel p-4 rounded-xl flex justify-between items-center group border border-white/5 hover:border-purple-500/30 transition-all">
+                        <div class="flex flex-col">
+                            <h6 class="text-sm font-bold text-white">${item.name}</h6>
+                            <p class="text-[10px] text-gray-500">${item.description || 'Açıklama yok'}</p>
+                            <span class="text-xs font-bold text-yellow-500 mt-2">${item.price} 💸</span>
+                        </div>
+                        <button onclick="deleteShopItem('${item._id}')" class="text-red-400 hover:text-red-300 p-2 opacity-0 group-hover:opacity-100 transition-all">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                list.innerHTML = '<div class="col-span-2 text-center py-8 text-red-400">Market verileri yüklenemedi.</div>';
+            }
+        }
+
+        async function addShopItem() {
+            const name = document.getElementById('shop-item-name').value;
+            const price = document.getElementById('shop-item-price').value;
+            const description = document.getElementById('shop-item-desc').value;
+            const roleId = document.getElementById('shop-item-role').value;
+
+            if (!name || !price) return showToast('Ürün adı ve fiyat zorunludur!', 'error');
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/shop`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, price: parseInt(price), description, roleId })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Ürün markete eklendi.', 'success');
+                    fetchShopItems();
+                    document.getElementById('shop-item-name').value = '';
+                    document.getElementById('shop-item-price').value = '';
+                    document.getElementById('shop-item-desc').value = '';
+                    document.getElementById('shop-item-role').value = '';
+                }
+            } catch (error) {
+                showToast('Ürün eklenirken hata oluştu.', 'error');
+            }
+        }
+
+        async function deleteShopItem(itemId) {
+            if (!confirm('Bu ürünü marketten kaldırmak istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/shop/${itemId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Ürün kaldırıldı.', 'success');
+                    fetchShopItems();
+                }
+            } catch (error) {
+                showToast('Hata oluştu.', 'error');
+            }
+        }
+
+        async function fetchAuditLogs() {
+            const list = document.getElementById('audit-logs-list');
+            list.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Loglar yükleniyor...</div>';
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/audit-logs`);
+                const logs = await response.json();
+
+                if (!logs || logs.length === 0) {
+                    list.innerHTML = '<div class="text-center py-8 text-gray-500">Henüz bir log kaydı yok.</div>';
+                    return;
+                }
+
+                list.innerHTML = logs.map(log => `
+                    <div class="glass-panel p-4 rounded-xl border-l-4 ${getLogColor(log.type)} bg-white/5">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center gap-2">
+                                <i class="${getLogIcon(log.type)} text-xs opacity-70"></i>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">${getLogTitle(log.type)}</span>
+                            </div>
+                            <span class="text-[10px] text-gray-600">${new Date(log.timestamp).toLocaleString('tr-TR')}</span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xs font-bold text-white">${log.userTag}</span>
+                            <span class="text-[10px] text-gray-500">#${log.channelName || 'Bilinmiyor'}</span>
+                        </div>
+                        ${log.type === 'messageDelete' ? `<p class="text-xs text-red-400 italic">"${log.content}"</p>` : ''}
+                        ${log.type === 'messageUpdate' ? `
+                            <div class="space-y-1">
+                                <p class="text-[10px] text-gray-500 line-through decoration-red-500/50">"${log.oldContent}"</p>
+                                <p class="text-xs text-green-400">"${log.newContent}"</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                list.innerHTML = '<div class="text-center py-8 text-red-400">Loglar yüklenirken hata oluştu.</div>';
+            }
+        }
+
+        function getLogColor(type) {
+            switch (type) {
+                case 'messageDelete': return 'border-red-500';
+                case 'messageUpdate': return 'border-yellow-500';
+                case 'memberJoin': return 'border-green-500';
+                case 'memberLeave': return 'border-orange-500';
+                default: return 'border-gray-500';
+            }
+        }
+
+        function getLogIcon(type) {
+            switch (type) {
+                case 'messageDelete': return 'fa-solid fa-trash';
+                case 'messageUpdate': return 'fa-solid fa-pen-to-square';
+                case 'memberJoin': return 'fa-solid fa-user-plus';
+                case 'memberLeave': return 'fa-solid fa-user-minus';
+                default: return 'fa-solid fa-circle-info';
+            }
+        }
+
+        function getLogTitle(type) {
+            switch (type) {
+                case 'messageDelete': return 'Mesaj Silindi';
+                case 'messageUpdate': return 'Mesaj Düzenlendi';
+                case 'memberJoin': return 'Üye Katıldı';
+                case 'memberLeave': return 'Üye Ayrıldı';
+                default: return 'Bilgi';
+            }
+        }
+
+        let giveawayRefreshInterval = null;
+
+        async function fetchGiveaways() {
+            const list = document.getElementById('giveaways-list');
+            const channelSelect = document.getElementById('ga-channel');
+            list.innerHTML = '<div class="text-center py-8 text-gray-500">Yükleniyor...</div>';
+
+            try {
+                // Kanalları doldur
+                const guildResponse = await fetch(`/api/server/${currentGuildId}`);
+                const guildData = await guildResponse.json();
+                const channels = guildData.textChannels || guildData.channels || [];
+                channelSelect.innerHTML = channels.map(c => `<option value="${c.id}">#${c.name}</option>`).join('');
+
+                const response = await fetch(`/api/server/${currentGuildId}/giveaways`);
+                const giveaways = await response.json();
+
+                if (!giveaways || giveaways.length === 0) {
+                    list.innerHTML = '<div class="text-center py-8 text-gray-500 italic text-xs">Henüz çekiliş başlatılmadı.</div>';
+                    return;
+                }
+
+                list.innerHTML = giveaways.map(ga => {
+                    const endDate = new Date(ga.endTime).toLocaleString('tr-TR');
+                    const isEnded = ga.ended;
+                    const statusBadge = isEnded
+                        ? '<span class="text-[10px] bg-gray-500/20 text-gray-400 px-2 py-1 rounded font-bold">✅ Bitti</span>'
+                        : '<span class="text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded animate-pulse font-bold">🔴 Devam Ediyor</span>';
+
+                    const winnersHtml = isEnded && ga.winners && ga.winners.length > 0
+                        ? `<p class="text-[10px] text-yellow-400 mt-1">🏆 Kazananlar: ${ga.winners.map(id => `<@${id}>`).join(', ')}</p>`
+                        : (isEnded ? '<p class="text-[10px] text-gray-500 mt-1">😢 Kazanan yok</p>' : '');
+
+                    return `
+                    <div class="glass-panel p-4 rounded-xl border ${isEnded ? 'border-white/5 opacity-70' : 'border-pink-500/20'} transition-all">
+                        <div class="flex justify-between items-start">
+                            <div class="flex flex-col gap-1">
+                                <h6 class="text-sm font-bold ${isEnded ? 'text-gray-400' : 'text-pink-400'}">${ga.prize}</h6>
+                                <p class="text-[10px] text-gray-500">Bitiş: ${endDate}</p>
+                                <span class="text-[10px] text-purple-400 font-bold">👥 ${ga.participants ? ga.participants.length : 0} Katılımcı</span>
+                                ${winnersHtml}
+                            </div>
+                            <div class="flex flex-col items-end gap-2">
+                                ${statusBadge}
+                                <button onclick="deleteGiveaway('${ga._id}')" class="text-red-400 hover:text-red-300 p-1.5 text-xs transition-colors">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (error) {
+                list.innerHTML = '<div class="text-center py-8 text-red-400">Veriler alınamadı.</div>';
+            }
+        }
+
+        async function startGiveaway() {
+            const prize = document.getElementById('ga-prize').value;
+            const channelId = document.getElementById('ga-channel').value;
+            const duration = document.getElementById('ga-duration').value;
+            const winnerCount = document.getElementById('ga-winners').value;
+
+            if (!prize || !duration) return showToast('Ödül ve süre zorunludur!', 'error');
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/giveaway`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prize, channelId, duration: parseInt(duration), winnerCount: parseInt(winnerCount) })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Çekiliş başarıyla başlatıldı!', 'success');
+                    fetchGiveaways();
+                    document.getElementById('ga-prize').value = '';
+                    document.getElementById('ga-duration').value = '';
+                }
+            } catch (error) {
+                showToast('Çekiliş başlatılırken hata oluştu.', 'error');
+            }
+        }
+
+        async function fetchInvites() {
+            const list = document.getElementById('invites-list');
+            list.innerHTML = '<tr><td colspan="2" class="text-center py-8 text-gray-500">Yükleniyor...</td></tr>';
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/invites`);
+                const invites = await response.json();
+
+                if (!invites || invites.length === 0) {
+                    list.innerHTML = '<tr><td colspan="2" class="text-center py-8 text-gray-500 text-xs">Henüz davet kaydı bulunmuyor.</td></tr>';
+                    return;
+                }
+
+                list.innerHTML = invites.map((inv, index) => `
+                    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td class="px-4 py-4 flex items-center gap-3">
+                            <span class="text-xs font-bold ${index < 3 ? 'text-yellow-500' : 'text-gray-600'}">#${index + 1}</span>
+                            <img src="${inv.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png'}" class="w-8 h-8 rounded-full border border-white/10">
+                            <span class="text-white font-medium text-xs">${inv.tag}</span>
+                        </td>
+                        <td class="px-4 py-4 text-xs font-bold text-purple-400">${inv.count} Davet</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                list.innerHTML = '<tr><td colspan="2" class="text-center py-8 text-red-400">Veriler alınamadı.</td></tr>';
             }
         }
 
@@ -1228,7 +2211,7 @@
 
         async function saveUserLevelSettings() {
             const backgroundUrl = document.getElementById('user-rank-bg').value;
-            
+
             // Eğer dosya seçildiyse önce onu yükle
             if (selectedFile) {
                 uploadLoading.classList.remove('hidden');
@@ -1246,7 +2229,7 @@
                         selectedFile = null;
                         uploadLoading.classList.add('hidden');
                         document.getElementById('user-rank-bg').value = result.background;
-                        
+
                         // Önizlemeyi güncelle
                         previewImg.src = result.background;
                         uploadIdle.classList.add('hidden');
@@ -1271,7 +2254,7 @@
                 const result = await response.json();
                 if (result.success) {
                     showToast(backgroundUrl ? 'Arka plan URL\'si güncellendi!' : 'Arka plan başarıyla sıfırlandı!', 'success');
-                    
+
                     // Önizlemeyi güncelle
                     if (!backgroundUrl) {
                         uploadIdle.classList.remove('hidden');
@@ -1291,7 +2274,7 @@
         }
 
         async function saveGuildSettings() {
-            if(!currentGuildId) return;
+            if (!currentGuildId) return;
 
             const btn = document.querySelector('button[onclick="saveGuildSettings()"]');
             const originalText = btn.innerHTML;
@@ -1312,6 +2295,10 @@
                 ticketLogChannel: document.getElementById('setting-ticket-log').value,
                 ticketMessage: document.getElementById('setting-ticket-message').value,
                 autorole: document.getElementById('setting-autorole').value,
+                inviteSystem: {
+                    status: document.getElementById('setting-invite-status').checked,
+                    channel: document.getElementById('setting-invite-channel').value
+                },
                 logs: {
                     moderation: document.getElementById('setting-mod-log').value
                 },
@@ -1319,6 +2306,12 @@
                     status: document.getElementById('setting-level-status').checked,
                     channel: document.getElementById('setting-level-channel').value,
                     xpRate: parseInt(document.getElementById('setting-xp-rate').value) || 1
+                },
+                economy: {
+                    status: document.getElementById('setting-economy-status').checked,
+                    dailyMin: parseInt(document.getElementById('setting-daily-min').value) || 500,
+                    dailyMax: parseInt(document.getElementById('setting-daily-max').value) || 1000,
+                    currency: document.getElementById('setting-currency-symbol').value || '💸'
                 },
                 disabledCommands: disabledCommands,
                 protections: {
@@ -1331,7 +2324,8 @@
                     antiBot: document.getElementById('setting-anti-bot').checked,
                     ageLimit: parseInt(document.getElementById('setting-age-limit').value) || 0,
                     bannedTags: document.getElementById('setting-banned-tags').value.split(',').map(t => t.trim()).filter(t => t !== '')
-                }
+                },
+                saas: document.getElementById('setting-saas').checked
             };
 
             try {
@@ -1340,10 +2334,10 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(settings)
                 });
-                
+
                 const result = await response.json();
-                
-                if(result.success) {
+
+                if (result.success) {
                     showToast('Ayarlar başarıyla kaydedildi!', 'success');
                 } else {
                     throw new Error(result.error || 'Kaydedilemedi');
@@ -1359,7 +2353,7 @@
         }
 
         async function leaveServer(guildId) {
-            if(!confirm('Bu sunucudan ayrılmak istediğinize emin misiniz? Bu işlem geri alınamaz.')) return;
+            if (!confirm('Bu sunucudan ayrılmak istediğinize emin misiniz? Bu işlem geri alınamaz.')) return;
 
             try {
                 const response = await fetch('/api/server/leave', {
@@ -1369,7 +2363,7 @@
                 });
                 const result = await response.json();
 
-                if(result.success) {
+                if (result.success) {
                     showToast(result.message, 'success');
                     closeManageModal();
                     fetchServers(); // Listeyi yenile
@@ -1406,30 +2400,32 @@
         const pages = {
             overview: document.getElementById('page-overview'),
             servers: document.getElementById('page-servers'),
-            commands: document.getElementById('page-commands')
+            commands: document.getElementById('page-commands'),
+            blacklist: document.getElementById('page-blacklist')
         };
 
         function switchPage(pageId) {
             // Tüm sayfaları gizle
             Object.values(pages).forEach(page => {
-                if(page) page.classList.add('hidden');
+                if (page) page.classList.add('hidden');
             });
 
             // Seçilen sayfayı göster
             const targetPage = pages[pageId];
             if (targetPage) {
                 targetPage.classList.remove('hidden');
-                
+
                 // Verileri sadece yoksa çek (Pre-fetch zaten yüklemiş olmalı)
                 if (pageId === 'servers' && allServers.length === 0) fetchServers();
                 if (pageId === 'commands' && allCommands.length === 0) fetchCommands();
+                if (pageId === 'blacklist') fetchBlacklist();
             }
 
             // Sidebar linklerini güncelle
             document.querySelectorAll('.sidebar-link').forEach(link => {
                 link.classList.remove('active', 'text-white', 'bg-white/5');
                 link.classList.add('text-gray-400');
-                
+
                 if (link.dataset.page === pageId) {
                     link.classList.add('active', 'text-white', 'bg-white/5');
                     link.classList.remove('text-gray-400');
@@ -1440,10 +2436,11 @@
             const titles = {
                 overview: 'Genel Bakış',
                 servers: 'Sunucularım',
-                commands: 'Komutlar'
+                commands: 'Komutlar',
+                blacklist: 'Kara Liste Yönetimi'
             };
             document.querySelector('header h1').innerText = titles[pageId] || 'Panel';
-            
+
             // Mobilde menüyü kapat
             if (window.innerWidth < 768) {
                 toggleSidebar();
@@ -1475,10 +2472,237 @@
                 document.getElementById('stat-users').innerText = formatCompact(data.users);
                 document.getElementById('stat-commands').innerText = formatCompact(data.commands);
                 document.getElementById('stat-ping').innerText = data.ping + 'ms';
+                
+                // Yeni istatistikler
+                if (data.activeGiveaways !== undefined) {
+                    document.getElementById('stat-giveaways').innerText = formatNumber(data.activeGiveaways);
+                }
+                if (data.averageMembersPerGuild !== undefined) {
+                    document.getElementById('stat-avg-members').innerText = `Ort. ${formatNumber(data.averageMembersPerGuild)} üye`;
+                }
+                
+                // Uptime bilgisi ekle (ping kartının altına)
+                const statusEl = document.getElementById('stat-status');
+                if (statusEl && data.uptime) {
+                    statusEl.innerText = `${data.uptime} uptime`;
+                }
 
             } catch (error) {
                 console.error('Veri çekme hatası:', error);
             }
+        }
+
+        // Analytics Grafikleri Çekme ve Render Etme
+        let serverGrowthChartInstance = null;
+        let commandUsageChartInstance = null;
+        let levelDistributionChartInstance = null;
+        let activeUsersChartInstance = null;
+
+        async function fetchAnalytics() {
+            try {
+                const response = await fetch('/api/stats/analytics');
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error('Analytics hatası:', data.error);
+                    return;
+                }
+
+                renderServerGrowthChart(data.serverGrowth);
+                renderCommandUsageChart(data.commandUsage);
+                renderLevelDistributionChart(data.levelDistribution);
+                renderActiveUsersChart(data.activeUsers);
+
+            } catch (error) {
+                console.error('Analytics çekme hatası:', error);
+            }
+        }
+
+        function renderServerGrowthChart(serverGrowth) {
+            const ctx = document.getElementById('serverGrowthChart').getContext('2d');
+            
+            if (serverGrowthChartInstance) {
+                serverGrowthChartInstance.destroy();
+            }
+
+            serverGrowthChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: serverGrowth.map(d => d.day),
+                    datasets: [{
+                        label: 'Sunucu Sayısı',
+                        data: serverGrowth.map(d => d.servers),
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#8b5cf6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }, {
+                        label: 'Kullanıcı Sayısı (Bin)',
+                        data: serverGrowth.map(d => d.users / 1000),
+                        borderColor: '#ec4899',
+                        backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ec4899',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: '#9ca3af',
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#9ca3af' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#9ca3af' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderCommandUsageChart(commandUsage) {
+            const ctx = document.getElementById('commandUsageChart').getContext('2d');
+            
+            if (commandUsageChartInstance) {
+                commandUsageChartInstance.destroy();
+            }
+
+            commandUsageChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: commandUsage.map(d => d.category),
+                    datasets: [{
+                        label: 'Komut Kullanımı',
+                        data: commandUsage.map(d => d.count),
+                        backgroundColor: commandUsage.map(d => d.color),
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#9ca3af' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#9ca3af' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderLevelDistributionChart(levelDistribution) {
+            const ctx = document.getElementById('levelDistributionChart').getContext('2d');
+            
+            if (levelDistributionChartInstance) {
+                levelDistributionChartInstance.destroy();
+            }
+
+            levelDistributionChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: levelDistribution.map(d => `Seviye ${d.range}`),
+                    datasets: [{
+                        data: levelDistribution.map(d => d.count),
+                        backgroundColor: [
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(236, 72, 153, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(59, 130, 246, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                color: '#9ca3af',
+                                font: { size: 11 },
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderActiveUsersChart(activeUsers) {
+            const ctx = document.getElementById('activeUsersChart').getContext('2d');
+            
+            if (activeUsersChartInstance) {
+                activeUsersChartInstance.destroy();
+            }
+
+            activeUsersChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Son 24 Saat', 'Son 7 Gün', 'Son 30 Gün'],
+                    datasets: [{
+                        data: [activeUsers.last24h, activeUsers.last7d, activeUsers.last30d],
+                        backgroundColor: [
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(16, 185, 129, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                color: '#9ca3af',
+                                font: { size: 11 },
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         async function fetchActivities() {
@@ -1486,7 +2710,7 @@
                 const response = await fetch('/api/activities');
                 const activities = await response.json();
                 const listContainer = document.getElementById('activity-list');
-                
+
                 if (!listContainer) return;
 
                 listContainer.innerHTML = ''; // Temizle
@@ -1518,11 +2742,11 @@
         async function fetchServers() {
             const listContainer = document.getElementById('server-list');
             const countBadge = document.getElementById('server-count-badge');
-            
+
             try {
                 const response = await fetch('/api/servers');
                 allServers = await response.json();
-                
+
                 if (countBadge) countBadge.innerText = allServers.length;
                 renderServers(allServers);
 
@@ -1570,32 +2794,105 @@
 
         // Komutları Çek
         let allCommands = []; // Arama için önbellek
-
+        let currentCommandGuildId = null; // Seçili sunucu ID'si
+        
         async function fetchCommands() {
             const tableBody = document.getElementById('command-list');
-            
+            const serverSelect = document.getElementById('command-server-select');
+        
             try {
                 const response = await fetch('/api/commands');
                 allCommands = await response.json();
-                
+        
+                // Sunucu listesini doldur (ilk kez yükleniyorsa)
+                if (serverSelect.options.length <= 1) {
+                    const serversResponse = await fetch('/api/servers');
+                    const servers = await serversResponse.json();
+                            
+                    servers.forEach(server => {
+                        const option = document.createElement('option');
+                        option.value = server.id;
+                        option.textContent = server.name;
+                        serverSelect.appendChild(option);
+                    });
+        
+                    // İlk sunucuyu otomatik seç
+                    if (servers.length > 0) {
+                        serverSelect.value = servers[0].id;
+                        currentCommandGuildId = servers[0].id;
+                        loadDisabledCommands(currentCommandGuildId);
+                    }
+                }
+        
                 renderCommands(allCommands);
-
+        
             } catch (error) {
                 console.error('Komut listesi hatası:', error);
-                tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-red-500 py-8">Komutlar yüklenemedi.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-red-500 py-8">Komutlar yüklenemedi.</td></tr>';
             }
         }
-
+        
+        // Yasaklı komutları yükle
+        async function loadDisabledCommands(guildId) {
+            try {
+                const response = await fetch(`/api/server/${guildId}/disabled-commands`);
+                const data = await response.json();
+                        
+                // Tüm komutların disabled property'sini güncelle
+                allCommands.forEach(cmd => {
+                    cmd.disabled = data.disabledCommands.includes(cmd.name);
+                });
+                        
+                renderCommands(allCommands);
+            } catch (error) {
+                console.error('Yasaklı komut yükleme hatası:', error);
+            }
+        }
+        
+        // Komutu yasakla/yasağını kaldır
+        async function toggleCommand(guildId, commandName, action) {
+            try {
+                const response = await fetch(`/api/server/${guildId}/toggle-command`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ commandName, action })
+                });
+                        
+                const result = await response.json();
+                        
+                if (result.success) {
+                    showToast(result.message, action === 'disable' ? 'warning' : 'success');
+                    // Durumu güncelle
+                    const cmd = allCommands.find(c => c.name === commandName);
+                    if (cmd) {
+                        cmd.disabled = (action === 'disable');
+                    }
+                    renderCommands(allCommands);
+                } else {
+                    showToast(result.error || 'İşlem başarısız', 'error');
+                }
+            } catch (error) {
+                console.error('Komut toggle hatası:', error);
+                showToast('Bir hata oluştu', 'error');
+            }
+        }
+        
         function renderCommands(commands) {
             const tableBody = document.getElementById('command-list');
             tableBody.innerHTML = '';
-
-            if (commands.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-8">Komut bulunamadı.</td></tr>';
+        
+            if (!currentCommandGuildId) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-yellow-500 py-8">⚠️ Lütfen önce bir sunucu seçin</td></tr>';
                 return;
             }
-
+        
+            if (commands.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-500 py-8">Komut bulunamadı.</td></tr>';
+                return;
+            }
+        
             commands.forEach(cmd => {
+                const isDisabled = cmd.disabled || false;
                 const rowHTML = `
                     <tr class="hover:bg-white/5 transition-colors animate-fade-in group">
                         <td class="px-6 py-4 font-mono text-purple-400 font-bold group-hover:text-purple-300 transition-colors">${cmd.name}</td>
@@ -1603,7 +2900,18 @@
                         <td class="px-6 py-4">
                             <span class="bg-white/5 text-gray-300 px-2 py-1 rounded text-xs border border-white/10">${cmd.category}</span>
                         </td>
-                        <td class="px-6 py-4 font-mono text-xs text-gray-500">${cmd.usage}</td>
+                        <td class="px-6 py-4">
+                            ${isDisabled 
+                                ? '<span class="text-red-400 bg-red-500/10 px-2 py-1 rounded text-xs border border-red-500/20"><i class="fa-solid fa-ban mr-1"></i>Yasaklı</span>'
+                                : '<span class="text-green-400 bg-green-500/10 px-2 py-1 rounded text-xs border border-green-500/20"><i class="fa-solid fa-check mr-1"></i>Aktif</span>'
+                            }
+                        </td>
+                        <td class="px-6 py-4">
+                            ${isDisabled
+                                ? `<button onclick="toggleCommand('${currentCommandGuildId}', '${cmd.name}', 'enable')" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded transition-colors"><i class="fa-solid fa-unlock mr-1"></i>Serbest Bırak</button>`
+                                : `<button onclick="toggleCommand('${currentCommandGuildId}', '${cmd.name}', 'disable')" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded transition-colors"><i class="fa-solid fa-lock mr-1"></i>Yasakla</button>`
+                            }
+                        </td>
                     </tr>
                 `;
                 tableBody.insertAdjacentHTML('beforeend', rowHTML);
@@ -1617,13 +2925,25 @@
                 const term = e.target.value.toLowerCase();
                 // Global search kutusunu da güncelle ki senkron olsunlar
                 if (globalSearch) globalSearch.value = term;
-                
-                const filtered = allCommands.filter(cmd => 
-                    cmd.name.toLowerCase().includes(term) || 
+
+                const filtered = allCommands.filter(cmd =>
+                    cmd.name.toLowerCase().includes(term) ||
                     cmd.description.toLowerCase().includes(term) ||
                     cmd.category.toLowerCase().includes(term)
                 );
                 renderCommands(filtered);
+            });
+        }
+
+        // Sunucu seçici değiştiğinde komutları yükle
+        const commandServerSelect = document.getElementById('command-server-select');
+        if (commandServerSelect) {
+            commandServerSelect.addEventListener('change', (e) => {
+                const guildId = e.target.value;
+                if (guildId) {
+                    currentCommandGuildId = guildId;
+                    loadDisabledCommands(guildId);
+                }
             });
         }
 
@@ -1677,7 +2997,7 @@
                     </div>
                 </div>
             `).join('');
-            
+
             notificationBadge.classList.remove('hidden');
         }
 
@@ -1686,10 +3006,10 @@
             try {
                 const response = await fetch('/api/activities');
                 const activities = await response.json();
-                
+
                 // Sadece yeni aktiviteleri ekleyelim veya listeyi güncelleyelim
                 const newNotifications = activities.slice(0, 5);
-                
+
                 // Eğer liste değişmişse güncelle
                 if (JSON.stringify(newNotifications) !== JSON.stringify(notifications)) {
                     notifications = newNotifications;
@@ -1705,10 +3025,10 @@
         if (globalSearch) {
             globalSearch.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase().trim();
-                
+
                 // Hangi sayfadayız?
                 const activePage = Object.keys(pages).find(key => pages[key] && !pages[key].classList.contains('hidden'));
-                
+
                 if (!term) {
                     // Arama temizlendiyse her şeyi resetle
                     if (allServers.length > 0) renderServers(allServers);
@@ -1717,8 +3037,8 @@
                 }
 
                 const serverMatches = allServers.filter(s => s.name.toLowerCase().includes(term));
-                const commandMatches = allCommands.filter(cmd => 
-                    cmd.name.toLowerCase().includes(term) || 
+                const commandMatches = allCommands.filter(cmd =>
+                    cmd.name.toLowerCase().includes(term) ||
                     cmd.description.toLowerCase().includes(term) ||
                     cmd.category.toLowerCase().includes(term)
                 );
@@ -1743,18 +3063,18 @@
 
         // Hızlı İşlemler İçin Dinleyici
         function setupQuickActions() {
-            const buttons = document.querySelectorAll('.quick-action-btn'); 
+            const buttons = document.querySelectorAll('.quick-action-btn');
             buttons.forEach(btn => {
                 // Remove old listeners to prevent duplicates (if any)
                 const newBtn = btn.cloneNode(true);
                 btn.parentNode.replaceChild(newBtn, btn);
-                
+
                 newBtn.addEventListener('click', async (e) => {
                     // Butona tıklanınca parent'ı (button) bul
                     const targetBtn = e.currentTarget;
                     const action = targetBtn.dataset.action;
-                    
-                    if(!action) return;
+
+                    if (!action) return;
 
                     // Duyuru işlemi için özel durum
                     let announceMsg = null;
@@ -1764,7 +3084,7 @@
                     }
 
                     const originalContent = targetBtn.innerHTML;
-                    
+
                     // Yükleniyor durumu
                     targetBtn.classList.add('opacity-70', 'cursor-not-allowed');
                     targetBtn.querySelector('div').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
@@ -1778,7 +3098,7 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ action, message: announceMsg })
                         });
-                        
+
                         // Check if the response is actually OK
                         if (!response.ok) {
                             const errorData = await response.json();
@@ -1786,16 +3106,16 @@
                         }
 
                         const result = await response.json();
-                        
-                        if(result.success) {
+
+                        if (result.success) {
                             showToast(result.message, 'success');
-                            if(result.mode !== undefined) {
+                            if (result.mode !== undefined) {
                                 updateMaintenanceButton(result.mode);
                             }
                         } else {
                             showToast(result.error || 'İşlem başarısız!', 'error');
                         }
-                    } catch(err) {
+                    } catch (err) {
                         console.error(err);
                         showToast(err.message || 'Bir hata oluştu.', 'error');
                     } finally {
@@ -1816,17 +3136,17 @@
                 // CPU Bar
                 updateProgressBar('cpu-bar', data.cpu);
                 const cpuText = document.getElementById('cpu-text');
-                if(cpuText) cpuText.innerText = `%${data.cpu}`;
+                if (cpuText) cpuText.innerText = `%${data.cpu}`;
 
                 // RAM Bar
                 updateProgressBar('ram-bar', data.ram);
                 const ramText = document.getElementById('ram-text');
-                if(ramText) ramText.innerText = `%${data.ram}`;
+                if (ramText) ramText.innerText = `%${data.ram}`;
 
                 // Disk Bar
                 updateProgressBar('disk-bar', data.disk);
                 const diskText = document.getElementById('disk-text');
-                if(diskText) diskText.innerText = `%${data.disk}`;
+                if (diskText) diskText.innerText = `%${data.disk}`;
 
             } catch (error) {
                 console.error('Sistem verisi hatası:', error);
@@ -1835,12 +3155,12 @@
 
         function updateProgressBar(id, value) {
             const bar = document.getElementById(id);
-            if(bar) {
+            if (bar) {
                 bar.style.width = `${value}%`;
                 // Renk değişimi
-                if(value > 80) {
+                if (value > 80) {
                     bar.className = bar.className.replace(/bg-\w+-500/g, 'bg-red-500');
-                } else if(value > 50) {
+                } else if (value > 50) {
                     bar.className = bar.className.replace(/bg-\w+-500/g, 'bg-yellow-500');
                 } else {
                     // Orijinal rengine dönmek için basit bir mantık veya sabit yeşil
@@ -1858,7 +3178,7 @@
             toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-xl text-white font-medium shadow-lg transform translate-y-20 transition-all duration-300 z-50 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
             toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check' : 'fa-triangle-exclamation'} mr-2"></i> ${message}`;
             document.body.appendChild(toast);
-            
+
             requestAnimationFrame(() => toast.classList.remove('translate-y-20'));
 
             setTimeout(() => {
@@ -1869,9 +3189,9 @@
 
         function updateMaintenanceButton(isActive) {
             const btn = document.querySelector('[data-action="maintenance"]');
-            if(btn) {
+            if (btn) {
                 const iconDiv = btn.querySelector('div');
-                if(isActive) {
+                if (isActive) {
                     btn.classList.add('ring-2', 'ring-yellow-500');
                     iconDiv.classList.remove('text-yellow-500', 'bg-yellow-500/20');
                     iconDiv.classList.add('text-white', 'bg-yellow-500');
@@ -1895,20 +3215,22 @@
             fetchBotStats();
             fetchActivities();
             fetchSystemHealth();
+            fetchAnalytics(); // Analytics grafiklerini yükle
             updateNotificationsFromActivities();
             setupQuickActions();
-            
+
             // Varsayılan olarak overview sayfasını aç
             switchPage('overview');
-            
+
             setInterval(() => {
                 // Sadece overview sayfası açıksa istatistikleri güncelle
                 if (!document.getElementById('page-overview').classList.contains('hidden')) {
                     fetchBotStats();
                     fetchSystemHealth();
+                    fetchAnalytics(); // Analytics verilerini güncelle (her 5 saniye)
                 }
-            }, 3000); 
-            
+            }, 5000);
+
             setInterval(() => {
                 if (!document.getElementById('page-overview').classList.contains('hidden')) {
                     fetchActivities();
@@ -1930,6 +3252,127 @@
         `;
         document.head.appendChild(style);
 
+        // Blacklist & Command Toggle Functions
+        async function fetchBlacklist() {
+            const tableBody = document.getElementById('blacklist-table-body');
+            if (!tableBody) return;
+            tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Yükleniyor...</td></tr>';
+
+            try {
+                const response = await fetch('/api/admin/blacklist');
+                if (response.status === 401 || response.status === 403) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-red-500 font-bold">Yetkiniz Yok!</td></tr>';
+                    return;
+                }
+                const data = await response.json();
+
+                if (!data || data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-gray-600 font-medium italic">Henüz bir kayıt bulunmuyor.</td></tr>';
+                    return;
+                }
+
+                tableBody.innerHTML = data.map(item => `
+                    <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <code class="bg-black/40 px-2 py-1 rounded text-xs text-purple-400 font-mono">${item.targetId}</code>
+                                <button onclick="copyToClipboard('${item.targetId}')" class="text-gray-600 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                                    <i class="fa-solid fa-copy text-[10px]"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${item.type === 'user' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}">
+                                ${item.type === 'user' ? '👤 Kullanıcı' : '🏢 Sunucu'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="text-xs text-gray-400 max-w-[200px] truncate" title="${item.reason}">${item.reason || 'Süresiz Yasak'}</p>
+                            <p class="text-[8px] text-gray-600 mt-0.5">${new Date(item.timestamp).toLocaleString('tr-TR')}</p>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="removeFromBlacklist('${item._id}')" class="w-8 h-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-500/10 transition-all ml-auto">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error(error);
+                tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-red-400">Veriler yüklenemedi.</td></tr>';
+            }
+        }
+
+        async function addToBlacklist() {
+            const targetId = document.getElementById('blacklist-target-id').value;
+            const type = document.getElementById('blacklist-target-type').value;
+            const reason = document.getElementById('blacklist-target-reason').value;
+
+            if (!targetId) return showToast('Hedef ID zorunludur!', 'error');
+
+            try {
+                const response = await fetch('/api/admin/blacklist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetId, type, reason })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Hedef kara listeye alındı!', 'success');
+                    document.getElementById('blacklist-target-id').value = '';
+                    document.getElementById('blacklist-target-reason').value = '';
+                    fetchBlacklist();
+                    fetchBotStats(); // Update stats
+                } else {
+                    showToast(result.error || 'Hata oluştu', 'error');
+                }
+            } catch (error) {
+                showToast('Hata: ' + error.message, 'error');
+            }
+        }
+
+        async function removeFromBlacklist(id) {
+            if (!confirm('Bu kaydı kara listeden silmek istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(`/api/admin/blacklist/${id}`, { method: 'DELETE' });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Kayıt başarıyla silindi.', 'success');
+                    fetchBlacklist();
+                }
+            } catch (error) {
+                showToast('Hata oluştu.', 'error');
+            }
+        }
+
+        function toggleAllCommands(status) {
+            document.querySelectorAll('input[name="disabled-cmd"]').forEach(cb => {
+                cb.checked = status;
+                const card = cb.closest('div.flex.items-center.justify-between');
+                if (card) {
+                    card.classList.toggle('bg-red-500/5', !status);
+                    card.classList.toggle('border-red-500/10', !status);
+                    const title = card.querySelector('span.font-bold');
+                    if (title) {
+                        title.classList.toggle('text-red-400', !status);
+                        title.classList.toggle('text-gray-200', status);
+                    }
+                    card.classList.toggle('bg-white/5', status);
+                    card.classList.toggle('border-white/5', status);
+                }
+            });
+            showToast(status ? 'Tüm komutlar aktif edildi (Kaydetmeyi unutmayın!)' : 'Tüm komutlar yasaklandı (Kaydetmeyi unutmayın!)', 'info');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('ID kopyalandı!', 'success');
+            });
+        }
+
     </script>
 </body>
+
 </html>
