@@ -46,6 +46,15 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
+        /* Select element styling */
+        select {
+            background-color: #1a1a20 !important;
+        }
+        select option {
+            background-color: #1a1a20 !important;
+            color: white !important;
+        }
+
         .sidebar-link.active {
             background: linear-gradient(90deg, rgba(168, 85, 247, 0.15) 0%, transparent 100%);
             border-left: 3px solid #a855f7;
@@ -145,22 +154,12 @@
             <div id="admin-menu" style="display: none;">
                 <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-8 mb-4">Yönetim</p>
 
-                <a href="#"
-                    class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
-                    <i class="fa-solid fa-shield-halved w-5 text-center"></i>
-                    Moderasyon
-                </a>
-                <a href="#"
-                    class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
-                    <i class="fa-solid fa-music w-5 text-center"></i>
-                    Müzik Ayarları
-                </a>
                 <a href="#" data-page="blacklist"
                     class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
                     <i class="fa-solid fa-user-slash w-5 text-center"></i>
                     Kara Liste
                 </a>
-                <a href="#"
+                <a href="#" data-page="bot-settings"
                     class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:text-white hover:bg-white/5 transition-all">
                     <i class="fa-solid fa-gear w-5 text-center"></i>
                     Bot Ayarları
@@ -226,7 +225,14 @@
         </header>
 
         <!-- Content Body -->
-        <div class="p-8">
+        <div class="p-8 relative">
+            <!-- Dynamic Background Glows -->
+            <div
+                class="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600/5 rounded-full blur-[120px] pointer-events-none">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none">
+            </div>
 
             <!-- PAGE: OVERVIEW -->
             <div id="page-overview" class="page-content space-y-8 animate-fade-in">
@@ -304,7 +310,8 @@
                     <div class="glass-panel p-6 rounded-2xl">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold text-white">📈 Sunucu Büyüme (Son 7 Gün)</h3>
-                            <span class="text-xs text-purple-400"><i class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
+                            <span class="text-xs text-purple-400"><i
+                                    class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
                         </div>
                         <div class="relative h-64">
                             <canvas id="serverGrowthChart"></canvas>
@@ -315,7 +322,8 @@
                     <div class="glass-panel p-6 rounded-2xl">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold text-white">🎯 Komut Kullanımı</h3>
-                            <span class="text-xs text-green-400"><i class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
+                            <span class="text-xs text-green-400"><i
+                                    class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
                         </div>
                         <div class="relative h-64">
                             <canvas id="commandUsageChart"></canvas>
@@ -326,7 +334,8 @@
                     <div class="glass-panel p-6 rounded-2xl">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold text-white">⭐ Level Dağılımı</h3>
-                            <span class="text-xs text-blue-400"><i class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
+                            <span class="text-xs text-blue-400"><i
+                                    class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
                         </div>
                         <div class="relative h-64">
                             <canvas id="levelDistributionChart"></canvas>
@@ -337,7 +346,8 @@
                     <div class="glass-panel p-6 rounded-2xl">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold text-white">👥 Aktif Kullanıcı Analizi</h3>
-                            <span class="text-xs text-yellow-400"><i class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
+                            <span class="text-xs text-yellow-400"><i
+                                    class="fa-solid fa-circle-check mr-1"></i>Canlı</span>
                         </div>
                         <div class="relative h-64">
                             <canvas id="activeUsersChart"></canvas>
@@ -398,6 +408,14 @@
                                         <i class="fa-solid fa-bullhorn"></i>
                                     </div>
                                     <h4 class="font-bold text-white text-sm">Duyuru Yap</h4>
+                                </button>
+                                <button data-action="shutdown"
+                                    class="quick-action-btn glass-panel p-4 rounded-xl hover:bg-white/5 transition-all text-left group border border-red-500/10">
+                                    <div
+                                        class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center text-red-500 mb-3 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-power-off"></i>
+                                    </div>
+                                    <h4 class="font-bold text-white text-sm">Botu Kapat</h4>
                                 </button>
                             </div>
                         </div>
@@ -475,10 +493,11 @@
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h2 class="text-xl font-bold text-white">Komut Yönetimi</h2>
-                            <p class="text-xs text-gray-500 mt-1">Sunucunuzda komutları yasaklayabilir veya serbest bırakabilirsiniz</p>
+                            <p class="text-xs text-gray-500 mt-1">Sunucunuzda komutları yasaklayabilir veya serbest
+                                bırakabilirsiniz</p>
                         </div>
                         <div class="flex items-center gap-3">
-                            <select id="command-server-select" 
+                            <select id="command-server-select"
                                 class="bg-[#0f0f13] border border-white/10 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
                                 <option value="">Sunucu Seçin...</option>
                             </select>
@@ -625,8 +644,178 @@
                     </div>
                 </div>
             </div>
-
         </div>
+
+        <!-- PAGE: BOT SETTINGS -->
+        <div id="page-bot-settings" class="page-content hidden animate-fade-in space-y-8">
+            <!-- System Status Summary -->
+            <div
+                class="glass-panel p-6 rounded-2xl border border-white/5 bg-gradient-to-r from-purple-500/5 to-transparent mb-8">
+                <div class="flex flex-wrap items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 bg-purple-500/20 rounded-2xl flex items-center justify-center text-purple-500 shadow-lg shadow-purple-500/10">
+                            <i class="fa-solid fa-microchip text-2xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-black text-white tracking-tight">GraveBOT Çekirdek Yönetimi
+                            </h2>
+                            <p class="text-xs text-gray-400 font-medium">Sistem durumu ve global kontroller</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-8">
+                        <div class="text-center">
+                            <p class="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">Durum
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                <span class="text-sm font-bold text-white">Aktif</span>
+                            </div>
+                        </div>
+                        <div class="w-px h-10 bg-white/5"></div>
+                        <div class="text-center">
+                            <p class="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">
+                                Uptime</p>
+                            <span class="text-sm font-bold text-purple-400" id="bot-settings-uptime">...</span>
+                        </div>
+                        <div class="w-px h-10 bg-white/5"></div>
+                        <div class="text-center">
+                            <p class="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">
+                                Gecikme</p>
+                            <span class="text-sm font-bold text-blue-400" id="bot-settings-ping">...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Power Controls -->
+                <div class="glass-panel p-8 rounded-2xl space-y-6">
+                    <div class="flex items-center gap-4 mb-2">
+                        <div class="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-red-500">
+                            <i class="fa-solid fa-power-off text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Güç Kontrolleri</h2>
+                            <p class="text-xs text-gray-500">Bot durumunu global olarak yönetin</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button onclick="handleBotAction('restart')"
+                            class="flex items-center gap-4 p-5 rounded-2xl bg-orange-500/5 border border-orange-500/10 hover:bg-orange-500/10 hover:border-orange-500/20 transition-all group">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-rotate text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h4 class="font-bold text-white text-sm">Yeniden Başlat</h4>
+                                <p class="text-[10px] text-gray-500">Sistemi tazeler</p>
+                            </div>
+                        </button>
+
+                        <button onclick="handleBotAction('shutdown')"
+                            class="flex items-center gap-4 p-5 rounded-2xl bg-red-500/5 border border-red-500/10 hover:bg-red-500/10 hover:border-red-500/20 transition-all group">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-power-off text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h4 class="font-bold text-white text-sm">Botu Kapat</h4>
+                                <p class="text-[10px] text-gray-500">Sistemi sonlandırır</p>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="bg-red-500/5 border border-red-500/10 rounded-xl p-4 flex gap-3 items-start">
+                        <i class="fa-solid fa-circle-exclamation text-red-500 mt-1"></i>
+                        <p class="text-[10px] text-gray-500 leading-relaxed">
+                            <span class="font-bold text-red-400">UYARI:</span> Botu kapattığınızda sunucudan
+                            manuel olarak tekrar başlatmanız gerekecektir.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Global Mode Switches -->
+                <div class="glass-panel p-8 rounded-2xl space-y-6">
+                    <div class="flex items-center gap-4 mb-2">
+                        <div
+                            class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-500">
+                            <i class="fa-solid fa-globe text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Global Modlar</h2>
+                            <p class="text-xs text-gray-500">Tüm sunucuları etkileyen ayarlar</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center text-yellow-500">
+                                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">Global Bakım Modu</h4>
+                                    <p class="text-[10px] text-gray-500">Bot aktif kalır ama uyarı verir</p>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="global-maintenance-toggle" class="sr-only peer"
+                                    onchange="handleBotAction('maintenance')">
+                                <div
+                                    class="w-14 h-7 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-yellow-600">
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="bg-yellow-500/5 border border-yellow-500/10 rounded-xl p-4 flex gap-3 items-start">
+                            <i class="fa-solid fa-info-circle text-yellow-500 mt-1"></i>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">
+                                Bakım modu aktifken bot sunuculardan çıkmaz, ancak komut kullanıldığında bir
+                                bilgilendirme mesajı gönderir.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- closes grid 625 -->
+
+            <!-- Bot Activity Logs -->
+            <div class="glass-panel rounded-2xl border border-white/5 overflow-hidden mt-8">
+                <div class="p-6 border-b border-white/5 flex justify-between items-center bg-white/2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <h3 class="text-xs font-bold text-white uppercase tracking-widest">Bot Yönetim Kayıtları
+                        </h3>
+                    </div>
+                    <span class="text-[10px] text-gray-500 font-medium">Son 10 İşlem</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-gray-400">
+                        <thead class="bg-white/2 text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+                            <tr>
+                                <th class="px-6 py-4">İşlem</th>
+                                <th class="px-6 py-4">Detay</th>
+                                <th class="px-6 py-4">Zaman</th>
+                                <th class="px-6 py-4 text-right">Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bot-action-logs" class="divide-y divide-white/5">
+                            <!-- Bot action logs will be loaded here -->
+                            <tr>
+                                <td colspan="4" class="px-6 py-12 text-center text-gray-600 italic">Henüz bir
+                                    işlem kaydı bulunmuyor.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- closes page-bot-settings 624 -->
+
+        </div> <!-- closes p-8 219 -->
     </main>
 
     <!-- Mobile Overlay -->
@@ -652,7 +841,7 @@
 
             <div class="flex flex-1 overflow-hidden">
                 <!-- Modal Sidebar -->
-                <div class="w-64 bg-[#0a0a0c] border-r border-white/5 p-4 space-y-1 hidden md:block">
+                <div class="w-64 bg-[#0a0a0c] border-r border-white/5 p-4 space-y-1 hidden md:block overflow-y-auto max-h-[calc(90vh-120px)]">
                     <button onclick="switchModalTab('general')"
                         class="modal-tab-btn active w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
                         data-tab="general">
@@ -681,7 +870,7 @@
                     <button onclick="switchModalTab('protections')"
                         class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
                         data-tab="protections">
-                        <i class="fa-solid fa-user-shield w-5 text-center"></i> Koruma Ayarları
+                        <i class="fa-solid fa-shield-alt w-5 text-center"></i> Koruma Filtreleri
                     </button>
                     <button onclick="switchModalTab('levels')"
                         class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
@@ -697,11 +886,6 @@
                         class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
                         data-tab="economy">
                         <i class="fa-solid fa-coins w-5 text-center"></i> Ekonomi Sistemi
-                    </button>
-                    <button onclick="switchModalTab('moderation')"
-                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
-                        data-tab="moderation">
-                        <i class="fa-solid fa-gavel w-5 text-center"></i> Moderasyon Kayıtları
                     </button>
                     <button onclick="switchModalTab('shop')"
                         class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
@@ -763,10 +947,13 @@
                                     <p class="text-[10px] text-gray-500">"sa" yazıldığında otomatik cevap verir.</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="setting-saas" class="sr-only peer">
+                                    <input type="checkbox" id="setting-saas" class="sr-only peer"
+                                        onchange="updateToggleLabel(this)">
                                     <div
                                         class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
                                     </div>
+                                    <span
+                                        class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
                                 </label>
                             </div>
                         </div>
@@ -787,11 +974,28 @@
                             <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Hoş Geldin Mesajı
                                 (Giriş)</h4>
                             <div class="space-y-4">
+                                <!-- Welcome Toggle -->
+                                <div
+                                    class="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg p-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-white">Hoş Geldin Sistemi</span>
+                                        <span class="text-xs text-gray-500">Giriş mesajlarını aktif et</span>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="setting-welcome-status" class="sr-only peer"
+                                            onchange="updateToggleLabel(this)">
+                                        <div
+                                            class="w-14 h-7 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600">
+                                        </div>
+                                        <span
+                                            class="ml-3 text-sm font-medium text-gray-400 peer-checked:text-white">Kapalı</span>
+                                    </label>
+                                </div>
                                 <div class="space-y-2">
                                     <label class="text-sm font-medium text-gray-400">Kanal</label>
                                     <select id="setting-welcome-channel"
                                         class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
-                                        <option value="">Devre Dışı</option>
+                                        <option value="">Seçiniz</option>
                                     </select>
                                 </div>
                                 <div class="space-y-2">
@@ -807,11 +1011,29 @@
                             <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Görüşürüz Mesajı
                                 (Çıkış)</h4>
                             <div class="space-y-4">
+                                <!-- Leave Toggle -->
+                                <div
+                                    class="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg p-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-white">Giriş-Çıkış Sistemi</span>
+                                        <span class="text-xs text-gray-500">Sunucudan ayrılanlar için mesaj
+                                            gönder</span>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="setting-leave-status" class="sr-only peer"
+                                            onchange="updateToggleLabel(this)">
+                                        <div
+                                            class="w-14 h-7 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600">
+                                        </div>
+                                        <span
+                                            class="ml-3 text-sm font-medium text-gray-400 peer-checked:text-white">Kapalı</span>
+                                    </label>
+                                </div>
                                 <div class="space-y-2">
                                     <label class="text-sm font-medium text-gray-400">Kanal</label>
                                     <select id="setting-leave-channel"
                                         class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
-                                        <option value="">Devre Dışı</option>
+                                        <option value="">Seçiniz</option>
                                     </select>
                                 </div>
                                 <div class="space-y-2">
@@ -885,6 +1107,24 @@
                     <div id="tab-autorole" class="modal-tab-content hidden space-y-6">
                         <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Oto-Rol Sistemi</h4>
 
+                        <!-- Aç/Kapa Toggle -->
+                        <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg p-4">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-white">Oto-Rol Sistemi</span>
+                                <span class="text-xs text-gray-500">Yeni gelen üyelere otomatik rol verilmesini aktif
+                                    et</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="setting-autorole-status" class="sr-only peer"
+                                    onchange="updateToggleLabel(this)">
+                                <div
+                                    class="w-14 h-7 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600">
+                                </div>
+                                <span
+                                    class="ml-3 text-sm font-medium text-gray-400 peer-checked:text-white">Kapalı</span>
+                            </label>
+                        </div>
+
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-400">Verilecek Rol</label>
                             <select id="setting-autorole"
@@ -931,7 +1171,19 @@
 
                     <!-- TAB: PROTECTIONS -->
                     <div id="tab-protections" class="modal-tab-content hidden space-y-6">
-                        <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Koruma Ayarları</h4>
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-bold text-white border-b border-white/5 pb-2 flex-1">🛡️ Koruma Filtreleri</h4>
+                            <div class="flex gap-2">
+                                <button onclick="toggleAllProtections(true)"
+                                    class="text-[10px] bg-green-500/10 text-green-400 hover:bg-green-500/20 px-3 py-1.5 rounded-lg border border-green-500/20 transition-all font-bold">
+                                    <i class="fa-solid fa-check-double mr-1"></i> Tümünü Aktif Et
+                                </button>
+                                <button onclick="toggleAllProtections(false)"
+                                    class="text-[10px] bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-lg border border-red-500/20 transition-all font-bold">
+                                    <i class="fa-solid fa-times-circle mr-1"></i> Tümünü Kapat
+                                </button>
+                            </div>
+                        </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
@@ -940,10 +1192,13 @@
                                     <p class="text-xs text-gray-500">Küfürlü mesajları otomatik siler.</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="setting-anti-swear" class="sr-only peer">
+                                    <input type="checkbox" id="setting-anti-swear" class="sr-only peer"
+                                        onchange="updateToggleLabel(this)">
                                     <div
                                         class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
                                     </div>
+                                    <span
+                                        class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
                                 </label>
                             </div>
 
@@ -953,10 +1208,13 @@
                                     <p class="text-xs text-gray-500">Davet linklerini ve reklamları siler.</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="setting-anti-link" class="sr-only peer">
+                                    <input type="checkbox" id="setting-anti-link" class="sr-only peer"
+                                        onchange="updateToggleLabel(this)">
                                     <div
                                         class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
                                     </div>
+                                    <span
+                                        class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
                                 </label>
                             </div>
 
@@ -966,71 +1224,101 @@
                                     <p class="text-xs text-gray-500">Hızlı mesaj gönderimini engeller.</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="setting-anti-spam" class="sr-only peer">
+                                    <input type="checkbox" id="setting-anti-spam" class="sr-only peer"
+                                        onchange="updateToggleLabel(this)">
                                     <div
                                         class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
                                     </div>
+                                    <span
+                                        class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
                                 </label>
                             </div>
 
                             <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
                                 <div>
-                                    <h5 class="text-sm font-bold text-white">Caps Engel</h5>
-                                    <p class="text-xs text-gray-500">Büyük harf kullanımını kısıtlar.</p>
+                                    <h5 class="text-sm font-bold text-white">Emoji Engel</h5>
+                                    <p class="text-xs text-gray-500">Aşırı emoji kullanımını engeller.</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="setting-anti-caps" class="sr-only peer">
+                                    <input type="checkbox" id="setting-anti-emoji" class="sr-only peer"
+                                        onchange="updateToggleLabel(this)">
                                     <div
                                         class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
                                     </div>
+                                    <span
+                                        class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
+                                </label>
+                            </div>
+
+                            <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
+                                <div>
+                                    <h5 class="text-sm font-bold text-white">URL Engel</h5>
+                                    <p class="text-xs text-gray-500">Mesajdaki linkleri otomatik temizler.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="setting-anti-url" class="sr-only peer"
+                                        onchange="updateToggleLabel(this)">
+                                    <div
+                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
+                                    </div>
+                                    <span
+                                        class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
                                 </label>
                             </div>
 
                             <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
                                 <div>
                                     <h5 class="text-sm font-bold text-white">Bot Engel</h5>
-                                    <p class="text-xs text-gray-500">İzinsiz bot girişlerini engeller.</p>
+                                    <p class="text-xs text-gray-500">Sunucuya bot sokulmasını engeller.</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="setting-anti-bot" class="sr-only peer">
+                                    <input type="checkbox" id="setting-anti-bot" class="sr-only peer"
+                                        onchange="updateToggleLabel(this)">
                                     <div
                                         class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
                                     </div>
+                                    <span
+                                        class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
                                 </label>
                             </div>
 
                             <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
                                 <div>
-                                    <h5 class="text-sm font-bold text-white">URL Koruma</h5>
-                                    <p class="text-xs text-gray-500">Tüm linkleri otomatik engeller.</p>
+                                    <h5 class="text-sm font-bold text-white">Büyük Harf Engel</h5>
+                                    <p class="text-xs text-gray-500">Sürekli caps kullanımını engeller.</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="setting-anti-url" class="sr-only peer">
+                                    <input type="checkbox" id="setting-anti-caps" class="sr-only peer"
+                                        onchange="updateToggleLabel(this)">
                                     <div
                                         class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
                                     </div>
+                                    <span
+                                        class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
                                 </label>
                             </div>
 
-                            <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
-                                <div>
-                                    <h5 class="text-sm font-bold text-white">Emoji Koruma</h5>
-                                    <p class="text-xs text-gray-500">Aşırı emoji kullanımını engeller.</p>
+                            <div
+                                class="glass-panel p-4 rounded-xl flex items-center justify-between col-span-1 md:col-span-2 border-l-4 border-l-orange-500 bg-orange-500/5">
+                                <div class="flex-1">
+                                    <h5 class="text-sm font-bold text-white">⚡ Flood Engel</h5>
+                                    <p class="text-xs text-gray-500">Hızlı mesaj gönderimini otomatik cezalandırır.</p>
                                 </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="setting-anti-emoji" class="sr-only peer">
-                                    <div
-                                        class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
-                                    </div>
-                                </label>
+                                <button onclick="openFloodModal()"
+                                    class="text-[10px] bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 px-4 py-2 rounded-lg border border-orange-500/20 transition-all font-bold whitespace-nowrap">
+                                    <i class="fa-solid fa-sliders mr-1"></i> Ayarla
+                                </button>
                             </div>
 
-                            <div class="glass-panel p-4 rounded-xl space-y-2">
-                                <h5 class="text-sm font-bold text-white">Yaş Sınırı (Gün)</h5>
-                                <input type="number" id="setting-age-limit"
-                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-purple-500"
-                                    placeholder="0 (Kapalı)">
-                                <p class="text-[10px] text-gray-500">Hesap bu günden yeniyse atılır.</p>
+                            <div
+                                class="glass-panel p-4 rounded-xl flex items-center justify-between col-span-1 md:col-span-2">
+                                <div class="flex-1">
+                                    <h5 class="text-sm font-bold text-white">Hesap Yaş Sınırı (Gün)</h5>
+                                    <p class="text-xs text-gray-500">Yeni hesapların girmesini engeller. (0 = Kapalı)
+                                    </p>
+                                </div>
+                                <input type="number" id="setting-age-limit" min="0" placeholder="0"
+                                    class="w-24 bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-1.5 text-white text-center focus:outline-none focus:border-purple-500 transition-colors">
                             </div>
                         </div>
 
@@ -1048,16 +1336,15 @@
                                     class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors">
                                     <option value="">Devre Dışı</option>
                                 </select>
-                                <p class="text-[10px] text-gray-500">Küfür, Reklam ve URL engellemeleri bu kanala
-                                    loglanır.</p>
+                                <p class="text-[10px] text-gray-500">Koruma engellemeleri bu kanala loglanır.</p>
                             </div>
                         </div>
 
                         <div class="space-y-2 mt-4">
-                            <label class="text-sm font-medium text-gray-400">Yasaklı Taglar (Virgül ile ayır)</label>
-                            <input type="text" id="setting-banned-tags"
+                            <label class="text-sm font-medium text-gray-400">Yasaklı Kelimeler (Virgülle ayırın)</label>
+                            <textarea id="setting-banned-tags" rows="2"
                                 class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
-                                placeholder="TAG1, TAG2, ...">
+                                placeholder="kelime1, kelime2, kelime3"></textarea>
                         </div>
                     </div>
 
@@ -1128,10 +1415,13 @@
                                         <p class="text-[10px] text-gray-500">Seviye sistemini aç/kapat.</p>
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="setting-level-status" class="sr-only peer">
+                                        <input type="checkbox" id="setting-level-status" class="sr-only peer"
+                                            onchange="updateToggleLabel(this)">
                                         <div
                                             class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
                                         </div>
+                                        <span
+                                            class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
                                     </label>
                                 </div>
                                 <div class="space-y-1">
@@ -1151,65 +1441,78 @@
                             <!-- User Rank Card Settings -->
                             <div class="glass-panel p-4 rounded-xl space-y-3">
                                 <h5 class="text-sm font-bold text-pink-400">Kişisel Ayarların</h5>
-                                
+
                                 <div class="space-y-3">
-                                    <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Progress Bar Rengi</label>
-                                    
+                                    <label class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Progress
+                                        Bar Rengi</label>
+
                                     <!-- Renk Seçici Grid -->
                                     <div class="grid grid-cols-6 gap-2">
                                         <!-- Pink-Purple-Indigo (Default) -->
-                                        <button onclick="setBarColor('pink-purple')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                        <button onclick="setBarColor('pink-purple')"
+                                            class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
                                             style="background: linear-gradient(135deg, #ec4899, #8b5cf6, #6366f1);"
                                             data-color="pink-purple">
-                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                            <i
+                                                class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
                                         </button>
-                                        
+
                                         <!-- Blue-Cyan -->
-                                        <button onclick="setBarColor('blue-cyan')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                        <button onclick="setBarColor('blue-cyan')"
+                                            class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
                                             style="background: linear-gradient(135deg, #3b82f6, #06b6d4, #14b8a6);"
                                             data-color="blue-cyan">
-                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                            <i
+                                                class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
                                         </button>
-                                        
+
                                         <!-- Green-Emerald -->
-                                        <button onclick="setBarColor('green-emerald')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                        <button onclick="setBarColor('green-emerald')"
+                                            class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
                                             style="background: linear-gradient(135deg, #22c55e, #10b981, #059669);"
                                             data-color="green-emerald">
-                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                            <i
+                                                class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
                                         </button>
-                                        
+
                                         <!-- Orange-Red -->
-                                        <button onclick="setBarColor('orange-red')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                        <button onclick="setBarColor('orange-red')"
+                                            class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
                                             style="background: linear-gradient(135deg, #f97316, #ef4444, #dc2626);"
                                             data-color="orange-red">
-                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                            <i
+                                                class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
                                         </button>
-                                        
+
                                         <!-- Yellow-Orange -->
-                                        <button onclick="setBarColor('yellow-orange')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                        <button onclick="setBarColor('yellow-orange')"
+                                            class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
                                             style="background: linear-gradient(135deg, #eab308, #f59e0b, #d97706);"
                                             data-color="yellow-orange">
-                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                            <i
+                                                class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
                                         </button>
-                                        
+
                                         <!-- Violet-Fuchsia -->
-                                        <button onclick="setBarColor('violet-fuchsia')" class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
+                                        <button onclick="setBarColor('violet-fuchsia')"
+                                            class="bar-color-btn relative h-12 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all transform hover:scale-105"
                                             style="background: linear-gradient(135deg, #a855f7, #d946ef, #ec4899);"
                                             data-color="violet-fuchsia">
-                                            <i class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
+                                            <i
+                                                class="fa-solid fa-check absolute top-1 right-1 text-white text-xs drop-shadow-lg hidden"></i>
                                         </button>
                                     </div>
-                                    
+
                                     <!-- Özel Renk Seçici -->
                                     <div class="flex items-center gap-2 mt-2">
-                                        <input type="color" id="custom-bar-color" 
+                                        <input type="color" id="custom-bar-color"
                                             class="w-10 h-10 rounded-lg cursor-pointer border-2 border-white/20 bg-transparent"
-                                            value="#8b5cf6"
-                                            onchange="setCustomBarColor(this.value)">
+                                            value="#8b5cf6" onchange="setCustomBarColor(this.value)">
                                         <span class="text-xs text-gray-400">Özel renk seç</span>
                                     </div>
-                                    
-                                    <p class="text-[10px] text-gray-500">Seçtiğiniz renk Discord'da g!rank komutunda gösterilecek</p>
+
+                                    <p class="text-[10px] text-gray-500">Seçtiğiniz renk Discord'da g!rank komutunda
+                                        gösterilecek</p>
                                 </div>
                             </div>
                         </div>
@@ -1226,10 +1529,13 @@
                                     <p class="text-xs text-gray-500">Ekonomi komutlarını aç/kapat.</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="setting-economy-status" class="sr-only peer">
+                                    <input type="checkbox" id="setting-economy-status" class="sr-only peer"
+                                        onchange="updateToggleLabel(this)">
                                     <div
                                         class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600">
                                     </div>
+                                    <span
+                                        class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
                                 </label>
                             </div>
 
@@ -1368,13 +1674,13 @@
                                 <div class="space-y-1">
                                     <label class="text-[10px] text-gray-500 uppercase">Kanal</label>
                                     <select id="ga-channel"
-                                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs"></select>
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-xs appearance-none focus:outline-none focus:border-purple-500"></select>
                                 </div>
                                 <div class="space-y-1">
-                                    <label class="text-[10px] text-gray-500 uppercase">Süre (Dakika)</label>
-                                    <input type="number" id="ga-duration"
-                                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs"
-                                        placeholder="60">
+                                    <label class="text-[10px] text-gray-500 uppercase">Süre</label>
+                                    <input type="text" id="ga-duration"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-purple-500"
+                                        placeholder="Örn: 5 dakika, 1 saat, 30 dk">
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-[10px] text-gray-500 uppercase">Kazanan Sayısı</label>
@@ -1401,10 +1707,13 @@
                             <div class="flex items-center justify-between">
                                 <h5 class="text-sm font-bold text-purple-400">Sistem Durumu</h5>
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="setting-invite-status" class="sr-only peer">
+                                    <input type="checkbox" id="setting-invite-status" class="sr-only peer"
+                                        onchange="updateToggleLabel(this)">
                                     <div
                                         class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600">
                                     </div>
+                                    <span
+                                        class="ml-2 text-[10px] text-gray-500 peer-checked:text-purple-400 font-bold uppercase tracking-wider">Kapalı</span>
                                 </label>
                             </div>
                             <div class="space-y-2">
@@ -1435,6 +1744,125 @@
                         </div>
                     </div>
 
+
+
+                </div>
+            </div>
+
+            <!-- Flood Ayarları Modal Dialog -->
+            <div id="flood-config-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+                <div class="bg-[#0f0f13] rounded-2xl border border-white/10 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                    <!-- Dialog Header -->
+                    <div class="sticky top-0 bg-[#151518] border-b border-white/5 p-6 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-orange-500"></i> Flood Engel Ayarları
+                            </h3>
+                            <p class="text-xs text-gray-400 mt-1">Hızlı mesaj gönderimi otomatik cezalandırma</p>
+                        </div>
+                        <button onclick="closeFloodModal()" class="text-gray-400 hover:text-white text-xl">✕</button>
+                    </div>
+
+                    <!-- Dialog Content -->
+                    <div class="p-6 space-y-6">
+                        <!-- Sistem Durumu -->
+                        <div class="flex items-center justify-between bg-white/5 border border-white/10 p-4 rounded-lg">
+                            <div>
+                                <h5 class="text-sm font-bold text-white">Sistemi Aktif Et</h5>
+                                <p class="text-xs text-gray-500 mt-1">Flood korumasını açıp kapatın</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="flood-modal-enabled" class="sr-only peer" onchange="updateToggleLabel(this)">
+                                <div class="w-14 h-7 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
+                                <span class="ml-3 text-sm font-medium text-gray-400 peer-checked:text-white">Kapalı</span>
+                            </label>
+                        </div>
+
+                        <!-- Mesaj Limitleri -->
+                        <div class="space-y-3">
+                            <h5 class="text-sm font-bold text-white">📤 Mesaj Limitleri</h5>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-gray-400">Maksimum Mesaj</label>
+                                    <input type="number" id="flood-modal-msg-limit" min="1" max="50" value="5"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
+                                    <p class="text-[10px] text-gray-500">Zaman diliminde gönderilen maksimum mesaj</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-gray-400">Zaman Dilimi (ms)</label>
+                                    <input type="number" id="flood-modal-msg-time" min="500" step="500" value="3000"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
+                                    <p class="text-[10px] text-gray-500">Kontrol edilecek zaman aralığı</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Komut Limitleri -->
+                        <div class="space-y-3">
+                            <h5 class="text-sm font-bold text-white">🔧 Komut Limitleri</h5>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-gray-400">Maksimum Komut</label>
+                                    <input type="number" id="flood-modal-cmd-limit" min="1" max="50" value="3"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
+                                    <p class="text-[10px] text-gray-500">Zaman diliminde çalıştırılabilir maksimum komut</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-gray-400">Zaman Dilimi (ms)</label>
+                                    <input type="number" id="flood-modal-cmd-time" min="500" step="500" value="5000"
+                                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
+                                    <p class="text-[10px] text-gray-500">Kontrol edilecek zaman aralığı</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ceza Sistemi -->
+                        <div class="space-y-3">
+                            <h5 class="text-sm font-bold text-white">⚠️ Ceza Sistemi</h5>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-400">Ceza Türü</label>
+                                <select id="flood-modal-punishment" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
+                                    <option value="warn">⚠️ Uyarı</option>
+                                    <option value="mute">🔇 Mute (Susturma)</option>
+                                    <option value="kick">🚪 Kick (Atma)</option>
+                                    <option value="ban">🔨 Ban (Yasaklama)</option>
+                                </select>
+                                <p class="text-[10px] text-gray-500">İhlal başladığında uygulanacak ceza türü</p>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-400">Mute Süresi (dakika)</label>
+                                <input type="number" id="flood-modal-mute-duration" min="1" value="5"
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
+                                <p class="text-[10px] text-gray-500">Mute cezası ne kadar sürecek</p>
+                            </div>
+                        </div>
+
+                        <!-- Log Kanalı -->
+                        <div class="space-y-3">
+                            <h5 class="text-sm font-bold text-white">📋 Log Kanalı</h5>
+                            <select id="flood-modal-log-channel" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
+                                <option value="">Devre Dışı</option>
+                            </select>
+                            <p class="text-[10px] text-gray-500">Flood ihlalleri bu kanala gönderilecek</p>
+                        </div>
+
+                        <!-- Bilgi Notu -->
+                        <div class="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3 flex gap-2 items-start">
+                            <i class="fa-solid fa-circle-info text-orange-500 mt-0.5 flex-shrink-0"></i>
+                            <div>
+                                <p class="text-[10px] text-orange-400 font-bold">Nasıl Çalışır?</p>
+                                <p class="text-[10px] text-gray-400 mt-1">Kullanıcı belirtilen zaman diliminde mesaj/komut limitini aştığında, otomatik olarak seçilmiş ceza uygulanır. İhlallar arttıkça ceza seviyesi yükselebilir.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dialog Footer -->
+                    <div class="sticky bottom-0 bg-[#151518] border-t border-white/5 p-6 flex justify-end gap-3">
+                        <button onclick="closeFloodModal()" class="px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-white/5 transition-all">İptal</button>
+                        <button onclick="saveFloodModal()" class="px-6 py-2 rounded-lg text-sm font-bold bg-orange-600 hover:bg-orange-500 text-white shadow-lg shadow-orange-500/20 transition-all transform hover:scale-105">
+                            <i class="fa-solid fa-save mr-2"></i> Kaydet
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -1458,38 +1886,53 @@
         async function checkAuth() {
             try {
                 const response = await fetch('/api/user');
-                if (response.status === 401) {
-                    // Not logged in, show login overlay
+                console.log('[AUTH] Status:', response.status);
+
+                if (!response.ok) {
+                    console.log('[AUTH] Not authenticated, showing login overlay');
                     document.getElementById('login-overlay').classList.remove('hidden');
                     return false;
                 }
+
                 const user = await response.json();
+                console.log('[AUTH] User:', user.username, 'isAdmin:', user.isAdmin);
 
                 // Show user info
-                document.getElementById('user-profile').classList.remove('hidden');
-                document.getElementById('user-name').innerText = user.username;
-                document.getElementById('user-avatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+                const profileEl = document.getElementById('user-profile');
+                const nameEl = document.getElementById('user-name');
+                const avatarEl = document.getElementById('user-avatar');
 
-                // Admin değilse panelleri gizle
+                if (profileEl) profileEl.classList.remove('hidden');
+                if (nameEl) nameEl.innerText = user.username;
+                if (avatarEl) {
+                    const avatarUrl = user.avatar
+                        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+                        : `https://cdn.discordapp.com/embed/avatars/${parseInt(user.discriminator || '0') % 5}.png`;
+                    avatarEl.src = avatarUrl;
+                }
+
+                // Admin panellerini yönet
+                const activityPanel = document.getElementById('admin-activities');
+                const quickActionsPanel = document.getElementById('admin-quick-actions');
+                const systemHealthPanel = document.getElementById('admin-system-health');
+                const adminMenu = document.getElementById('admin-menu');
+
                 if (!user.isAdmin) {
-                    const activityPanel = document.getElementById('admin-activities');
-                    const quickActionsPanel = document.getElementById('admin-quick-actions');
-                    const systemHealthPanel = document.getElementById('admin-system-health');
-                    const adminMenu = document.getElementById('admin-menu');
-
                     if (activityPanel) activityPanel.style.display = 'none';
                     if (quickActionsPanel) quickActionsPanel.style.display = 'none';
                     if (systemHealthPanel) systemHealthPanel.style.display = 'none';
                     if (adminMenu) adminMenu.style.display = 'none';
                 } else {
-                    // Admins see everything
-                    const adminMenu = document.getElementById('admin-menu');
+                    if (activityPanel) activityPanel.style.display = '';
+                    if (quickActionsPanel) quickActionsPanel.style.display = '';
+                    if (systemHealthPanel) systemHealthPanel.style.display = '';
                     if (adminMenu) adminMenu.style.display = 'block';
                 }
 
                 return true;
             } catch (e) {
-                console.error("Auth check failed", e);
+                console.error("[AUTH] Check failed:", e);
+                document.getElementById('login-overlay').classList.remove('hidden');
                 return false;
             }
         }
@@ -1530,7 +1973,11 @@
                 ];
 
                 // SA-AS
-                document.getElementById('setting-saas').checked = data.settings.saas || false;
+                const saasToggle = document.getElementById('setting-saas');
+                if (saasToggle) {
+                    saasToggle.checked = data.settings.saas || false;
+                    updateToggleLabel(saasToggle);
+                }
 
                 channelSelects.forEach(select => {
                     if (!select) return;
@@ -1615,27 +2062,62 @@
                 // Set Values
                 document.getElementById('setting-prefix').value = data.settings.prefix || '!';
                 document.getElementById('setting-language').value = data.settings.language || 'tr';
+
+                // Welcome
+                const welcomeToggle = document.getElementById('setting-welcome-status');
+                if (welcomeToggle) {
+                    welcomeToggle.checked = !!data.settings.welcomeStatus;
+                    updateToggleLabel(welcomeToggle);
+                }
                 document.getElementById('setting-welcome-channel').value = data.settings.welcomeChannel || '';
                 document.getElementById('setting-welcome-message').value = data.settings.welcomeMessage || '';
+
+                // Leave
+                const leaveToggle = document.getElementById('setting-leave-status');
+                if (leaveToggle) {
+                    leaveToggle.checked = !!data.settings.leaveStatus;
+                    updateToggleLabel(leaveToggle);
+                }
                 document.getElementById('setting-leave-channel').value = data.settings.leaveChannel || '';
                 document.getElementById('setting-leave-message').value = data.settings.leaveMessage || '';
+
                 document.getElementById('setting-ticket-category').value = data.settings.ticketCategory || '';
                 document.getElementById('setting-ticket-log').value = data.settings.ticketLogChannel || '';
                 document.getElementById('setting-ticket-message').value = data.settings.ticketMessage || '';
                 document.getElementById('setting-autorole').value = data.settings.autorole || '';
+
+                // Oto-Rol Toggle Durumu
+                const arStatus = !!data.settings.autoroleStatus;
+                const arToggle = document.getElementById('setting-autorole-status');
+                if (arToggle) {
+                    arToggle.checked = arStatus;
+                    updateToggleLabel(arToggle);
+                }
                 document.getElementById('setting-mod-log').value = data.settings.logs?.moderation || '';
 
                 // Davet Sistemi
-                document.getElementById('setting-invite-status').checked = data.settings.inviteSystem?.status || false;
+                const inviteToggle = document.getElementById('setting-invite-status');
+                if (inviteToggle) {
+                    inviteToggle.checked = data.settings.inviteSystem?.status || false;
+                    updateToggleLabel(inviteToggle);
+                }
                 document.getElementById('setting-invite-channel').value = data.settings.inviteSystem?.channel || '';
 
                 // Level System
-                document.getElementById('setting-level-status').checked = data.settings.levelSystem?.status || false;
+                const levelToggle = document.getElementById('setting-level-status');
+                if (levelToggle) {
+                    levelToggle.checked = data.settings.levelSystem?.status || false;
+                    updateToggleLabel(levelToggle);
+                }
                 document.getElementById('setting-level-channel').value = data.settings.levelSystem?.channel || '';
                 document.getElementById('setting-xp-rate').value = data.settings.levelSystem?.xpRate || 1;
 
                 // Economy System
-                document.getElementById('setting-economy-status').checked = data.settings.economy?.status || false;
+                const economyToggle = document.getElementById('setting-economy-status');
+                if (economyToggle) {
+                    economyToggle.checked = data.settings.economy?.status || false;
+                    updateToggleLabel(economyToggle);
+                }
                 document.getElementById('setting-daily-min').value = data.settings.economy?.dailyMin || 500;
                 document.getElementById('setting-daily-max').value = data.settings.economy?.dailyMax || 1000;
                 document.getElementById('setting-currency-symbol').value = data.settings.economy?.currency || '💸';
@@ -1660,15 +2142,19 @@
                 }
 
                 // Protections
-                document.getElementById('setting-anti-swear').checked = data.settings.protections?.antiSwear || false;
-                document.getElementById('setting-anti-link').checked = data.settings.protections?.antiLink || false;
-                document.getElementById('setting-anti-url').checked = data.settings.protections?.antiUrl || false;
-                document.getElementById('setting-anti-emoji').checked = data.settings.protections?.antiEmoji || false;
-                document.getElementById('setting-anti-spam').checked = data.settings.protections?.antiSpam || false;
-                document.getElementById('setting-anti-caps').checked = data.settings.protections?.antiCaps || false;
-                document.getElementById('setting-anti-bot').checked = data.settings.protections?.antiBot || false;
+                const protectionIds = ['setting-anti-swear', 'setting-anti-link', 'setting-anti-url', 'setting-anti-emoji', 'setting-anti-spam', 'setting-anti-caps', 'setting-anti-bot'];
+                protectionIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.checked = data.settings.protections?.[id.replace('setting-', '').replace(/-([a-z])/g, (g) => g[1].toUpperCase())] || false;
+                        updateToggleLabel(el);
+                    }
+                });
                 document.getElementById('setting-age-limit').value = data.settings.protections?.ageLimit || 0;
                 document.getElementById('setting-banned-tags').value = (data.settings.protections?.bannedTags || []).join(', ');
+
+                // Sync all toggle labels
+                modal.querySelectorAll('input[type="checkbox"]').forEach(cb => updateToggleLabel(cb));
 
                 // Reset to first tab
                 switchModalTab('general');
@@ -1677,6 +2163,96 @@
                 console.error(error);
                 showToast("Sunucu bilgileri yüklenemedi: " + error.message, 'error');
                 closeManageModal();
+            }
+        }
+
+        // --- FLOOD SİSTEMİ FONKSİYONLARI ---
+        async function fetchFloodStats() {
+            const list = document.getElementById('flood-list');
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/flood/stats`);
+                const data = await response.json();
+
+                if (!data.topFlooders || data.topFlooders.length === 0) {
+                    list.innerHTML = '<div class="text-center py-4 text-gray-500 text-xs">Henüz flood kaydı yok.</div>';
+                    return;
+                }
+
+                list.innerHTML = data.topFlooders.map((flooder, idx) => `
+                    <div class="bg-white/5 p-3 rounded-lg flex justify-between items-center">
+                        <div class="flex-1">
+                            <p class="font-bold text-white text-sm">#${idx + 1} - <@${flooder.userId}></p>
+                            <p class="text-xs text-gray-500">İhlal: ${flooder.violations} | Mesaj: ${flooder.messageCount}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold px-2 py-1 rounded ${flooder.punishmentType === 'ban' ? 'bg-red-500/20 text-red-400' : flooder.punishmentType === 'kick' ? 'bg-orange-500/20 text-orange-400' : flooder.punishmentType === 'mute' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-500/20 text-gray-400'}">
+                                ${flooder.punishmentType.toUpperCase()}
+                            </span>
+                            <button onclick="resetFloodUser('${flooder.userId}')" class="text-red-400 hover:text-red-300 ml-2 text-xs transition-colors">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                list.innerHTML = '<div class="text-center py-4 text-red-400 text-xs">Veriler alınamadı.</div>';
+            }
+        }
+
+        async function loadFloodConfig() {
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/flood/config`);
+                const config = await response.json();
+
+                document.getElementById('flood-enabled').checked = config.enabled;
+                document.getElementById('flood-msg-limit').value = config.messageLimit;
+                document.getElementById('flood-msg-time').value = config.messageTimeframe;
+            } catch (error) {
+                console.error('Flood config yüklenemedi:', error);
+            }
+        }
+
+        async function updateFloodConfig() {
+            // Sadece gösterim güncellemesi (gerçek update saveFloodConfig'de)
+        }
+
+        async function saveFloodConfig() {
+            const config = {
+                enabled: document.getElementById('flood-enabled').checked,
+                messageLimit: parseInt(document.getElementById('flood-msg-limit').value),
+                messageTimeframe: parseInt(document.getElementById('flood-msg-time').value)
+            };
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/flood/config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Flood ayarları kaydedildi!', 'success');
+                    fetchFloodStats();
+                }
+            } catch (error) {
+                showToast('Ayarlar kaydedilirken hata oluştu.', 'error');
+            }
+        }
+
+        async function resetFloodUser(userId) {
+            if (!confirm('Bu kullanıcının flood kaydını sıfırlamak istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/flood/${userId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Flood kaydı sıfırlandı!', 'success');
+                    fetchFloodStats();
+                }
+            } catch (error) {
+                showToast('Flood kaydı sıfırlanırken hata oluştu.', 'error');
             }
         }
 
@@ -1717,8 +2293,14 @@
                 giveawayRefreshInterval = null;
             }
             if (tabId === 'giveaways') {
+                channelsLoaded = false;
                 fetchGiveaways();
                 giveawayRefreshInterval = setInterval(fetchGiveaways, 10000); // 10 saniyede bir yenile
+            }
+
+            if (tabId === 'flood') {
+                loadFloodConfig();
+                fetchFloodStats();
             }
 
             // Update sidebar buttons
@@ -2041,19 +2623,28 @@
         }
 
         let giveawayRefreshInterval = null;
+        let channelsLoaded = false;
 
         async function fetchGiveaways() {
             const list = document.getElementById('giveaways-list');
             const channelSelect = document.getElementById('ga-channel');
+            
+            // Kanalları sadece ilk sefer yükle
+            if (!channelsLoaded) {
+                try {
+                    const guildResponse = await fetch(`/api/server/${currentGuildId}`);
+                    const guildData = await guildResponse.json();
+                    const channels = guildData.textChannels || guildData.channels || [];
+                    channelSelect.innerHTML = channels.map(c => `<option value="${c.id}">#${c.name}</option>`).join('');
+                    channelsLoaded = true;
+                } catch (error) {
+                    console.error('Kanallar yüklenirken hata:', error);
+                }
+            }
+            
             list.innerHTML = '<div class="text-center py-8 text-gray-500">Yükleniyor...</div>';
 
             try {
-                // Kanalları doldur
-                const guildResponse = await fetch(`/api/server/${currentGuildId}`);
-                const guildData = await guildResponse.json();
-                const channels = guildData.textChannels || guildData.channels || [];
-                channelSelect.innerHTML = channels.map(c => `<option value="${c.id}">#${c.name}</option>`).join('');
-
                 const response = await fetch(`/api/server/${currentGuildId}/giveaways`);
                 const giveaways = await response.json();
 
@@ -2099,16 +2690,20 @@
         async function startGiveaway() {
             const prize = document.getElementById('ga-prize').value;
             const channelId = document.getElementById('ga-channel').value;
-            const duration = document.getElementById('ga-duration').value;
+            const durationInput = document.getElementById('ga-duration').value;
             const winnerCount = document.getElementById('ga-winners').value;
 
-            if (!prize || !duration) return showToast('Ödül ve süre zorunludur!', 'error');
+            if (!prize || !durationInput) return showToast('Ödül ve süre zorunludur!', 'error');
+
+            // Süreyi parse et
+            const duration = parseDuration(durationInput);
+            if (!duration || duration <= 0) return showToast('Geçerli bir süre girin! (Örn: 5 dakika, 1 saat)', 'error');
 
             try {
                 const response = await fetch(`/api/server/${currentGuildId}/giveaway`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prize, channelId, duration: parseInt(duration), winnerCount: parseInt(winnerCount) })
+                    body: JSON.stringify({ prize, channelId, duration: duration, winnerCount: parseInt(winnerCount) })
                 });
                 const result = await response.json();
                 if (result.success) {
@@ -2122,23 +2717,48 @@
             }
         }
 
+        // Süre parse fonksiyonu
+        function parseDuration(input) {
+            const lowerInput = input.toLowerCase().trim();
+            
+            // Saat kontrolü
+            const hourMatch = lowerInput.match(/^(\d+)\s*(saat|sa|hour|hr|h)$/);
+            if (hourMatch) {
+                return parseInt(hourMatch[1]) * 60; // Saati dakikaya çevir
+            }
+            
+            // Dakika kontrolü
+            const minuteMatch = lowerInput.match(/^(\d+)\s*(dakika|dk|minute|min|m)$/);
+            if (minuteMatch) {
+                return parseInt(minuteMatch[1]);
+            }
+            
+            // Sadece sayı girilmişse dakika olarak kabul et
+            const numberMatch = lowerInput.match(/^(\d+)$/);
+            if (numberMatch) {
+                return parseInt(numberMatch[1]);
+            }
+            
+            return null; // Geçersiz giriş
+        }
+
         // --- RANK BAR RENK SEÇİCİ ---
         let selectedBarColor = 'pink-purple'; // Default
-        
+
         function setBarColor(colorScheme) {
             selectedBarColor = colorScheme;
-            
+
             // Tüm butonlardan check işareti kaldır
             document.querySelectorAll('.bar-color-btn .fa-check').forEach(icon => {
                 icon.classList.add('hidden');
             });
-            
+
             // Seçili butona check işareti ekle
             const selectedBtn = document.querySelector(`.bar-color-btn[data-color="${colorScheme}"]`);
             if (selectedBtn) {
                 const checkIcon = selectedBtn.querySelector('.fa-check');
                 if (checkIcon) checkIcon.classList.remove('hidden');
-                
+
                 // Border highlight
                 document.querySelectorAll('.bar-color-btn').forEach(btn => {
                     btn.classList.remove('border-white', 'border-purple-500');
@@ -2147,19 +2767,19 @@
                 selectedBtn.classList.remove('border-white/20');
                 selectedBtn.classList.add('border-white', 'border-purple-500');
             }
-            
+
             // Özel renk input'u sıfırla
             document.getElementById('custom-bar-color').value = '#8b5cf6';
         }
-        
+
         function setCustomBarColor(colorValue) {
             selectedBarColor = 'custom';
-            
+
             // Tüm butonlardan check işareti kaldır
             document.querySelectorAll('.bar-color-btn .fa-check').forEach(icon => {
                 icon.classList.add('hidden');
             });
-            
+
             // Tüm butonların border'ını sıfırla
             document.querySelectorAll('.bar-color-btn').forEach(btn => {
                 btn.classList.remove('border-white', 'border-purple-500');
@@ -2241,8 +2861,10 @@
                 prefix: document.getElementById('setting-prefix').value,
                 language: document.getElementById('setting-language').value,
                 welcomeChannel: document.getElementById('setting-welcome-channel').value,
+                welcomeStatus: document.getElementById('setting-welcome-status').checked,
                 welcomeMessage: document.getElementById('setting-welcome-message').value,
                 leaveChannel: document.getElementById('setting-leave-channel').value,
+                leaveStatus: document.getElementById('setting-leave-status').checked,
                 leaveMessage: document.getElementById('setting-leave-message').value,
                 ticketCategory: document.getElementById('setting-ticket-category').value,
                 ticketLogChannel: document.getElementById('setting-ticket-log').value,
@@ -2280,7 +2902,8 @@
                     ageLimit: parseInt(document.getElementById('setting-age-limit').value) || 0,
                     bannedTags: document.getElementById('setting-banned-tags').value.split(',').map(t => t.trim()).filter(t => t !== '')
                 },
-                saas: document.getElementById('setting-saas').checked
+                saas: document.getElementById('setting-saas').checked,
+                autoroleStatus: document.getElementById('setting-autorole-status').checked
             };
 
             try {
@@ -2294,7 +2917,7 @@
 
                 if (result.success) {
                     showToast('Ayarlar başarıyla kaydedildi!', 'success');
-                    
+
                     // Bar rengini kaydet
                     try {
                         await fetch(`/api/server/${currentGuildId}/user-level-config`, {
@@ -2335,8 +2958,8 @@
                 if (result.success) {
                     showToast(result.message, 'success');
                     closeManageModal();
-                    fetchServers(); // Listeyi yenile
-                    fetchBotStats(); // İstatistikleri yenile
+                    fetchServers();
+                    fetchBotStats();
                 } else {
                     showToast(result.error || 'Bir hata oluştu', 'error');
                 }
@@ -2365,12 +2988,21 @@
         mobileMenuBtn.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
 
+        function updateToggleLabel(el) {
+            if (!el) return;
+            const label = el.nextElementSibling.nextElementSibling;
+            if (label) {
+                label.textContent = el.checked ? 'Açık' : 'Kapalı';
+            }
+        }
+
         // Sayfa Yönetimi ve Navigasyon
         const pages = {
             overview: document.getElementById('page-overview'),
             servers: document.getElementById('page-servers'),
             commands: document.getElementById('page-commands'),
-            blacklist: document.getElementById('page-blacklist')
+            blacklist: document.getElementById('page-blacklist'),
+            'bot-settings': document.getElementById('page-bot-settings')
         };
 
         function switchPage(pageId) {
@@ -2388,6 +3020,7 @@
                 if (pageId === 'servers' && allServers.length === 0) fetchServers();
                 if (pageId === 'commands' && allCommands.length === 0) fetchCommands();
                 if (pageId === 'blacklist') fetchBlacklist();
+                if (pageId === 'bot-settings') fetchBotActionLogs();
             }
 
             // Sidebar linklerini güncelle
@@ -2406,13 +3039,49 @@
                 overview: 'Genel Bakış',
                 servers: 'Sunucularım',
                 commands: 'Komutlar',
-                blacklist: 'Kara Liste Yönetimi'
+                blacklist: 'Kara Liste Yönetimi',
+                'bot-settings': 'Bot Yönetim Paneli'
             };
             document.querySelector('header h1').innerText = titles[pageId] || 'Panel';
 
             // Mobilde menüyü kapat
             if (window.innerWidth < 768) {
                 toggleSidebar();
+            }
+        }
+
+        async function handleBotAction(action) {
+            let confirmMsg = "";
+            if (action === 'restart') confirmMsg = "Botu yeniden başlatmak istediğinize emin misiniz?";
+            if (action === 'shutdown') confirmMsg = "Botu tamamen kapatmak istediğinize emin misiniz?";
+            if (action === 'maintenance') {
+                // Toggle olduğu için confirm gerekmiyor veya sadece bilgi
+            }
+
+            if (confirmMsg && !confirm(confirmMsg)) {
+                if (action === 'maintenance') document.getElementById('global-maintenance-toggle').checked = !document.getElementById('global-maintenance-toggle').checked;
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    if (action === 'maintenance') {
+                        document.getElementById('global-maintenance-toggle').checked = data.mode;
+                    }
+                } else {
+                    showToast(data.error || 'İşlem başarısız', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                showToast('Sunucu bağlantı hatası', 'error');
             }
         }
 
@@ -2425,36 +3094,67 @@
             });
         });
 
-        // Veri Çekme Simülasyonu
+        // Veri Çekme
         async function fetchBotStats() {
             try {
-                // API'den veri çek
                 const response = await fetch('/api/stats');
+
+                if (!response.ok) {
+                    // 401 veya başka hata - elemanlara hata göster
+                    ['stat-servers', 'stat-users', 'stat-commands', 'stat-ping', 'stat-giveaways'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && el.innerText === '...') el.innerText = '—';
+                    });
+                    return;
+                }
+
                 const data = await response.json();
 
-                // Sayıları formatla
-                const formatNumber = (num) => new Intl.NumberFormat('tr-TR').format(num);
-                const formatCompact = (num) => new Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short" }).format(num);
+                // Maintenance toggle güncelle
+                const maintToggle = document.getElementById('global-maintenance-toggle');
+                if (maintToggle) maintToggle.checked = data.maintenance;
 
-                // DOM güncelle
-                document.getElementById('stat-servers').innerText = formatNumber(data.servers);
-                document.getElementById('stat-users').innerText = formatCompact(data.users);
-                document.getElementById('stat-commands').innerText = formatCompact(data.commands);
-                document.getElementById('stat-ping').innerText = data.ping + 'ms';
-                
-                // Yeni istatistikler
+                // Bot Settings Uptime/Ping güncelle
+                const bsUptime = document.getElementById('bot-settings-uptime');
+                const bsPing = document.getElementById('bot-settings-ping');
+                if (bsUptime) bsUptime.innerText = data.uptime || '---';
+                if (bsPing) bsPing.innerText = (data.ping || 0) + 'ms';
+
+                const formatNumber = (num) => new Intl.NumberFormat('tr-TR').format(num);
+                const formatCompact = (num) => new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(num);
+
+                // Animasyonlu sayıcı
+                function animateCount(el, target, formatter) {
+                    if (!el) return;
+                    const start = 0;
+                    const duration = 800;
+                    const startTime = performance.now();
+                    function update(now) {
+                        const elapsed = now - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const current = Math.round(progress * target);
+                        el.innerText = formatter(current);
+                        if (progress < 1) requestAnimationFrame(update);
+                    }
+                    requestAnimationFrame(update);
+                }
+
+                animateCount(document.getElementById('stat-servers'), data.servers, formatNumber);
+                animateCount(document.getElementById('stat-users'), data.users, formatCompact);
+                animateCount(document.getElementById('stat-commands'), data.commands, formatNumber);
+
+                const pingEl = document.getElementById('stat-ping');
+                if (pingEl) pingEl.innerText = (data.ping || 0) + 'ms';
+
                 if (data.activeGiveaways !== undefined) {
-                    document.getElementById('stat-giveaways').innerText = formatNumber(data.activeGiveaways);
+                    animateCount(document.getElementById('stat-giveaways'), data.activeGiveaways, formatNumber);
                 }
                 if (data.averageMembersPerGuild !== undefined) {
-                    document.getElementById('stat-avg-members').innerText = `Ort. ${formatNumber(data.averageMembersPerGuild)} üye`;
+                    const avgEl = document.getElementById('stat-avg-members');
+                    if (avgEl) avgEl.innerText = `Ort. ${formatNumber(data.averageMembersPerGuild)} üye`;
                 }
-                
-                // Uptime bilgisi ekle (ping kartının altına)
                 const statusEl = document.getElementById('stat-status');
-                if (statusEl && data.uptime) {
-                    statusEl.innerText = `${data.uptime} uptime`;
-                }
+                if (statusEl && data.uptime) statusEl.innerText = data.uptime + ' uptime';
 
             } catch (error) {
                 console.error('Veri çekme hatası:', error);
@@ -2489,7 +3189,7 @@
 
         function renderServerGrowthChart(serverGrowth) {
             const ctx = document.getElementById('serverGrowthChart').getContext('2d');
-            
+
             if (serverGrowthChartInstance) {
                 serverGrowthChartInstance.destroy();
             }
@@ -2556,7 +3256,7 @@
 
         function renderCommandUsageChart(commandUsage) {
             const ctx = document.getElementById('commandUsageChart').getContext('2d');
-            
+
             if (commandUsageChartInstance) {
                 commandUsageChartInstance.destroy();
             }
@@ -2596,7 +3296,7 @@
 
         function renderLevelDistributionChart(levelDistribution) {
             const ctx = document.getElementById('levelDistributionChart').getContext('2d');
-            
+
             if (levelDistributionChartInstance) {
                 levelDistributionChartInstance.destroy();
             }
@@ -2637,7 +3337,7 @@
 
         function renderActiveUsersChart(activeUsers) {
             const ctx = document.getElementById('activeUsersChart').getContext('2d');
-            
+
             if (activeUsersChartInstance) {
                 activeUsersChartInstance.destroy();
             }
@@ -2764,27 +3464,27 @@
         // Komutları Çek
         let allCommands = []; // Arama için önbellek
         let currentCommandGuildId = null; // Seçili sunucu ID'si
-        
+
         async function fetchCommands() {
             const tableBody = document.getElementById('command-list');
             const serverSelect = document.getElementById('command-server-select');
-        
+
             try {
                 const response = await fetch('/api/commands');
                 allCommands = await response.json();
-        
+
                 // Sunucu listesini doldur (ilk kez yükleniyorsa)
                 if (serverSelect.options.length <= 1) {
                     const serversResponse = await fetch('/api/servers');
                     const servers = await serversResponse.json();
-                            
+
                     servers.forEach(server => {
                         const option = document.createElement('option');
                         option.value = server.id;
                         option.textContent = server.name;
                         serverSelect.appendChild(option);
                     });
-        
+
                     // İlk sunucuyu otomatik seç
                     if (servers.length > 0) {
                         serverSelect.value = servers[0].id;
@@ -2792,32 +3492,32 @@
                         loadDisabledCommands(currentCommandGuildId);
                     }
                 }
-        
+
                 renderCommands(allCommands);
-        
+
             } catch (error) {
                 console.error('Komut listesi hatası:', error);
                 tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-red-500 py-8">Komutlar yüklenemedi.</td></tr>';
             }
         }
-        
+
         // Yasaklı komutları yükle
         async function loadDisabledCommands(guildId) {
             try {
                 const response = await fetch(`/api/server/${guildId}/disabled-commands`);
                 const data = await response.json();
-                        
+
                 // Tüm komutların disabled property'sini güncelle
                 allCommands.forEach(cmd => {
                     cmd.disabled = data.disabledCommands.includes(cmd.name);
                 });
-                        
+
                 renderCommands(allCommands);
             } catch (error) {
                 console.error('Yasaklı komut yükleme hatası:', error);
             }
         }
-        
+
         // Komutu yasakla/yasağını kaldır
         async function toggleCommand(guildId, commandName, action) {
             try {
@@ -2826,9 +3526,9 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ commandName, action })
                 });
-                        
+
                 const result = await response.json();
-                        
+
                 if (result.success) {
                     showToast(result.message, action === 'disable' ? 'warning' : 'success');
                     // Durumu güncelle
@@ -2845,21 +3545,21 @@
                 showToast('Bir hata oluştu', 'error');
             }
         }
-        
+
         function renderCommands(commands) {
             const tableBody = document.getElementById('command-list');
             tableBody.innerHTML = '';
-        
+
             if (!currentCommandGuildId) {
                 tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-yellow-500 py-8">⚠️ Lütfen önce bir sunucu seçin</td></tr>';
                 return;
             }
-        
+
             if (commands.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-500 py-8">Komut bulunamadı.</td></tr>';
                 return;
             }
-        
+
             commands.forEach(cmd => {
                 const isDisabled = cmd.disabled || false;
                 const rowHTML = `
@@ -2870,16 +3570,16 @@
                             <span class="bg-white/5 text-gray-300 px-2 py-1 rounded text-xs border border-white/10">${cmd.category}</span>
                         </td>
                         <td class="px-6 py-4">
-                            ${isDisabled 
-                                ? '<span class="text-red-400 bg-red-500/10 px-2 py-1 rounded text-xs border border-red-500/20"><i class="fa-solid fa-ban mr-1"></i>Yasaklı</span>'
-                                : '<span class="text-green-400 bg-green-500/10 px-2 py-1 rounded text-xs border border-green-500/20"><i class="fa-solid fa-check mr-1"></i>Aktif</span>'
-                            }
+                            ${isDisabled
+                        ? '<span class="text-red-400 bg-red-500/10 px-2 py-1 rounded text-xs border border-red-500/20"><i class="fa-solid fa-ban mr-1"></i>Yasaklı</span>'
+                        : '<span class="text-green-400 bg-green-500/10 px-2 py-1 rounded text-xs border border-green-500/20"><i class="fa-solid fa-check mr-1"></i>Aktif</span>'
+                    }
                         </td>
                         <td class="px-6 py-4">
                             ${isDisabled
-                                ? `<button onclick="toggleCommand('${currentCommandGuildId}', '${cmd.name}', 'enable')" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded transition-colors"><i class="fa-solid fa-unlock mr-1"></i>Serbest Bırak</button>`
-                                : `<button onclick="toggleCommand('${currentCommandGuildId}', '${cmd.name}', 'disable')" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded transition-colors"><i class="fa-solid fa-lock mr-1"></i>Yasakla</button>`
-                            }
+                        ? `<button onclick="toggleCommand('${currentCommandGuildId}', '${cmd.name}', 'enable')" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded transition-colors"><i class="fa-solid fa-unlock mr-1"></i>Serbest Bırak</button>`
+                        : `<button onclick="toggleCommand('${currentCommandGuildId}', '${cmd.name}', 'disable')" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded transition-colors"><i class="fa-solid fa-lock mr-1"></i>Yasakla</button>`
+                    }
                         </td>
                     </tr>
                 `;
@@ -3141,11 +3841,23 @@
             }
         }
 
-        // Basit Toast Bildirimi
+        // Toast Bildirimi
         function showToast(message, type = 'info') {
+            const colors = {
+                success: 'bg-green-600',
+                error: 'bg-red-600',
+                info: 'bg-blue-600',
+                warning: 'bg-yellow-600'
+            };
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-triangle-exclamation',
+                info: 'fa-circle-info',
+                warning: 'fa-triangle-exclamation'
+            };
             const toast = document.createElement('div');
-            toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-xl text-white font-medium shadow-lg transform translate-y-20 transition-all duration-300 z-50 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
-            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check' : 'fa-triangle-exclamation'} mr-2"></i> ${message}`;
+            toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-xl text-white font-medium shadow-lg transform translate-y-20 transition-all duration-300 z-[9999] flex items-center gap-2 ${colors[type] || 'bg-gray-700'}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || 'fa-circle-info'}"></i> ${message}`;
             document.body.appendChild(toast);
 
             requestAnimationFrame(() => toast.classList.remove('translate-y-20'));
@@ -3153,7 +3865,7 @@
             setTimeout(() => {
                 toast.classList.add('translate-y-20', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            }, 3500);
         }
 
         function updateMaintenanceButton(isActive) {
@@ -3170,42 +3882,63 @@
                     iconDiv.classList.remove('text-white', 'bg-yellow-500');
                 }
             }
+
+            // Ayrıca sayfa ayarlarındaki toggle'ı da güncelle
+            const toggle = document.getElementById('global-maintenance-toggle');
+            if (toggle) toggle.checked = isActive;
         }
 
-        // Sayfa yüklendiğinde ve her 3 saniyede bir verileri güncelle
+        // Sayfa yüklenince verileri güncelle
         document.addEventListener('DOMContentLoaded', async () => {
             const isLoggedIn = await checkAuth();
-            if (!isLoggedIn) return; // Stop if not logged in
 
-            // Verileri pre-fetch et (Arama için önemli)
-            fetchServers();
-            fetchCommands();
+            if (!isLoggedIn) {
+                // Giriş yapılmamışsa overlay zaten gösterildi, 
+                // ama yine de sayfayı hazırla
+                console.log('[INIT] Not logged in, waiting for login...');
+                return;
+            }
 
-            fetchBotStats();
-            fetchActivities();
-            fetchSystemHealth();
-            fetchAnalytics(); // Analytics grafiklerini yükle
-            updateNotificationsFromActivities();
+            console.log('[INIT] Logged in, fetching data...');
+
+            // Hata fırlatsa bile diğerleri çalışsın
+            const safeCall = (fn) => fn().catch(e => console.error('[INIT]', e));
+
+            await Promise.allSettled([
+                safeCall(fetchServers),
+                safeCall(fetchCommands),
+                safeCall(fetchBotStats),
+                safeCall(fetchActivities),
+                safeCall(fetchSystemHealth),
+                safeCall(fetchAnalytics),
+                safeCall(updateNotificationsFromActivities)
+            ]);
+
             setupQuickActions();
-
-            // Varsayılan olarak overview sayfasını aç
             switchPage('overview');
 
+            // Sekme tekrar odaklandığında istatistikleri güncelle
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    fetchBotStats().catch(() => { });
+                    fetchAnalytics().catch(() => { });
+                }
+            });
+
             setInterval(() => {
-                // Sadece overview sayfası açıksa istatistikleri güncelle
                 if (!document.getElementById('page-overview').classList.contains('hidden')) {
-                    fetchBotStats();
-                    fetchSystemHealth();
-                    fetchAnalytics(); // Analytics verilerini güncelle (her 5 saniye)
+                    fetchBotStats().catch(() => { });
+                    fetchSystemHealth().catch(() => { });
                 }
             }, 5000);
 
             setInterval(() => {
                 if (!document.getElementById('page-overview').classList.contains('hidden')) {
-                    fetchActivities();
-                    updateNotificationsFromActivities();
+                    fetchActivities().catch(() => { });
+                    updateNotificationsFromActivities().catch(() => { });
+                    fetchAnalytics().catch(() => { });
                 }
-            }, 5000);
+            }, 15000);
         });
 
         // Basit animasyon için CSS ekle
@@ -3335,10 +4068,174 @@
             showToast(status ? 'Tüm komutlar aktif edildi (Kaydetmeyi unutmayın!)' : 'Tüm komutlar yasaklandı (Kaydetmeyi unutmayın!)', 'info');
         }
 
+        // Flood Modal Fonksiyonları
+        function openFloodModal() {
+            const modal = document.getElementById('flood-config-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                loadFloodModalConfig();
+            }
+        }
+
+        function closeFloodModal() {
+            const modal = document.getElementById('flood-config-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        async function loadFloodModalConfig() {
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/flood/config`);
+                const config = await response.json();
+
+                document.getElementById('flood-modal-enabled').checked = config.enabled || false;
+                document.getElementById('flood-modal-msg-limit').value = config.messageLimit || 5;
+                document.getElementById('flood-modal-msg-time').value = config.messageTimeframe || 3000;
+                document.getElementById('flood-modal-cmd-limit').value = config.commandLimit || 3;
+                document.getElementById('flood-modal-cmd-time').value = config.commandTimeframe || 5000;
+                document.getElementById('flood-modal-punishment').value = config.punishmentType || 'mute';
+                document.getElementById('flood-modal-mute-duration').value = (config.muteDuration || 300000) / 60000;
+                document.getElementById('flood-modal-log-channel').value = config.logChannel || '';
+
+                // Log channel seçeneğini doldur
+                const logChannelSelect = document.getElementById('flood-modal-log-channel');
+                if (logChannelSelect && currentGuildId) {
+                    const response = await fetch(`/api/server/${currentGuildId}`);
+                    const data = await response.json();
+                    logChannelSelect.innerHTML = '<option value="">Devre Dışı</option>';
+                    data.textChannels?.forEach(channel => {
+                        const option = document.createElement('option');
+                        option.value = channel.id;
+                        option.innerText = `#${channel.name}`;
+                        logChannelSelect.appendChild(option);
+                    });
+                    logChannelSelect.value = config.logChannel || '';
+                }
+
+                updateToggleLabel(document.getElementById('flood-modal-enabled'));
+            } catch (error) {
+                console.error('Flood config yüklenemedi:', error);
+                showToast('Ayarlar yüklenemedi', 'error');
+            }
+        }
+
+        async function saveFloodModal() {
+            const config = {
+                enabled: document.getElementById('flood-modal-enabled').checked,
+                messageLimit: parseInt(document.getElementById('flood-modal-msg-limit').value),
+                messageTimeframe: parseInt(document.getElementById('flood-modal-msg-time').value),
+                commandLimit: parseInt(document.getElementById('flood-modal-cmd-limit').value),
+                commandTimeframe: parseInt(document.getElementById('flood-modal-cmd-time').value),
+                punishmentType: document.getElementById('flood-modal-punishment').value,
+                muteDuration: parseInt(document.getElementById('flood-modal-mute-duration').value) * 60000,
+                logChannel: document.getElementById('flood-modal-log-channel').value || null
+            };
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/flood/config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Flood ayarları kaydedildi!', 'success');
+                    closeFloodModal();
+                } else {
+                    showToast(result.error || 'Kaydedilemedi', 'error');
+                }
+            } catch (error) {
+                showToast('Ayarlar kaydedilirken hata oluştu', 'error');
+            }
+        }
+
+        // Koruma Filtreleri Toggle Fonksiyonu
+        async function toggleAllProtections(enable) {
+            const protectionIds = [
+                'setting-anti-swear',
+                'setting-anti-link',
+                'setting-anti-spam',
+                'setting-anti-emoji',
+                'setting-anti-url',
+                'setting-anti-bot',
+                'setting-anti-caps'
+            ];
+
+            protectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.checked = enable;
+                    updateToggleLabel(el);
+                }
+            });
+
+            // Flood config'ini de güncelle
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/flood/config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled: enable })
+                });
+                const result = await response.json();
+                if (!result.success) {
+                    console.error('Flood config güncellenemedi:', result.error);
+                }
+            } catch (error) {
+                console.error('Flood config güncelleme hatası:', error);
+            }
+
+            showToast(enable ? 'Tüm koruma filtreleri aktifleştirildi!' : 'Tüm koruma filtreleri devre dışı bırakıldı!', 'info');
+        }
+
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
                 showToast('ID kopyalandı!', 'success');
             });
+        }
+
+        async function fetchBotActionLogs() {
+            const tableBody = document.getElementById('bot-action-logs');
+            if (!tableBody) return;
+
+            try {
+                const response = await fetch('/api/activities');
+                const activities = await response.json();
+
+                // Bot eylemlerini filtrele (Restart, Shutdown, Maintenance, vb.)
+                const botActions = activities.filter(a =>
+                    ['RESTART', 'SHUTDOWN', 'MAINTENANCE', 'MAINTENANCE_OFF'].includes(a.type)
+                ).slice(0, 10);
+
+                if (botActions.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-gray-600 italic">Henüz bir işlem kaydı bulunmuyor.</td></tr>';
+                    return;
+                }
+
+                tableBody.innerHTML = botActions.map(log => {
+                    let typeBadge = '';
+                    switch (log.type) {
+                        case 'RESTART': typeBadge = '<span class="bg-orange-500/10 text-orange-400 px-2 py-1 rounded text-[10px] font-bold">🔄 RESTART</span>'; break;
+                        case 'SHUTDOWN': typeBadge = '<span class="bg-red-500/10 text-red-400 px-2 py-1 rounded text-[10px] font-bold">🛑 SHUTDOWN</span>'; break;
+                        case 'MAINTENANCE': typeBadge = '<span class="bg-yellow-500/10 text-yellow-400 px-2 py-1 rounded text-[10px] font-bold">🛠 BAKIM AÇIK</span>'; break;
+                        case 'MAINTENANCE_OFF': typeBadge = '<span class="bg-green-500/10 text-green-400 px-2 py-1 rounded text-[10px] font-bold">✅ BAKIM KAPALI</span>'; break;
+                    }
+
+                    return `
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition-all">
+                            <td class="px-6 py-4">${typeBadge}</td>
+                            <td class="px-6 py-4 text-xs font-medium text-gray-300">${log.content}</td>
+                            <td class="px-6 py-4 text-[10px] text-gray-500">${new Date(log.timestamp).toLocaleString('tr-TR')}</td>
+                            <td class="px-6 py-4 text-right">
+                                <span class="text-green-500"><i class="fa-solid fa-circle-check"></i></span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error(error);
+                tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-red-400">Loglar yüklenemedi.</td></tr>';
+            }
         }
 
     </script>

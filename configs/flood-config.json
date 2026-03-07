@@ -1,0 +1,18 @@
+{
+  "enabled": false,
+  "messageLimit": 5,
+  "messageTimeframe": 3000,
+  "commandLimit": 3,
+  "commandTimeframe": 5000,
+  "punishments": {
+    "warn": 1,
+    "mute": 2,
+    "kick": 3,
+    "ban": 4
+  },
+  "muteDuration": 300000,
+  "banDuration": 3600000,
+  "ignoreRoles": [],
+  "logChannel": "1414187413864976506",
+  "punishmentType": "warn"
+}

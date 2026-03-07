@@ -3,10 +3,13 @@ const Afk = require('../models/Afk');
 const Level = require('../models/Level');
 const Blacklist = require('../models/Blacklist');
 const CommandUsage = require('../models/CommandUsage');
+const Flood = require('../models/Flood');
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { loadConfig } = require('../configs/flood-config');
 
 // Basit Spam Kontrolü İçin Bellek
 const spamMap = new Map();
+const floodCache = new Map();
 
 module.exports = {
     name: 'messageCreate',
@@ -28,6 +31,186 @@ module.exports = {
         const isBlacklistedUser = await Blacklist.findOne({ targetId: message.author.id, type: 'user' });
         if (isBlacklistedUser && !botOwnerIds.includes(message.author.id)) {
             return; // Kara listedeki kullanıcı botu kullanamaz
+        }
+
+        // --- FLOOD KONTROLÜ (GELİŞMİŞ) ---
+        const floodConfig = loadConfig();
+        if (floodConfig.enabled && !message.author.bot && !message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+            const floodKey = `${message.guild.id}-${message.author.id}`;
+            const cacheData = floodCache.get(floodKey) || { messages: [], commands: [], lastMessage: null };
+            
+            const now = Date.now();
+            
+            // Eski zaman dilimindeki mesajları temizle
+            cacheData.messages = cacheData.messages.filter(t => now - t < floodConfig.messageTimeframe);
+            cacheData.messages.push(now);
+            
+            // Flood Algılama (Gelişmiş)
+            let isFlood = false;
+            let floodReason = '';
+            
+            // 1. Hız kontrolü - N mesaj M ms'de
+            if (cacheData.messages.length > floodConfig.messageLimit) {
+                isFlood = true;
+                floodReason = `Çok hızlı mesaj gönderimi (${cacheData.messages.length}/${floodConfig.messageLimit})`;
+            }
+            
+            // 2. Tekrarlanan mesaj kontrolü
+            if (cacheData.lastMessage && cacheData.lastMessage === message.content && message.content.length > 5) {
+                const recentDuplicates = cacheData.messages.filter(t => now - t < 2000); // Son 2 saniyede
+                if (recentDuplicates.length >= 3) {
+                    isFlood = true;
+                    floodReason = 'Tekrarlanan mesaj spam';
+                }
+            }
+            
+            // 3. Mention spam - 5+ mention
+            const mentionCount = (message.mentions.members?.size || 0) + (message.mentions.roles?.size || 0);
+            if (mentionCount >= 5) {
+                isFlood = true;
+                floodReason = `Mention spam (${mentionCount} mention)`;
+            }
+            
+            // 4. Emoji spam - 15+ emoji
+            const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+            const emojiCount = (message.content.match(emojiRegex) || []).length;
+            if (emojiCount >= 15) {
+                isFlood = true;
+                floodReason = `Emoji spam (${emojiCount} emoji)`;
+            }
+            
+            // 5. Büyük harf spam - %80+
+            if (message.content.length > 10) {
+                const capsCount = (message.content.match(/[A-Z]/g) || []).length;
+                const capsPercent = (capsCount / message.content.length) * 100;
+                if (capsPercent >= 80) {
+                    isFlood = true;
+                    floodReason = 'Caps lock spam';
+                }
+            }
+            
+            // 6. URL/Link spam
+            const linkRegex = /(https?:\/\/|www\.)/gi;
+            const linkCount = (message.content.match(linkRegex) || []).length;
+            if (linkCount >= 3) {
+                isFlood = true;
+                floodReason = `Link spam (${linkCount} link)`;
+            }
+            
+            // 7. Uzun spam mesaj
+            if (message.content.length > 1500) {
+                isFlood = true;
+                floodReason = 'Aşırı uzun mesaj (1500+ karakter)';
+            }
+            
+            // 8. Tekrarlanan karakter - "aaaaa" gibi
+            if (/(.)(\1){9,}/.test(message.content)) {
+                isFlood = true;
+                floodReason = 'Tekrarlanan karakter spam';
+            }
+            
+            cacheData.lastMessage = message.content;
+            
+            if (isFlood) {
+                // FLOOD TESPİT EDİLDİ!
+                let floodRecord = await Flood.findOne({ guildId: message.guild.id, userId: message.author.id });
+                if (!floodRecord) {
+                    floodRecord = await Flood.create({
+                        guildId: message.guild.id,
+                        userId: message.author.id,
+                        messageCount: 1,
+                        violations: 1
+                    });
+                } else {
+                    floodRecord.violations += 1;
+                    floodRecord.messageCount += 1;
+                    await floodRecord.save();
+                }
+
+                // Ceza belirle
+                const violation = floodRecord.violations;
+                let punishment = 'none';
+
+                if (violation >= floodConfig.punishments.ban) {
+                    punishment = 'ban';
+                } else if (violation >= floodConfig.punishments.kick) {
+                    punishment = 'kick';
+                } else if (violation >= floodConfig.punishments.mute) {
+                    punishment = 'mute';
+                } else if (violation >= floodConfig.punishments.warn) {
+                    punishment = 'warn';
+                }
+
+                // Ceza uygula
+                if (punishment !== 'none') {
+                    try {
+                        switch (punishment) {
+                            case 'warn':
+                                const warnEmbed = new EmbedBuilder()
+                                    .setColor('#FFD700')
+                                    .setTitle('⚠️ Flood Uyarısı')
+                                    .setDescription(`${message.author}, mesaj kurallarını ihlal ediyorsun!\n\n**Sebep:** ${floodReason}\n**Uyarı Sayısı:** ${violation}`);
+                                message.reply({ embeds: [warnEmbed], flags: 64 }).catch(() => { });
+                                break;
+
+                            case 'mute':
+                                floodRecord.isMuted = true;
+                                floodRecord.muteEndsAt = new Date(Date.now() + floodConfig.muteDuration);
+                                await floodRecord.save();
+                                
+                                // Discord timeout uygula
+                                await message.member.timeout(floodConfig.muteDuration, 'Flood koruması - ' + floodReason).catch(err => {
+                                    console.error('Timeout ayarlanırken hata:', err);
+                                });
+                                
+                                const muteEmbed = new EmbedBuilder()
+                                    .setColor('#FF6B6B')
+                                    .setTitle('🔇 Flood Mute')
+                                    .setDescription(`${message.author} flood yaptığı için ${(floodConfig.muteDuration / 60000).toFixed(0)} dakika susturuldu!\n\n**Sebep:** ${floodReason}`);
+                                message.channel.send({ embeds: [muteEmbed] }).catch(() => { });
+                                break;
+
+                            case 'kick':
+                                await message.member.kick('Flood koruması - ' + floodReason).catch(() => { });
+                                break;
+
+                            case 'ban':
+                                await message.guild.members.ban(message.author.id, { reason: 'Flood koruması - ' + floodReason }).catch(() => { });
+                                break;
+                        }
+
+                        floodRecord.punished = true;
+                        floodRecord.punishmentType = punishment;
+                        await floodRecord.save();
+
+                        // Log chan'a gönder
+                        if (floodConfig.logChannel) {
+                            const logCh = message.guild.channels.cache.get(floodConfig.logChannel);
+                            if (logCh) {
+                                const logEmbed = new EmbedBuilder()
+                                    .setColor('#FF6B6B')
+                                    .setTitle('🚨 Flood Tespit Edildi')
+                                    .addFields(
+                                        { name: '👤 Kullanıcı', value: `${message.author.tag} (${message.author.id})`, inline: true },
+                                        { name: '📊 İhlal Sayısı', value: violation.toString(), inline: true },
+                                        { name: '⚡ Ceza', value: punishment.toUpperCase(), inline: true },
+                                        { name: '📋 Sebep', value: floodReason, inline: false }
+                                    );
+                                logCh.send({ embeds: [logEmbed] }).catch(() => { });
+                            }
+                        }
+
+                        floodCache.set(floodKey, { messages: [], commands: [], lastMessage: null });
+                        return;
+                    } catch (error) {
+                        console.error('Flood ceza uygulama hatası:', error);
+                    }
+                }
+
+                floodCache.set(floodKey, cacheData);
+            } else {
+                floodCache.set(floodKey, cacheData);
+            }
         }
 
         // MongoDB'den ayarları al

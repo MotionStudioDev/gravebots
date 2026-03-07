@@ -20,6 +20,7 @@ const Giveaway = require('./models/Giveaway');
 const Blacklist = require('./models/Blacklist');
 const ServerHistory = require('./models/ServerHistory');
 const CommandUsage = require('./models/CommandUsage');
+const Flood = require('./models/Flood');
 const fs = require('fs');
 const { Collection } = require('discord.js');
 
@@ -45,7 +46,25 @@ const HARDCODED_ADMIN_ID = "336814068595818497";
 
 // MongoDB Bağlantısı
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('✅ MongoDB Bağlantısı Başarılı'))
+    .then(async () => {
+        console.log('✅ MongoDB Bağlantısı Başarılı');
+
+        // HATA FIX: Eski/Ghost indexleri temizle (Duplicate key error: email_1 için)
+        try {
+            const userConn = mongoose.connection.collection('users');
+            const indexes = await userConn.indexes();
+            const hasEmailIndex = indexes.find(i => i.name === 'email_1');
+
+            if (hasEmailIndex) {
+                console.log('🧹 Eski "email_1" indexi bulundu, temizleniyor...');
+                await userConn.dropIndex('email_1');
+                console.log('✅ Index başarıyla silindi.');
+            }
+        } catch (e) {
+            // Index yoksa veya silinemezse hata vermesin
+            console.log('ℹ️ Index temizleme atlandı veya gerek kalmadı.');
+        }
+    })
     .catch(err => console.error('❌ MongoDB Bağlantı Hatası:', err));
 
 const activityLog = [
@@ -139,7 +158,12 @@ function checkAuth(req, res, next) {
 // Middleware: Admin Kontrolü (Bot Sahibi)
 function checkAdmin(req, res, next) {
     // Bot sahiplerinden biri mi?
-    if (req.isAuthenticated() && client.botOwnerIds.includes(req.user.id)) return next();
+    if (req.isAuthenticated()) {
+        if (client.botOwnerIds.includes(req.user.id)) return next();
+        console.log(`🚫 [AUTH] Yetkisiz erişim denemesi! Kullanıcı: ${req.user.username} (ID: ${req.user.id})`);
+    } else {
+        console.log(`🚫 [AUTH] Giriş yapılmamış erişim denemesi!`);
+    }
     res.status(403).json({ error: "Bu işlem için yetkiniz yok." });
 }
 
@@ -204,7 +228,7 @@ app.get('/api/stats', checkAuth, async (req, res) => {
 
     // Gerçek sunucu sayısı
     const serverCount = client.guilds.cache.size;
-    
+
     // Gerçek kullanıcı sayısı - Member intents yoksa approximate kullan
     let userCount = 0;
     try {
@@ -219,10 +243,10 @@ app.get('/api/stats', checkAuth, async (req, res) => {
 
     // Aktif çekiliş sayısı
     const activeGiveaways = await Giveaway.countDocuments({ ended: false });
-    
+
     // Toplam ceza kaydı
     const totalInfractions = await Infraction.countDocuments();
-    
+
     // Kara listedeki hedefler
     const blacklistedCount = await Blacklist.countDocuments();
 
@@ -253,21 +277,21 @@ app.get('/api/stats/analytics', checkAuth, async (req, res) => {
         // 1. SUNUCU BÜYÜME VERİLERİ (Gerçek veritabanı verileri)
         const serverGrowth = [];
         const today = new Date().toISOString().split('T')[0];
-        
+
         // Son 7 günün verilerini çek
         for (let i = 6; i >= 0; i--) {
             const date = new Date();
             date.setDate(date.getDate() - i);
             const dateStr = date.toISOString().split('T')[0];
             const dayName = date.toLocaleDateString('tr-TR', { weekday: 'short' });
-            
+
             let history = await ServerHistory.findOne({ date: dateStr });
-            
+
             // Eğer o güne ait veri yoksa, bugünün verisini kullan (ilk günler için)
             if (!history) {
                 history = await ServerHistory.findOne({ date: today });
             }
-            
+
             serverGrowth.push({
                 day: dayName,
                 servers: history ? history.serverCount : client.guilds.cache.size,
@@ -278,7 +302,7 @@ app.get('/api/stats/analytics', checkAuth, async (req, res) => {
         // 2. KOMUT KULLANIM İSTATİSTİKLERİ (Gerçek veritabanı verileri)
         const commandUsage = [];
         const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-        
+
         // Son 7 günde her kategori için kullanım sayısını al
         const usageStats = await CommandUsage.aggregate([
             {
@@ -296,14 +320,14 @@ app.get('/api/stats/analytics', checkAuth, async (req, res) => {
                 $sort: { count: -1 }
             }
         ]);
-        
+
         // Kullanılmayan kategorileri de ekle
         const categories = {};
         client.commands.forEach(cmd => {
             const cat = cmd.category || 'Genel';
             if (!categories[cat]) categories[cat] = 0;
         });
-        
+
         usageStats.forEach(stat => {
             if (categories[stat._id] !== undefined) {
                 commandUsage.push({
@@ -313,7 +337,7 @@ app.get('/api/stats/analytics', checkAuth, async (req, res) => {
                 });
             }
         });
-        
+
         // Hiç kullanılmamış kategorileri 0 ile ekle
         Object.keys(categories).forEach(cat => {
             if (!commandUsage.find(cu => cu.category === cat)) {
@@ -329,7 +353,7 @@ app.get('/api/stats/analytics', checkAuth, async (req, res) => {
         const levelDistribution = [];
         const allLevels = await Level.find({}).select('level').lean();
         const totalLevels = allLevels.length;
-        
+
         const levelRanges = [
             { min: 1, max: 5, label: '1-5' },
             { min: 6, max: 10, label: '6-10' },
@@ -354,14 +378,14 @@ app.get('/api/stats/analytics', checkAuth, async (req, res) => {
             last7d: 0,
             last30d: 0
         };
-        
+
         // Level verilerinden son mesaj zamanlarını kontrol et (simüle edilmiş)
         // Gerçek implementasyon için User modeline lastMessageTime eklenmeli
         const now = Date.now();
         const oneDay = 24 * 60 * 60 * 1000;
         const sevenDays = 7 * oneDay;
         const thirtyDays = 30 * oneDay;
-        
+
         // Şimdilik toplam kullanıcı sayısının yüzdesi olarak hesapla
         const totalUsers = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
         activeUsers.last24h = Math.floor(totalUsers * 0.1); // %10 aktif
@@ -579,7 +603,7 @@ app.post('/api/server/:id/user-level-config', checkAuth, async (req, res) => {
 
         await Level.findOneAndUpdate(
             { guildId: req.params.id, userId: req.user.id },
-            { 
+            {
                 barColor: barColor || 'pink-purple',
                 customBarColor: customBarColor || '#8b5cf6'
             },
@@ -776,15 +800,15 @@ app.get('/api/server/:id/disabled-commands', checkAuth, async (req, res) => {
 app.post('/api/server/:id/toggle-command', checkAuth, async (req, res) => {
     try {
         const { commandName, action } = req.body; // action: 'disable' | 'enable'
-        
+
         if (!commandName) {
             return res.status(400).json({ error: 'Komut adı gerekli' });
         }
 
         // Komutun var olup olmadığını kontrol et
-        const command = client.commands.get(commandName.toLowerCase()) || 
-                       client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName.toLowerCase()));
-        
+        const command = client.commands.get(commandName.toLowerCase()) ||
+            client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName.toLowerCase()));
+
         if (!command) {
             return res.status(404).json({ error: 'Böyle bir komut bulunamadı' });
         }
@@ -819,11 +843,11 @@ app.post('/api/server/:id/toggle-command', checkAuth, async (req, res) => {
             return res.status(400).json({ error: 'Geçersiz işlem. action: "disable" veya "enable" olmalı' });
         }
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             disabledCommands: updatedSettings.disabledCommands,
-            message: action === 'disable' 
-                ? `${commandName} komutu yasaklandı` 
+            message: action === 'disable'
+                ? `${commandName} komutu yasaklandı`
                 : `${commandName} komudu serbest bırakıldı`
         });
     } catch (error) {
@@ -836,7 +860,7 @@ app.post('/api/server/:id/toggle-command', checkAuth, async (req, res) => {
 app.post('/api/server/:id/disabled-commands', checkAuth, async (req, res) => {
     try {
         const { disabledCommands } = req.body; // Array of command names
-        
+
         if (!Array.isArray(disabledCommands)) {
             return res.status(400).json({ error: 'disabledCommands bir array olmalı' });
         }
@@ -950,6 +974,29 @@ app.get('/api/server/:id/giveaways', checkAuth, async (req, res) => {
 // API: Çekiliş Sil
 app.delete('/api/server/:id/giveaway/:gaId', checkAuth, async (req, res) => {
     try {
+        // Önce çekilişi bul
+        const giveaway = await Giveaway.findById(req.params.gaId);
+        if (!giveaway) {
+            return res.status(404).json({ error: 'Çekiliş bulunamadı.' });
+        }
+
+        // Eğer çekiliş aktifse (bitmemişse), Discord mesajını da sil
+        if (!giveaway.ended) {
+            try {
+                const channel = client.channels.cache.get(giveaway.channelId);
+                if (channel) {
+                    const message = await channel.messages.fetch(giveaway.messageId).catch(() => null);
+                    if (message) {
+                        await message.delete();
+                    }
+                }
+            } catch (msgError) {
+                console.error('Çekiliş mesajı silinirken hata:', msgError);
+                // Mesaj silinemese bile çekilişi silmeye devam et
+            }
+        }
+
+        // Veritabanından çekilişi sil
         await Giveaway.findByIdAndDelete(req.params.gaId);
         res.json({ success: true });
     } catch (error) {
@@ -968,15 +1015,23 @@ app.post('/api/server/:id/giveaway', checkAuth, async (req, res) => {
 
         const embed = new EmbedBuilder()
             .setColor('#FF69B4')
-            .setTitle('\uD83C\uDF89 ÇEKİLİŞ BAŞLADI!')
+            .setTitle('\uD83C\uDF89 **ÇEKİLİŞ ZAMANI!** \uD83C\uDF89')
             .setDescription(
-                `**Ödül:** ${prize}\n` +
-                `**Süre:** ${duration} Dakika\n` +
-                `**Kazanan Sayısı:** ${winnerCount}\n\n` +
-                `Katılmak için \uD83C\uDF89 tepkisine tıkla!\n` +
-                `\u23F0 Bitiş: <t:${Math.floor(endTime.getTime() / 1000)}:R>`
+                `### \uD83E\uDD47 **${prize}**\n\n` +
+                `\uD83D\uDD52 **Kalan Süre:** <t:${Math.floor(endTime.getTime() / 1000)}:R>\n` +
+                `\uD83D\uDC65 **Kazanan Sayısı:** ${winnerCount}\n` +
+                `\uD83D\uDCCA **Katılımcılar:** 0\n\n` +
+                `> *Katılmak için aşağıdaki 🎉 tepkisine tıklayın!*`
             )
-            .setFooter({ text: `Bitiş: ${endTime.toLocaleString('tr-TR')}` })
+            .addFields(
+                { name: '\uD83D\uDCC5 Başlangıç', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true },
+                { name: '\uD83D\uDCC6 Bitiş', value: `<t:${Math.floor(endTime.getTime() / 1000)}:F>`, inline: true },
+                { name: '\uD83C\uDF9B Durum', value: '🔴 Devam Ediyor', inline: true }
+            )
+            .setFooter({ 
+                text: `GraveBOT Çekiliş Sistemi • ID: ${Date.now()}`, 
+                iconURL: client.user.displayAvatarURL() 
+            })
             .setTimestamp();
 
         const msg = await channel.send({ embeds: [embed] });
@@ -1018,13 +1073,22 @@ app.post('/api/server/:id/giveaway', checkAuth, async (req, res) => {
                     if (endMsg) {
                         const endEmbed = new EmbedBuilder()
                             .setColor('#808080')
-                            .setTitle('\uD83C\uDF8A ÇEKİLİŞ BİTTİ!')
+                            .setTitle('🎊 **ÇEKİLİŞ SONUÇLANDI!** 🎊')
                             .setDescription(
-                                `**Ödül:** ${freshGiveaway.prize}\n` +
-                                `**Katılımcı:** ${freshGiveaway.participants.length} kişi\n` +
-                                `**Kazanan(lar):** ${winnerMentions}`
+                                `### 🏆 **${freshGiveaway.prize}**\n\n` +
+                                `👥 **Toplam Katılımcı:** ${freshGiveaway.participants.length}\n` +
+                                `🏅 **Kazanan(lar):** ${winnerMentions}\n\n` +
+                                `> *Çekiliş başarıyla tamamlandı!*`
                             )
-                            .setFooter({ text: `Bitiş: ${new Date(freshGiveaway.endTime).toLocaleString('tr-TR')}` })
+                            .addFields(
+                                { name: '� Katılımcılar', value: `${freshGiveaway.participants.length}`, inline: true },
+                                { name: '🏆 Kazananlar', value: winnerIds.length > 0 ? winnerIds.length.toString() : '0', inline: true },
+                                { name: '🎵 Durum', value: '✅ Tamamlandı', inline: true }
+                            )
+                            .setFooter({ 
+                                text: `GraveBOT Çekiliş Sistemi • ${ch.guild.name}`, 
+                                iconURL: ch.guild.iconURL() || client.user.displayAvatarURL() 
+                            })
                             .setTimestamp();
                         await endMsg.edit({ embeds: [endEmbed] });
                     }
@@ -1076,10 +1140,18 @@ app.post('/api/action', checkAdmin, async (req, res) => {
 
     switch (action) {
         case 'restart':
-            addActivity('system', 'Bot Yeniden Başlatıldı', 'Panel İsteği', 'orange', 'fa-rotate');
+            addActivity('RESTART', 'Sistem Yeniden Başlatıldı', 'Panel İsteği', 'orange', 'fa-rotate');
             res.json({ success: true, message: "Bot yeniden başlatılıyor..." });
             setTimeout(() => {
-                process.exit(0); // Render/PM2 gibi sistemler otomatik yeniden başlatır
+                process.exit(0);
+            }, 1000);
+            return;
+
+        case 'shutdown':
+            addActivity('SHUTDOWN', 'Sistem Kapatıldı', 'Panel İsteği', 'red', 'fa-power-off');
+            res.json({ success: true, message: "Bot kapatılıyor..." });
+            setTimeout(() => {
+                process.exit(0);
             }, 1000);
             return;
 
@@ -1106,7 +1178,7 @@ app.post('/api/action', checkAdmin, async (req, res) => {
                 status: maintenanceMode ? 'dnd' : 'online',
                 activities: [{ name: maintenanceMode ? 'Bakım Modu...' : `g!help`, type: ActivityType.Custom }]
             });
-            addActivity('warning', status, 'Yönetici', 'yellow', 'fa-triangle-exclamation');
+            addActivity(maintenanceMode ? 'MAINTENANCE' : 'MAINTENANCE_OFF', status, 'Yönetici', 'yellow', 'fa-triangle-exclamation');
             return res.json({ success: true, message: status, mode: maintenanceMode });
 
         case 'announce':
@@ -1131,6 +1203,14 @@ app.post('/api/action', checkAdmin, async (req, res) => {
 
             addActivity('info', 'Duyuru Yapıldı', `${sentCount} sunucu sahibine ulaşıldı`, 'purple', 'fa-bullhorn');
             return res.json({ success: true, message: `Duyuru ${sentCount} benzersiz sunucu sahibine gönderildi.` });
+
+        case 'shutdown':
+            addActivity('system', 'Bot Kapatıldı', 'Panel İsteği', 'red', 'fa-power-off');
+            res.json({ success: true, message: "Bot kapatılıyor..." });
+            setTimeout(() => {
+                process.exit(0); // Shutdown (Render/PM2 restart manually if needed)
+            }, 1000);
+            return;
 
         default:
             return res.status(400).json({ error: "Geçersiz işlem" });
@@ -1201,6 +1281,69 @@ function formatUptime(uptime) {
 }
 
 // --- 3. BAŞLATMA ---
+
+// API: Flood İstatistikleri
+app.get('/api/server/:id/flood/stats', checkAuth, async (req, res) => {
+    try {
+        const guildId = req.params.id;
+        const floods = await Flood.find({ guildId, violations: { $gt: 0 } }).sort({ violations: -1 }).limit(10);
+        
+        const stats = {
+            totalFlooders: floods.length,
+            topFlooders: floods.map(f => ({
+                userId: f.userId,
+                violations: f.violations,
+                messageCount: f.messageCount,
+                commandCount: f.commandCount,
+                punishmentType: f.punishmentType,
+                isMuted: f.isMuted
+            }))
+        };
+
+        res.json(stats);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Flood Ayarlarını Getir
+app.get('/api/server/:id/flood/config', checkAuth, async (req, res) => {
+    try {
+        const { loadConfig } = require('./configs/flood-config');
+        const config = loadConfig();
+        res.json(config);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Flood Ayarlarını Güncelleştir
+app.post('/api/server/:id/flood/config', checkAuth, async (req, res) => {
+    try {
+        const { loadConfig, saveConfig } = require('./configs/flood-config');
+        let config = loadConfig();
+        
+        config = { ...config, ...req.body };
+        saveConfig(config);
+        
+        res.json({ success: true, config });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Kullanıcı Flood Kaydını Sıfırla
+app.delete('/api/server/:id/flood/:userId', checkAuth, async (req, res) => {
+    try {
+        await Flood.findOneAndUpdate(
+            { guildId: req.params.id, userId: req.params.userId },
+            { violations: 0, isMuted: false, muteEndsAt: null, punished: false }
+        );
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 // Web sunucusunu başlat
 app.listen(port, () => {

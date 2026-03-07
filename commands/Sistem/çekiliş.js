@@ -1,6 +1,31 @@
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 const Giveaway = require('../../models/Giveaway');
 
+// Süre parse fonksiyonu
+function parseDuration(input) {
+    const lowerInput = input.toLowerCase().trim();
+    
+    // Saat kontrolü
+    const hourMatch = lowerInput.match(/^(\d+)\s*(saat|sa|hour|hr|h)$/);
+    if (hourMatch) {
+        return parseInt(hourMatch[1]) * 60; // Saati dakikaya çevir
+    }
+    
+    // Dakika kontrolü
+    const minuteMatch = lowerInput.match(/^(\d+)\s*(dakika|dk|minute|min|m)$/);
+    if (minuteMatch) {
+        return parseInt(minuteMatch[1]);
+    }
+    
+    // Sadece sayı girilmişse dakika olarak kabul et
+    const numberMatch = lowerInput.match(/^(\d+)$/);
+    if (numberMatch) {
+        return parseInt(numberMatch[1]);
+    }
+    
+    return null; // Geçersiz giriş
+}
+
 module.exports = {
     name: 'çekiliş',
     description: 'Yeni bir çekiliş başlatır.',
@@ -12,12 +37,14 @@ module.exports = {
             return message.reply('❌ Bu komutu kullanmak için `Sunucuyu Yönet` yetkisine sahip olmalısınız.');
         }
 
-        const duration = parseInt(args[0]);
+        const durationInput = args[0];
         const winnerCount = parseInt(args[1]);
         const prize = args.slice(2).join(' ');
 
-        if (!duration || isNaN(duration) || duration <= 0) {
-            return message.reply('❌ Geçerli bir süre (dakika) girmelisiniz!');
+        // Süreyi parse et
+        const duration = parseDuration(durationInput);
+        if (!duration || duration <= 0) {
+            return message.reply('❌ Geçerli bir süre girmelisiniz! (Örn: 5 dakika, 1 saat)');
         }
         if (!winnerCount || isNaN(winnerCount) || winnerCount <= 0) {
             return message.reply('❌ Geçerli bir kazanan sayısı girmelisiniz!');
@@ -30,14 +57,23 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setColor('#FF69B4')
-            .setTitle('🎉 ÇEKİLİŞ BAŞLADI!')
+            .setTitle('🎉 **ÇEKİLİŞ ZAMANI!** 🎉')
             .setDescription(
-                `**Ödül:** ${prize}\n` +
-                `**Bitiş:** <t:${Math.floor(endTime.getTime() / 1000)}:R>\n` +
-                `**Kazanan Sayısı:** ${winnerCount}\n\n` +
-                `Katılmak için 🎉 tepkisine tıkla!`
+                `### 🏆 **${prize}**\n\n` +
+                `⏰ **Kalan Süre:** <t:${Math.floor(endTime.getTime() / 1000)}:R>\n` +
+                `👥 **Kazanan Sayısı:** ${winnerCount}\n` +
+                `📊 **Katılımcılar:** 0\n\n` +
+                `> *Katılmak için aşağıdaki 🎉 tepkisine tıklayın!*`
             )
-            .setFooter({ text: `Bitiş: ${endTime.toLocaleString('tr-TR')}` })
+            .addFields(
+                { name: '📅 Başlangıç', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true },
+                { name: '📆 Bitiş', value: `<t:${Math.floor(endTime.getTime() / 1000)}:F>`, inline: true },
+                { name: '🎵 Durum', value: '🔴 Devam Ediyor', inline: true }
+            )
+            .setFooter({ 
+                text: `GraveBOT Çekiliş Sistemi • ${message.guild.name}`, 
+                iconURL: message.guild.iconURL() || client.user.displayAvatarURL() 
+            })
             .setTimestamp();
 
         const msg = await message.channel.send({ embeds: [embed] });
@@ -84,13 +120,22 @@ module.exports = {
                     if (endMsg) {
                         const endEmbed = new EmbedBuilder()
                             .setColor('#808080')
-                            .setTitle('🎊 ÇEKİLİŞ BİTTİ!')
+                            .setTitle('🎊 **ÇEKİLİŞ SONUÇLANDI!** 🎊')
                             .setDescription(
-                                `**Ödül:** ${freshGiveaway.prize}\n` +
-                                `**Katılımcı:** ${freshGiveaway.participants.length} kişi\n` +
-                                `**Kazanan(lar):** ${winnerMentions}`
+                                `### 🏆 **${freshGiveaway.prize}**\n\n` +
+                                `👥 **Toplam Katılımcı:** ${freshGiveaway.participants.length}\n` +
+                                `🏅 **Kazanan(lar):** ${winnerMentions}\n\n` +
+                                `> *Çekiliş başarıyla tamamlandı!*`
                             )
-                            .setFooter({ text: `Bitiş: ${new Date(freshGiveaway.endTime).toLocaleString('tr-TR')}` })
+                            .addFields(
+                                { name: '👥 Katılımcılar', value: `${freshGiveaway.participants.length}`, inline: true },
+                                { name: '🏆 Kazananlar', value: winnerIds.length > 0 ? winnerIds.length.toString() : '0', inline: true },
+                                { name: '🎵 Durum', value: '✅ Tamamlandı', inline: true }
+                            )
+                            .setFooter({ 
+                                text: `GraveBOT Çekiliş Sistemi • ${ch.guild.name}`, 
+                                iconURL: ch.guild.iconURL() || client.user.displayAvatarURL() 
+                            })
                             .setTimestamp();
                         await endMsg.edit({ embeds: [endEmbed] });
                     }

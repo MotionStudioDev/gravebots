@@ -6,13 +6,16 @@ const GuildSchema = new mongoose.Schema({
     language: { type: String, default: 'tr' },
     saas: { type: Boolean, default: false },
     welcomeChannel: { type: String, default: null },
+    welcomeStatus: { type: Boolean, default: false },
     welcomeMessage: { type: String, default: 'Hoşgeldin {user}, sunucumuza katıldı!' },
     leaveChannel: { type: String, default: null },
+    leaveStatus: { type: Boolean, default: false },
     leaveMessage: { type: String, default: null },
     ticketCategory: { type: String, default: null },
     ticketLogChannel: { type: String, default: null },
     ticketMessage: { type: String, default: 'Bir sorun yaşıyorsanız veya yardıma ihtiyacınız varsa aşağıdaki butona tıklayarak bir destek talebi açabilirsiniz.' },
     autorole: { type: String, default: null },
+    autoroleStatus: { type: Boolean, default: false },
     inviteSystem: {
         status: { type: Boolean, default: false },
         channel: { type: String, default: null }

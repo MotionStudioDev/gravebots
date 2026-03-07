@@ -8,9 +8,11 @@ module.exports = {
     usage: 'otorol <@rol/kapat>',
     async execute(message, args, client) {
         if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-            return message.reply({ embeds: [
-                new EmbedBuilder().setColor('#FF0000').setDescription('❌ Bu komutu kullanmak için `Yönetici` yetkiniz yok.')
-            ]});
+            return message.reply({
+                embeds: [
+                    new EmbedBuilder().setColor('#FF0000').setDescription('❌ Bu komutu kullanmak için `Yönetici` yetkiniz yok.')
+                ]
+            });
         }
 
         const action = args[0];
@@ -24,12 +26,14 @@ module.exports = {
         if (action.toLowerCase() === 'kapat') {
             await Guild.findOneAndUpdate(
                 { guildId: message.guild.id },
-                { autorole: null },
+                { autorole: null, autoroleStatus: false },
                 { upsert: true }
             );
-            return message.reply({ embeds: [
-                new EmbedBuilder().setColor('#FF0000').setDescription('✅ Otorol sistemi başarıyla kapatıldı.')
-            ]});
+            return message.reply({
+                embeds: [
+                    new EmbedBuilder().setColor('#FF0000').setDescription('✅ Otorol sistemi başarıyla kapatıldı.')
+                ]
+            });
         }
 
         const role = message.mentions.roles.first() || message.guild.roles.cache.get(action);
@@ -41,7 +45,7 @@ module.exports = {
 
         await Guild.findOneAndUpdate(
             { guildId: message.guild.id },
-            { autorole: role.id },
+            { autorole: role.id, autoroleStatus: true },
             { upsert: true }
         );
 

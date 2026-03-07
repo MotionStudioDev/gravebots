@@ -37,6 +37,24 @@ module.exports = {
                     const newParticipants = [...giveaway.participants, user.id];
                     giveaway.participants = newParticipants;
                     await giveaway.save();
+
+                    // Embed'i güncelle - katılımcı sayısını göster
+                    try {
+                        const embed = reaction.message.embeds[0];
+                        if (embed) {
+                            const updatedEmbed = new EmbedBuilder(embed)
+                                .setDescription(
+                                    embed.description.replace(
+                                        /\*\*Katılımcılar:\*\* \d+/,
+                                        `**Katılımcılar:** ${newParticipants.length}`
+                                    )
+                                );
+                            await reaction.message.edit({ embeds: [updatedEmbed] });
+                        }
+                    } catch (updateError) {
+                        console.error('Çekiliş embed güncellenirken hata:', updateError);
+                    }
+
                     console.log(`🎉 [BOT] ${user.tag} çekilişe katıldı: ${giveaway.prize} (Sunucu: ${reaction.message.guild.name})`);
                 }
                 return; // Çekilişse başka kontrol yapma

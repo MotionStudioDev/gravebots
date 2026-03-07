@@ -1,5 +1,6 @@
 const { EmbedBuilder, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const Guild = require('../../models/Guild');
+const { loadConfig, saveConfig } = require('../../configs/flood-config');
 
 module.exports = {
     name: 'koruma',
@@ -20,7 +21,8 @@ module.exports = {
             'emoji': 'antiEmoji',
             'spam': 'antiSpam',
             'caps': 'antiCaps',
-            'bot': 'antiBot'
+            'bot': 'antiBot',
+            'flood': 'flood'
         };
 
         const target = args[0]?.toLowerCase();
@@ -30,6 +32,7 @@ module.exports = {
         const createProtectionPanel = async (guildId) => {
             const settings = await Guild.findOne({ guildId });
             const p = settings?.protections || {};
+            const floodConfig = loadConfig();
             
             const embed = new EmbedBuilder()
                 .setColor('#5865F2')
@@ -43,9 +46,11 @@ module.exports = {
                     { name: '⌨️ Caps Engel', value: p.antiCaps ? '✅ Açık' : '❌ Kapalı', inline: true },
                     { name: '⏳ Spam Engel', value: p.antiSpam ? '✅ Açık' : '❌ Kapalı', inline: true },
                     { name: '🤖 Bot Engel', value: p.antiBot ? '✅ Açık' : '❌ Kapalı', inline: true },
-                    { name: '🔞 Yaş Sınırı', value: `\`${p.ageLimit || 0}\` Gün`, inline: true }
+                    { name: '🔞 Yaş Sınırı', value: `\`${p.ageLimit || 0}\` Gün`, inline: true },
+                    { name: '\n⚡ Flood Koruması', value: floodConfig.enabled ? '✅ Aktif' : '❌ Devre Dışı', inline: true },
+                    { name: '📊 Flood Limitleri', value: `Mesaj: \`${floodConfig.messageLimit}\`/\`${floodConfig.messageTimeframe}ms\`\nKomut: \`${floodConfig.commandLimit}\`/\`${floodConfig.commandTimeframe}ms\``, inline: false }
                 )
-                .setFooter({ text: 'Ayarları Dashboard üzerinden de yönetebilirsiniz.' })
+                .setFooter({ text: 'Ayarları Dashboard üzerinden de yönetebilirsiniz. • bugun saat 15:01' })
                 .setTimestamp();
 
             const row = new ActionRowBuilder()
@@ -81,10 +86,11 @@ module.exports = {
                 // Mevcut durumu kontrol et
                 const settings = await Guild.findOne({ guildId: message.guild.id });
                 const p = settings?.protections || {};
+                const floodConfig = loadConfig();
                 
                 const allMatch = status ? 
-                    (p.antiSwear && p.antiLink && p.antiUrl && p.antiEmoji && p.antiSpam && p.antiCaps && p.antiBot) : 
-                    (!p.antiSwear && !p.antiLink && !p.antiUrl && !p.antiEmoji && !p.antiSpam && !p.antiCaps && !p.antiBot);
+                    (p.antiSwear && p.antiLink && p.antiUrl && p.antiEmoji && p.antiSpam && p.antiCaps && p.antiBot && floodConfig.enabled) : 
+                    (!p.antiSwear && !p.antiLink && !p.antiUrl && !p.antiEmoji && !p.antiSpam && !p.antiCaps && !p.antiBot && !floodConfig.enabled);
 
                 if (allMatch) {
                     return i.reply({ 
@@ -93,6 +99,7 @@ module.exports = {
                     });
                 }
                 
+                // Başka koruma sistemlerini güncelle
                 await Guild.findOneAndUpdate(
                     { guildId: message.guild.id },
                     { 
@@ -106,6 +113,11 @@ module.exports = {
                     },
                     { upsert: true }
                 );
+
+                // Flood config'ini de güncelle
+                const updatedFloodConfig = loadConfig();
+                updatedFloodConfig.enabled = status;
+                saveConfig(updatedFloodConfig);
 
                 const updatedPanel = await createProtectionPanel(message.guild.id);
                 await i.update(updatedPanel);
@@ -125,11 +137,19 @@ module.exports = {
         const status = action === 'aç';
         const field = systems[target];
 
-        await Guild.findOneAndUpdate(
-            { guildId: message.guild.id },
-            { [`protections.${field}`]: status },
-            { upsert: true }
-        );
+        // Flood özel handling
+        if (field === 'flood') {
+            const config = loadConfig();
+            config.enabled = status;
+            saveConfig(config);
+        } else {
+            // Diğer koruma sistemleri
+            await Guild.findOneAndUpdate(
+                { guildId: message.guild.id },
+                { [`protections.${field}`]: status },
+                { upsert: true }
+            );
+        }
 
         const embed = new EmbedBuilder()
             .setColor(status ? '#00FF00' : '#FF0000')
