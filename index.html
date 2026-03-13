@@ -47,6 +47,208 @@
             border-radius: 8px !important;
         }
         
+        /* ===== LOGIN MODAL ANIMASYONLAR ===== */
+        @keyframes modalFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes modalGlow {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.3)); }
+            50% { filter: drop-shadow(0 0 25px rgba(236, 72, 153, 0.4)); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        @keyframes orbitalBg1 {
+            0% { transform: translate(-20%, -50%) rotate(0deg) scale(1); }
+            50% { transform: translate(20%, -60%) rotate(180deg) scale(1.1); }
+            100% { transform: translate(-20%, -50%) rotate(360deg) scale(1); }
+        }
+
+        @keyframes orbitalBg2 {
+            0% { transform: translate(50%, -30%) rotate(0deg) scale(1); }
+            50% { transform: translate(30%, -40%) rotate(-180deg) scale(0.9); }
+            100% { transform: translate(50%, -30%) rotate(-360deg) scale(1); }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes button-hover-glow {
+            0% { box-shadow: 0 0 10px rgba(88, 101, 242, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(88, 101, 242, 0.8); }
+            100% { box-shadow: 0 0 30px rgba(88, 101, 242, 1); }
+        }
+
+        /* Modal animasyonları */
+        #login-modal.show #login-modal-content {
+            animation: modalFloat 3s ease-in-out infinite, modalGlow 4s ease-in-out infinite;
+            transform: scale(1) !important;
+            opacity: 1 !important;
+            translate: 0 !important;
+        }
+
+        /* Orbital backgrounds */
+        .orbital-bg {
+            position: absolute;
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            border-radius: 50%;
+            filter: blur(1px);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
+        }
+
+        .orbital-1 {
+            width: 200px;
+            height: 200px;
+            animation: orbitalBg1 20s linear infinite;
+        }
+
+        .orbital-2 {
+            width: 150px;
+            height: 150px;
+            border-color: rgba(236, 72, 153, 0.3);
+            box-shadow: 0 0 30px rgba(236, 72, 153, 0.2);
+            animation: orbitalBg2 15s linear infinite reverse;
+        }
+
+        /* Modern Login Card Styles */
+        .login-card {
+            background: linear-gradient(135deg, rgba(22, 22, 29, 0.95) 0%, rgba(25, 25, 35, 0.95) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 0% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        .login-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        /* Button Split Gradient Animation */
+        .button-split {
+            position: relative;
+            overflow: hidden !important;
+            background-size: 200% 100% !important;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        .button-split::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .button-split:hover::before {
+            left: 100%;
+        }
+
+        .button-split:active {
+            transform: scale(0.95) !important;
+        }
+
+        /* Floating particles */
+        @keyframes float-up {
+            0% {
+                opacity: 0;
+                transform: translateY(0) translateX(0);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) translateX(20px);
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(to bottom, rgba(168, 85, 247, 0.8), rgba(236, 72, 153, 0.2));
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float-up 3s ease-out forwards;
+        }
+
+        /* Feature card enhanced */
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(236, 72, 153, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(236, 72, 153, 0.08) 100%);
+            border-color: rgba(168, 85, 247, 0.5);
+            backdrop-filter: blur(15px);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(168, 85, 247, 0.15);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        
         .fade-in-up {
             animation: fadeInUp 0.5s ease-out forwards;
         }
@@ -508,39 +710,84 @@
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-500" id="login-modal-overlay"></div>
         
         <div class="relative w-full max-w-md mx-4 transform transition-all duration-500 scale-95 opacity-0 translate-y-8" id="login-modal-content">
-            <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur opacity-30"></div>
+            <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-3xl blur-xl opacity-25 animate-pulse"></div>
             
-            <div class="relative bg-[#16161d] rounded-3xl p-8 shadow-2xl border border-white/10 overflow-hidden">
-                <!-- Background Decoration -->
-                <div class="absolute top-0 right-0 w-32 h-32 bg-purple-600/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                <div class="absolute bottom-0 left-0 w-32 h-32 bg-pink-600/10 rounded-full blur-3xl -ml-16 -mb-16"></div>
+            <!-- Animated Orbital Backgrounds -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 pointer-events-none">
+                <div class="orbital-bg orbital-1"></div>
+                <div class="orbital-bg orbital-2" style="animation-delay: -5s;"></div>
+            </div>
+
+            <!-- Main Card -->
+            <div class="login-card rounded-3xl p-8 shadow-2xl overflow-hidden relative backdrop-blur-2xl">
+                <!-- Top accent line -->
+                <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+
+                <!-- Corner accents -->
+                <div class="absolute top-6 right-6 w-24 h-24 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-2xl"></div>
+                <div class="absolute bottom-6 left-6 w-24 h-24 bg-gradient-to-tr from-pink-500/20 to-transparent rounded-full blur-2xl"></div>
 
                 <div class="text-center relative z-10">
-                    <div class="w-20 h-20 bg-gradient-to-tr from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-purple-500/20 transform hover:rotate-12 transition-transform">
-                        <img src="logo.png" alt="GraveBOT" class="w-12 h-12 object-contain filter drop-shadow-lg">
+                    <!-- Animated Logo with Ring -->
+                    <div class="inline-block mb-6 relative group">
+                        <div class="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl opacity-75 group-hover:opacity-100 blur transition-all duration-300"></div>
+                        <div class="w-20 h-20 bg-gradient-to-tr from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center relative shadow-xl">
+                            <img src="logo.png" alt="GraveBOT" class="w-12 h-12 object-contain filter drop-shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        </div>
+                        <div class="absolute inset-0 rounded-2xl ring-2 ring-purple-400/30 group-hover:ring-purple-400/60 transition-all duration-300 animate-pulse"></div>
                     </div>
                     
-                    <h2 class="text-3xl font-black text-white mb-2 tracking-tight">GraveBOT <span class="text-purple-500">Panel</span></h2>
-                    <p class="text-gray-400 text-sm mb-10 px-4 leading-relaxed">
-                        Sunucularınızı yönetmek için Discord hesabınızla güvenli bir şekilde giriş yapın.
+                    <!-- Modern Title -->
+                    <h2 class="text-4xl font-black text-white mb-1 tracking-tight">
+                        Grave<span class="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">BOT</span>
+                    </h2>
+                    <p class="text-sm text-purple-300 font-semibold tracking-widest uppercase mb-6 opacity-80">Control Panel</p>
+                    
+                    <p class="text-gray-300 text-sm mb-8 px-4 leading-relaxed opacity-90">
+                        Sunucularınızı yönetmek için Discord hesabınızla güvenli giriş yapın.
                     </p>
 
-                    <a href="/auth/discord" class="flex items-center justify-center gap-3 w-full py-4 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-500/20 transition-all transform hover:scale-[1.02] active:scale-95 group">
-                        <i class="fa-brands fa-discord text-2xl group-hover:animate-bounce"></i>
-                        <span>Discord ile Giriş Yap</span>
+                    <!-- Modern Discord Button -->
+                    <a href="/auth/discord" class="button-split flex items-center justify-center gap-3 w-full py-4 bg-gradient-to-r from-[#5865F2] to-[#4752C4] hover:from-[#7289DA] hover:to-[#5865F2] text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-500/40 transition-all transform hover:scale-[1.02] active:scale-95 group relative overflow-hidden mb-6">
+                        <i class="fa-brands fa-discord text-2xl group-hover:animate-bounce relative z-10"></i>
+                        <span class="relative z-10">Discord ile Başla</span>
+                        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 bg-white/10 transition-opacity duration-300 rounded-2xl"></div>
                     </a>
 
-                    <div class="mt-8 pt-6 border-t border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">
-                            Giriş yaparak <a href="#" class="text-purple-400 hover:underline">Hizmet Şartları</a>'nı kabul etmiş olursunuz.
-                        </p>
+                    <!-- Feature Cards - Enhanced -->
+                    <div class="grid grid-cols-3 gap-2 mb-8">
+                        <div class="feature-card p-3 rounded-xl bg-white/5 border border-purple-500/30 text-center group cursor-pointer">
+                            <div class="text-2xl mb-2 group-hover:scale-125 transition-transform">🛡️</div>
+                            <p class="text-[10px] text-gray-300 font-semibold">Güvenli</p>
+                        </div>
+                        <div class="feature-card p-3 rounded-xl bg-white/5 border border-pink-500/30 text-center group cursor-pointer">
+                            <div class="text-2xl mb-2 group-hover:scale-125 transition-transform">⚡</div>
+                            <p class="text-[10px] text-gray-300 font-semibold">Hızlı</p>
+                        </div>
+                        <div class="feature-card p-3 rounded-xl bg-white/5 border border-blue-500/30 text-center group cursor-pointer">
+                            <div class="text-2xl mb-2 group-hover:scale-125 transition-transform">✨</div>
+                            <p class="text-[10px] text-gray-300 font-semibold">Kolay</p>
+                        </div>
                     </div>
+
+                    <!-- Divider -->
+                    <div class="flex items-center gap-3 my-6">
+                        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                        <span class="text-xs text-gray-500 uppercase tracking-widest font-semibold">veya</span>
+                        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                    </div>
+
+                    <!-- Terms -->
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold hover:text-gray-400 transition-colors">
+                        Giriş yaparak <a href="#" class="text-purple-400 hover:text-purple-300 hover:underline transition-colors">Hizmet Şartları</a>'nı kabul edersiniz.
+                    </p>
                 </div>
             </div>
             
-            <!-- Close Button -->
-            <button onclick="closeLoginModal()" class="absolute -top-12 right-0 text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium group">
-                Kapat <i class="fa-solid fa-xmark text-lg group-hover:rotate-90 transition-transform"></i>
+            <!-- Close Button - Modern -->
+            <button onclick="closeLoginModal()" class="absolute -top-14 right-0 group flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-300 border border-white/10 hover:border-white/20">
+                <i class="fa-solid fa-xmark group-hover:rotate-90 transition-transform duration-300"></i>
+                Kapat
             </button>
         </div>
     </div>
@@ -1067,33 +1314,59 @@
     </section>
 
     <script>
-        // Login Modal Functions
+        // Login Modal Functions with Enhanced Animation
         function openLoginModal() {
             const modal = document.getElementById('login-modal');
             const content = document.getElementById('login-modal-content');
+            const overlay = document.getElementById('login-modal-overlay');
             
             modal.classList.remove('hidden');
-            // Small delay to trigger transition
+            modal.classList.add('show');
+            
+            // Overlay fade-in
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100');
+            
+            // Content animation with delay
             setTimeout(() => {
                 content.classList.remove('scale-95', 'opacity-0', 'translate-y-8');
                 content.classList.add('scale-100', 'opacity-100', 'translate-y-0');
-            }, 10);
+            }, 50);
+
+            // Shake animation on elements
+            const elements = content.querySelectorAll('.relative > *');
+            elements.forEach((el, index) => {
+                el.style.animation = `slide-up 0.5s ease-out forwards`;
+                el.style.animationDelay = `${index * 0.08}s`;
+            });
         }
 
         function closeLoginModal() {
             const modal = document.getElementById('login-modal');
             const content = document.getElementById('login-modal-content');
+            const overlay = document.getElementById('login-modal-overlay');
             
             content.classList.remove('scale-100', 'opacity-100', 'translate-y-0');
             content.classList.add('scale-95', 'opacity-0', 'translate-y-8');
             
+            overlay.classList.add('opacity-0');
+            overlay.classList.remove('opacity-100');
+            
             setTimeout(() => {
                 modal.classList.add('hidden');
+                modal.classList.remove('show');
             }, 500);
         }
 
         // Close modal when clicking on overlay
         document.getElementById('login-modal-overlay').addEventListener('click', closeLoginModal);
+
+        // Keyboard shortcut to close modal (ESC)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !document.getElementById('login-modal').classList.contains('hidden')) {
+                closeLoginModal();
+            }
+        });
 
         // Feature Modal Functions
         function openFeatureModal(type) {

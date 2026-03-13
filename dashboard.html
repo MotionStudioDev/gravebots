@@ -50,6 +50,7 @@
         select {
             background-color: #1a1a20 !important;
         }
+
         select option {
             background-color: #1a1a20 !important;
             color: white !important;
@@ -821,6 +822,60 @@
     <!-- Mobile Overlay -->
     <div id="mobile-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden md:hidden"></div>
 
+    <!-- New Survey Modal -->
+    <div id="survey-modal"
+        class="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-lg rounded-2xl overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-white/5 flex justify-between items-center bg-[#151518]">
+                <h3 class="text-xl font-bold text-white">Yeni Anket Oluştur</h3>
+                <button onclick="closeSurveyModal()" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-8 space-y-6">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-400">Sunucu Seçin</label>
+                    <select id="survey-server-select"
+                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                        <option value="">Sunucu Seçin...</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-400">Anket Kanalı</label>
+                    <select id="survey-channel-select"
+                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                        <option value="">Kanal Seçin...</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-400">Anket Sorusu</label>
+                    <input type="text" id="survey-question"
+                        class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                        placeholder="Örn: Hangi oyun daha iyi?">
+                </div>
+                <div class="space-y-2" id="survey-options-container">
+                    <label class="text-sm font-medium text-gray-400">Seçenekler (En az 2)</label>
+                    <div class="space-y-2" id="options-inputs">
+                        <input type="text"
+                            class="survey-option-input w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                            placeholder="Seçenek 1">
+                        <input type="text"
+                            class="survey-option-input w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                            placeholder="Seçenek 2">
+                    </div>
+                    <button onclick="addSurveyOption()"
+                        class="text-xs text-purple-400 hover:text-purple-300 font-bold mt-2">
+                        <i class="fa-solid fa-plus mr-1"></i> Seçenek Ekle
+                    </button>
+                </div>
+                <button onclick="createSurvey()"
+                    class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-purple-500/20">
+                    ANKETİ BAŞLAT
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Manage Server Modal -->
     <div id="manage-modal"
         class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
@@ -841,7 +896,8 @@
 
             <div class="flex flex-1 overflow-hidden">
                 <!-- Modal Sidebar -->
-                <div class="w-64 bg-[#0a0a0c] border-r border-white/5 p-4 space-y-1 hidden md:block overflow-y-auto max-h-[calc(90vh-120px)]">
+                <div
+                    class="w-64 bg-[#0a0a0c] border-r border-white/5 p-4 space-y-1 hidden md:block overflow-y-auto max-h-[calc(90vh-120px)]">
                     <button onclick="switchModalTab('general')"
                         class="modal-tab-btn active w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center gap-3"
                         data-tab="general">
@@ -901,6 +957,11 @@
                         class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
                         data-tab="giveaways">
                         <i class="fa-solid fa-gift w-5 text-center"></i> Çekiliş Sistemi
+                    </button>
+                    <button onclick="switchModalTab('surveys')"
+                        class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                        data-tab="surveys">
+                        <i class="fa-solid fa-square-poll-vertical w-5 text-center"></i> Anket Sistemi
                     </button>
                     <button onclick="switchModalTab('invites')"
                         class="modal-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
@@ -1172,7 +1233,8 @@
                     <!-- TAB: PROTECTIONS -->
                     <div id="tab-protections" class="modal-tab-content hidden space-y-6">
                         <div class="flex items-center justify-between mb-4">
-                            <h4 class="text-lg font-bold text-white border-b border-white/5 pb-2 flex-1">🛡️ Koruma Filtreleri</h4>
+                            <h4 class="text-lg font-bold text-white border-b border-white/5 pb-2 flex-1">🛡️ Koruma
+                                Filtreleri</h4>
                             <div class="flex gap-2">
                                 <button onclick="toggleAllProtections(true)"
                                     class="text-[10px] bg-green-500/10 text-green-400 hover:bg-green-500/20 px-3 py-1.5 rounded-lg border border-green-500/20 transition-all font-bold">
@@ -1324,19 +1386,41 @@
 
                         <div class="mt-6 space-y-4">
                             <div class="flex items-center justify-between mb-2">
-                                <h5 class="text-sm font-bold text-white">Mod-Log Sistemi</h5>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                                        <i class="fa-solid fa-clipboard-list text-blue-500"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-sm font-bold text-white">Mod-Log Sistemi</h5>
+                                        <p class="text-[10px] text-gray-500">Tüm olayları belirlediğiniz kanala loglar
+                                        </p>
+                                    </div>
+                                </div>
                                 <button onclick="resetModLog()"
-                                    class="text-[10px] text-red-400 hover:text-red-300 transition-colors flex items-center gap-1">
-                                    <i class="fa-solid fa-power-off"></i> Sistemi Kapat
+                                    class="text-[10px] text-red-400 hover:text-red-300 transition-colors flex items-center gap-1 bg-red-500/10 px-3 py-1.5 rounded-lg border border-red-500/20">
+                                    <i class="fa-solid fa-power-off"></i> Kapat
                                 </button>
                             </div>
                             <div class="space-y-2">
                                 <label class="text-xs text-gray-400">Mod-Log Kanalı</label>
                                 <select id="setting-mod-log"
-                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors">
                                     <option value="">Devre Dışı</option>
                                 </select>
-                                <p class="text-[10px] text-gray-500">Koruma engellemeleri bu kanala loglanır.</p>
+                            </div>
+
+                            <div class="bg-blue-500/5 border border-blue-500/10 rounded-xl p-4 space-y-2">
+                                <h6 class="text-xs font-bold text-blue-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-info-circle"></i> Loglanan Olaylar
+                                </h6>
+                                <div class="grid grid-cols-2 gap-1">
+                                    <span class="text-[10px] text-gray-400">🗑️ Mesaj Silme</span>
+                                    <span class="text-[10px] text-gray-400">✏️ Mesaj Düzenleme</span>
+                                    <span class="text-[10px] text-gray-400">👋 Üye Giriş/Çıkış</span>
+                                    <span class="text-[10px] text-gray-400">🛡️ Koruma Filtreleri</span>
+                                    <span class="text-[10px] text-gray-400">🔨 Ban/Kick İşlemleri</span>
+                                    <span class="text-[10px] text-gray-400">⚠️ Uyarı İşlemleri</span>
+                                </div>
                             </div>
                         </div>
 
@@ -1700,6 +1784,24 @@
                         </div>
                     </div>
 
+                    <div id="tab-surveys" class="modal-tab-content hidden space-y-6">
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <h4 class="text-lg font-bold text-white">Anket Sistemi</h4>
+                            <button onclick="openNewSurveyModal()"
+                                class="bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Yeni Anket
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="survey-list">
+                            <!-- Anketler buraya yüklenecek -->
+                            <div class="text-center text-gray-500 py-12 col-span-full">
+                                <i class="fa-solid fa-square-poll-vertical text-4xl mb-3 opacity-20"></i>
+                                <p class="text-xs">Henüz bir anket oluşturulmamış.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="tab-invites" class="modal-tab-content hidden space-y-6">
                         <h4 class="text-lg font-bold text-white border-b border-white/5 pb-2">Davet Takip Sistemi</h4>
 
@@ -1750,10 +1852,13 @@
             </div>
 
             <!-- Flood Ayarları Modal Dialog -->
-            <div id="flood-config-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-                <div class="bg-[#0f0f13] rounded-2xl border border-white/10 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div id="flood-config-modal"
+                class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+                <div
+                    class="bg-[#0f0f13] rounded-2xl border border-white/10 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
                     <!-- Dialog Header -->
-                    <div class="sticky top-0 bg-[#151518] border-b border-white/5 p-6 flex justify-between items-center">
+                    <div
+                        class="sticky top-0 bg-[#151518] border-b border-white/5 p-6 flex justify-between items-center">
                         <div>
                             <h3 class="text-xl font-bold text-white flex items-center gap-2">
                                 <i class="fa-solid fa-sliders text-orange-500"></i> Flood Engel Ayarları
@@ -1772,9 +1877,13 @@
                                 <p class="text-xs text-gray-500 mt-1">Flood korumasını açıp kapatın</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="flood-modal-enabled" class="sr-only peer" onchange="updateToggleLabel(this)">
-                                <div class="w-14 h-7 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
-                                <span class="ml-3 text-sm font-medium text-gray-400 peer-checked:text-white">Kapalı</span>
+                                <input type="checkbox" id="flood-modal-enabled" class="sr-only peer"
+                                    onchange="updateToggleLabel(this)">
+                                <div
+                                    class="w-14 h-7 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600">
+                                </div>
+                                <span
+                                    class="ml-3 text-sm font-medium text-gray-400 peer-checked:text-white">Kapalı</span>
                             </label>
                         </div>
 
@@ -1805,7 +1914,8 @@
                                     <label class="text-xs font-bold text-gray-400">Maksimum Komut</label>
                                     <input type="number" id="flood-modal-cmd-limit" min="1" max="50" value="3"
                                         class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
-                                    <p class="text-[10px] text-gray-500">Zaman diliminde çalıştırılabilir maksimum komut</p>
+                                    <p class="text-[10px] text-gray-500">Zaman diliminde çalıştırılabilir maksimum komut
+                                    </p>
                                 </div>
                                 <div class="space-y-1">
                                     <label class="text-xs font-bold text-gray-400">Zaman Dilimi (ms)</label>
@@ -1821,7 +1931,8 @@
                             <h5 class="text-sm font-bold text-white">⚠️ Ceza Sistemi</h5>
                             <div class="space-y-2">
                                 <label class="text-xs font-bold text-gray-400">Ceza Türü</label>
-                                <select id="flood-modal-punishment" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
+                                <select id="flood-modal-punishment"
+                                    class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
                                     <option value="warn">⚠️ Uyarı</option>
                                     <option value="mute">🔇 Mute (Susturma)</option>
                                     <option value="kick">🚪 Kick (Atma)</option>
@@ -1840,7 +1951,8 @@
                         <!-- Log Kanalı -->
                         <div class="space-y-3">
                             <h5 class="text-sm font-bold text-white">📋 Log Kanalı</h5>
-                            <select id="flood-modal-log-channel" class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
+                            <select id="flood-modal-log-channel"
+                                class="w-full bg-[#1a1a20] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500 transition-colors">
                                 <option value="">Devre Dışı</option>
                             </select>
                             <p class="text-[10px] text-gray-500">Flood ihlalleri bu kanala gönderilecek</p>
@@ -1851,15 +1963,19 @@
                             <i class="fa-solid fa-circle-info text-orange-500 mt-0.5 flex-shrink-0"></i>
                             <div>
                                 <p class="text-[10px] text-orange-400 font-bold">Nasıl Çalışır?</p>
-                                <p class="text-[10px] text-gray-400 mt-1">Kullanıcı belirtilen zaman diliminde mesaj/komut limitini aştığında, otomatik olarak seçilmiş ceza uygulanır. İhlallar arttıkça ceza seviyesi yükselebilir.</p>
+                                <p class="text-[10px] text-gray-400 mt-1">Kullanıcı belirtilen zaman diliminde
+                                    mesaj/komut limitini aştığında, otomatik olarak seçilmiş ceza uygulanır. İhlallar
+                                    arttıkça ceza seviyesi yükselebilir.</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Dialog Footer -->
                     <div class="sticky bottom-0 bg-[#151518] border-t border-white/5 p-6 flex justify-end gap-3">
-                        <button onclick="closeFloodModal()" class="px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-white/5 transition-all">İptal</button>
-                        <button onclick="saveFloodModal()" class="px-6 py-2 rounded-lg text-sm font-bold bg-orange-600 hover:bg-orange-500 text-white shadow-lg shadow-orange-500/20 transition-all transform hover:scale-105">
+                        <button onclick="closeFloodModal()"
+                            class="px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-white/5 transition-all">İptal</button>
+                        <button onclick="saveFloodModal()"
+                            class="px-6 py-2 rounded-lg text-sm font-bold bg-orange-600 hover:bg-orange-500 text-white shadow-lg shadow-orange-500/20 transition-all transform hover:scale-105">
                             <i class="fa-solid fa-save mr-2"></i> Kaydet
                         </button>
                     </div>
@@ -2265,6 +2381,10 @@
                 clearInterval(giveawayRefreshInterval);
                 giveawayRefreshInterval = null;
             }
+            if (surveyRefreshInterval) {
+                clearInterval(surveyRefreshInterval);
+                surveyRefreshInterval = null;
+            }
             const _uploadIdle = document.getElementById('upload-idle');
             const _uploadPreview = document.getElementById('upload-preview');
             if (_uploadIdle) _uploadIdle.classList.remove('hidden');
@@ -2286,6 +2406,7 @@
             if (tabId === 'shop') fetchShopItems();
             if (tabId === 'audit-logs') fetchAuditLogs();
             if (tabId === 'invites') fetchInvites();
+            if (tabId === 'surveys') fetchSurveys();
 
             // Çekiliş otomatik yenileme
             if (giveawayRefreshInterval) {
@@ -2296,6 +2417,11 @@
                 channelsLoaded = false;
                 fetchGiveaways();
                 giveawayRefreshInterval = setInterval(fetchGiveaways, 10000); // 10 saniyede bir yenile
+            }
+
+            if (tabId === 'surveys') {
+                fetchSurveys();
+                surveyRefreshInterval = setInterval(fetchSurveys, 10000);
             }
 
             if (tabId === 'flood') {
@@ -2628,7 +2754,7 @@
         async function fetchGiveaways() {
             const list = document.getElementById('giveaways-list');
             const channelSelect = document.getElementById('ga-channel');
-            
+
             // Kanalları sadece ilk sefer yükle
             if (!channelsLoaded) {
                 try {
@@ -2641,7 +2767,7 @@
                     console.error('Kanallar yüklenirken hata:', error);
                 }
             }
-            
+
             list.innerHTML = '<div class="text-center py-8 text-gray-500">Yükleniyor...</div>';
 
             try {
@@ -2717,28 +2843,174 @@
             }
         }
 
+        // Anket Sistemi Fonksiyonları
+        let surveyRefreshInterval = null;
+
+        async function fetchSurveys() {
+            const list = document.getElementById('survey-list');
+            if (!currentGuildId) {
+                list.innerHTML = '<div class="text-center py-12 col-span-full text-gray-500"><i class="fa-solid fa-server text-4xl mb-3 opacity-20"></i><p>Lütfen bir sunucu seçin.</p></div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/surveys`);
+                const surveys = await response.json();
+
+                if (!surveys || surveys.length === 0) {
+                    list.innerHTML = '<div class="text-center py-12 col-span-full text-gray-500"><i class="fa-solid fa-square-poll-vertical text-4xl mb-3 opacity-20"></i><p class="text-xs">Henüz bir anket oluşturulmamış.</p></div>';
+                    return;
+                }
+
+                list.innerHTML = surveys.map(survey => {
+                    const totalVotes = survey.options.reduce((acc, opt) => acc + opt.votes.length, 0);
+                    const isClosed = survey.closed;
+
+                    return `
+                    <div class="glass-panel p-4 rounded-xl border ${isClosed ? 'border-white/5 opacity-70' : 'border-purple-500/20'} transition-all hover:scale-[1.01]">
+                        <div class="flex justify-between items-start mb-3">
+                            <h4 class="font-bold text-white text-sm truncate pr-4" title="${survey.question}">${survey.question}</h4>
+                            <button onclick="deleteSurvey('${survey._id}')" class="text-red-400 hover:text-red-300 transition-colors p-1 text-xs">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            ${survey.options.map((opt, i) => {
+                        const percentage = totalVotes > 0 ? Math.round((opt.votes.length / totalVotes) * 100) : 0;
+                        return `
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-[10px] mb-1">
+                                        <span class="text-gray-400 font-medium">${opt.label}</span>
+                                        <span class="text-purple-400 font-bold">${opt.votes.length} oy (%${percentage})</span>
+                                    </div>
+                                    <div class="w-full bg-white/5 rounded-full h-1 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-purple-600 to-blue-600 h-full rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                                    </div>
+                                </div>`;
+                    }).join('')}
+                        </div>
+                        <div class="mt-4 flex justify-between items-center border-t border-white/5 pt-3">
+                            <span class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">${isClosed ? 'BİTTİ' : 'AKTİF'}</span>
+                            <span class="text-[9px] text-gray-500 font-medium">${new Date(survey.createdAt).toLocaleDateString('tr-TR')}</span>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (error) {
+                list.innerHTML = '<div class="text-center py-12 col-span-full text-red-400">Anketler yüklenirken hata oluştu.</div>';
+            }
+        }
+
+        function openNewSurveyModal() {
+            if (!currentGuildId) return showToast('Lütfen önce bir sunucu seçin!', 'error');
+
+            const modal = document.getElementById('survey-modal');
+            const serverSelect = document.getElementById('survey-server-select');
+            const channelSelect = document.getElementById('survey-channel-select');
+
+            // Populate Server Select
+            serverSelect.innerHTML = `<option value="${currentGuildId}" selected>Geçerli Sunucu</option>`;
+
+            // Fetch Channels
+            fetch(`/api/server/${currentGuildId}`)
+                .then(res => res.json())
+                .then(data => {
+                    channelSelect.innerHTML = (data.textChannels || []).map(c => `<option value="${c.id}">#${c.name}</option>`).join('');
+                });
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeSurveyModal() {
+            document.getElementById('survey-modal').classList.add('hidden');
+        }
+
+        function addSurveyOption() {
+            const container = document.getElementById('options-inputs');
+            const count = container.querySelectorAll('input').length;
+            if (count >= 5) return showToast('En fazla 5 seçenek ekleyebilirsiniz.', 'error');
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'survey-option-input w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors';
+            input.placeholder = `Seçenek ${count + 1}`;
+            container.appendChild(input);
+        }
+
+        async function createSurvey() {
+            const channelId = document.getElementById('survey-channel-select').value;
+            const question = document.getElementById('survey-question').value;
+            const optionInputs = document.querySelectorAll('.survey-option-input');
+            const options = Array.from(optionInputs).map(i => i.value.trim()).filter(v => v !== '');
+
+            if (!channelId || !question || options.length < 2) {
+                return showToast('Lütfen tüm alanları doldurun ve en az 2 seçenek girin.', 'error');
+            }
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/surveys`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ channelId, question, options })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Anket başarıyla başlatıldı!', 'success');
+                    closeSurveyModal();
+                    fetchSurveys();
+                    // Clear inputs
+                    document.getElementById('survey-question').value = '';
+                    document.getElementById('options-inputs').innerHTML = `
+                        <input type="text" class="survey-option-input w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="Seçenek 1">
+                        <input type="text" class="survey-option-input w-full bg-[#1a1a20] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="Seçenek 2">
+                    `;
+                } else {
+                    showToast(result.error || 'Hata oluştu', 'error');
+                }
+            } catch (error) {
+                showToast('Anket oluşturulurken hata oluştu.', 'error');
+            }
+        }
+
+        async function deleteSurvey(surveyId) {
+            if (!confirm('Bu anketi silmek ve Discord mesajını kaldırmak istediğinize emin misiniz?')) return;
+
+            try {
+                const response = await fetch(`/api/server/${currentGuildId}/surveys/${surveyId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Anket silindi.', 'success');
+                    fetchSurveys();
+                }
+            } catch (error) {
+                showToast('Anket silinirken hata oluştu.', 'error');
+            }
+        }
+
         // Süre parse fonksiyonu
         function parseDuration(input) {
             const lowerInput = input.toLowerCase().trim();
-            
+
             // Saat kontrolü
             const hourMatch = lowerInput.match(/^(\d+)\s*(saat|sa|hour|hr|h)$/);
             if (hourMatch) {
                 return parseInt(hourMatch[1]) * 60; // Saati dakikaya çevir
             }
-            
+
             // Dakika kontrolü
             const minuteMatch = lowerInput.match(/^(\d+)\s*(dakika|dk|minute|min|m)$/);
             if (minuteMatch) {
                 return parseInt(minuteMatch[1]);
             }
-            
+
             // Sadece sayı girilmişse dakika olarak kabul et
             const numberMatch = lowerInput.match(/^(\d+)$/);
             if (numberMatch) {
                 return parseInt(numberMatch[1]);
             }
-            
+
             return null; // Geçersiz giriş
         }
 
@@ -4237,6 +4509,174 @@
                 tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-red-400">Loglar yüklenemedi.</td></tr>';
             }
         }
+
+        // Sayfa Değiştirme Mantığı
+        let currentPage = 'overview';
+
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.dataset.page;
+                if (!page) return;
+
+                switchPage(page);
+            });
+        });
+
+        function switchPage(pageId) {
+            currentPage = pageId;
+
+            // Update Sidebar
+            document.querySelectorAll('.sidebar-link').forEach(l => {
+                if (l.dataset.page === pageId) {
+                    l.classList.add('active', 'text-white');
+                    l.classList.remove('text-gray-400');
+                } else {
+                    l.classList.remove('active', 'text-white');
+                    l.classList.add('text-gray-400');
+                }
+            });
+
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => {
+                p.classList.add('hidden');
+            });
+
+            // Show selected page
+            const selectedPage = document.getElementById(`page-${pageId}`);
+            if (selectedPage) {
+                selectedPage.classList.remove('hidden');
+            }
+
+            // Update Header Title
+            const titles = {
+                'overview': 'Genel Bakış',
+                'servers': 'Sunucularım',
+                'commands': 'Komut Yönetimi',
+                'surveys': 'Anket Sistemi',
+                'blacklist': 'Kara Liste',
+                'bot-settings': 'Bot Ayarları'
+            };
+            document.querySelector('header h1').innerText = titles[pageId] || 'Panel';
+
+            // Page specific loads
+            if (pageId === 'overview') fetchStats();
+            if (pageId === 'servers') fetchServers();
+            if (pageId === 'commands') fetchCommands();
+            if (pageId === 'blacklist') fetchBlacklist();
+            if (pageId === 'bot-settings') fetchBotSettings();
+        }
+
+        // Ana İstatistikleri Çek
+        async function fetchStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+
+                if (stats.error) return;
+
+                // Stats Grid
+                const updateEl = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = val.toLocaleString('tr-TR');
+                };
+
+                updateEl('stat-servers', stats.servers);
+                updateEl('stat-users', stats.users);
+                updateEl('stat-commands', stats.commands);
+                updateEl('stat-ping', stats.ping + 'ms');
+                updateEl('stat-giveaways', stats.activeGiveaways);
+                updateEl('stat-avg-members', `Ort. ${stats.averageMembersPerGuild} üye`);
+
+                // Bot Settings Uptime & Ping
+                const uptimeEl = document.getElementById('bot-settings-uptime');
+                const pingEl = document.getElementById('bot-settings-ping');
+                if (uptimeEl) uptimeEl.innerText = stats.uptime;
+                if (pingEl) pingEl.innerText = stats.ping + ' ms';
+
+                // Maintenance Toggle
+                const maintenanceToggle = document.getElementById('global-maintenance-toggle');
+                if (maintenanceToggle) maintenanceToggle.checked = stats.maintenance;
+
+            } catch (error) {
+                console.error('İstatistik çekme hatası:', error);
+            }
+        }
+
+        async function fetchBotSettings() {
+            fetchStats();
+            fetchBotActionLogs();
+        }
+
+        async function handleBotAction(action) {
+            let confirmMsg = '';
+            if (action === 'restart') confirmMsg = 'Botu yeniden başlatmak istediğinize emin misiniz?';
+            if (action === 'shutdown') confirmMsg = 'Botu tamamen kapatmak istediğinize emin misiniz?';
+            if (action === 'maintenance') {
+                const isEnabling = document.getElementById('global-maintenance-toggle').checked;
+                confirmMsg = isEnabling ? 'Bakım modunu açmak istediğinize emin misiniz?' : 'Bakım modunu kapatmak istediğinize emin misiniz?';
+            }
+
+            if (!confirm(confirmMsg)) {
+                if (action === 'maintenance') {
+                    document.getElementById('global-maintenance-toggle').checked = !document.getElementById('global-maintenance-toggle').checked;
+                }
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/bot-action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast(result.message || 'İşlem başarılı!', 'success');
+                    fetchBotActionLogs();
+                } else {
+                    showToast(result.error || 'Hata oluştu', 'error');
+                }
+            } catch (error) {
+                showToast('İşlem sırasında hata oluştu.', 'error');
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            // Basit bir alert yerine toast da yapılabilir, şimdilik alert
+            // alert(message);
+
+            // Daha şık bir toast (Dashboard'da zaten tailwind var)
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 z-[100] px-6 py-3 rounded-xl shadow-2xl animate-fade-in flex items-center gap-3 border ${type === 'success' ? 'bg-green-600/90 border-green-500' :
+                type === 'error' ? 'bg-red-600/90 border-red-500' :
+                    'bg-blue-600/90 border-blue-500'
+                } text-white font-bold text-sm`;
+
+            const icon = type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info';
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize Dashboard
+        async function initDashboard() {
+            const auth = await checkAuth();
+            if (auth) {
+                switchPage('overview');
+                fetchStats();
+                fetchActivities();
+                // Refresh stats every 30s
+                setInterval(fetchStats, 30000);
+                setInterval(fetchActivities, 60000);
+            }
+        }
+
+        initDashboard();
 
     </script>
 </body>

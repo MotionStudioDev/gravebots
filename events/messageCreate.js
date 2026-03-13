@@ -4,6 +4,7 @@ const Level = require('../models/Level');
 const Blacklist = require('../models/Blacklist');
 const CommandUsage = require('../models/CommandUsage');
 const Flood = require('../models/Flood');
+const { sendModLog } = require('../utils/modlog');
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 const { loadConfig } = require('../configs/flood-config');
 
@@ -38,23 +39,23 @@ module.exports = {
         if (floodConfig.enabled && !message.author.bot && !message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
             const floodKey = `${message.guild.id}-${message.author.id}`;
             const cacheData = floodCache.get(floodKey) || { messages: [], commands: [], lastMessage: null };
-            
+
             const now = Date.now();
-            
+
             // Eski zaman dilimindeki mesajları temizle
             cacheData.messages = cacheData.messages.filter(t => now - t < floodConfig.messageTimeframe);
             cacheData.messages.push(now);
-            
+
             // Flood Algılama (Gelişmiş)
             let isFlood = false;
             let floodReason = '';
-            
+
             // 1. Hız kontrolü - N mesaj M ms'de
             if (cacheData.messages.length > floodConfig.messageLimit) {
                 isFlood = true;
                 floodReason = `Çok hızlı mesaj gönderimi (${cacheData.messages.length}/${floodConfig.messageLimit})`;
             }
-            
+
             // 2. Tekrarlanan mesaj kontrolü
             if (cacheData.lastMessage && cacheData.lastMessage === message.content && message.content.length > 5) {
                 const recentDuplicates = cacheData.messages.filter(t => now - t < 2000); // Son 2 saniyede
@@ -63,14 +64,14 @@ module.exports = {
                     floodReason = 'Tekrarlanan mesaj spam';
                 }
             }
-            
+
             // 3. Mention spam - 5+ mention
             const mentionCount = (message.mentions.members?.size || 0) + (message.mentions.roles?.size || 0);
             if (mentionCount >= 5) {
                 isFlood = true;
                 floodReason = `Mention spam (${mentionCount} mention)`;
             }
-            
+
             // 4. Emoji spam - 15+ emoji
             const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
             const emojiCount = (message.content.match(emojiRegex) || []).length;
@@ -78,7 +79,7 @@ module.exports = {
                 isFlood = true;
                 floodReason = `Emoji spam (${emojiCount} emoji)`;
             }
-            
+
             // 5. Büyük harf spam - %80+
             if (message.content.length > 10) {
                 const capsCount = (message.content.match(/[A-Z]/g) || []).length;
@@ -88,7 +89,7 @@ module.exports = {
                     floodReason = 'Caps lock spam';
                 }
             }
-            
+
             // 6. URL/Link spam
             const linkRegex = /(https?:\/\/|www\.)/gi;
             const linkCount = (message.content.match(linkRegex) || []).length;
@@ -96,21 +97,21 @@ module.exports = {
                 isFlood = true;
                 floodReason = `Link spam (${linkCount} link)`;
             }
-            
+
             // 7. Uzun spam mesaj
             if (message.content.length > 1500) {
                 isFlood = true;
                 floodReason = 'Aşırı uzun mesaj (1500+ karakter)';
             }
-            
+
             // 8. Tekrarlanan karakter - "aaaaa" gibi
             if (/(.)(\1){9,}/.test(message.content)) {
                 isFlood = true;
                 floodReason = 'Tekrarlanan karakter spam';
             }
-            
+
             cacheData.lastMessage = message.content;
-            
+
             if (isFlood) {
                 // FLOOD TESPİT EDİLDİ!
                 let floodRecord = await Flood.findOne({ guildId: message.guild.id, userId: message.author.id });
@@ -157,12 +158,12 @@ module.exports = {
                                 floodRecord.isMuted = true;
                                 floodRecord.muteEndsAt = new Date(Date.now() + floodConfig.muteDuration);
                                 await floodRecord.save();
-                                
+
                                 // Discord timeout uygula
                                 await message.member.timeout(floodConfig.muteDuration, 'Flood koruması - ' + floodReason).catch(err => {
                                     console.error('Timeout ayarlanırken hata:', err);
                                 });
-                                
+
                                 const muteEmbed = new EmbedBuilder()
                                     .setColor('#FF6B6B')
                                     .setTitle('🔇 Flood Mute')
@@ -352,22 +353,17 @@ module.exports = {
                 if (hasBadWord) {
                     await message.delete().catch(() => { });
 
-                    // Mod-Log Gönder
-                    if (settings.logs?.moderation) {
-                        const logChannel = message.guild.channels.cache.get(settings.logs.moderation) || await message.guild.channels.fetch(settings.logs.moderation).catch(() => null);
-                        if (logChannel) {
-                            const logEmbed = new EmbedBuilder()
-                                .setColor('#FF0000')
-                                .setTitle('🔞 Küfür Filtresi')
-                                .addFields(
-                                    { name: 'Kullanıcı', value: `${message.author.tag} (${message.author.id})`, inline: true },
-                                    { name: 'Kanal', value: `<#${message.channel.id}>`, inline: true },
-                                    { name: 'Mesaj İçeriği', value: `\`\`\`${message.content.substring(0, 500)}\`\`\`` }
-                                )
-                                .setTimestamp();
-                            logChannel.send({ embeds: [logEmbed] }).catch(err => console.error("Log gönderme hatası:", err));
-                        }
-                    }
+                    // Mod-Log Gönder (YENİ SİSTEM)
+                    await sendModLog({
+                        guildId: message.guild.id,
+                        type: 'protection',
+                        userId: message.author.id,
+                        userTag: message.author.tag,
+                        channelId: message.channel.id,
+                        channelName: message.channel.name,
+                        content: message.content,
+                        reason: 'Küfür filtresi'
+                    }, settings, client);
 
                     return message.channel.send({
                         embeds: [
@@ -391,22 +387,17 @@ module.exports = {
                 if (settings.protections?.antiLink && isLink) {
                     await message.delete().catch(() => { });
 
-                    // Mod-Log Gönder
-                    if (settings.logs?.moderation) {
-                        const logChannel = message.guild.channels.cache.get(settings.logs.moderation);
-                        if (logChannel) {
-                            const logEmbed = new EmbedBuilder()
-                                .setColor('#FF0000')
-                                .setTitle('🔗 Reklam Filtresi')
-                                .addFields(
-                                    { name: 'Kullanıcı', value: `${message.author.tag} (${message.author.id})`, inline: true },
-                                    { name: 'Kanal', value: `<#${message.channel.id}>`, inline: true },
-                                    { name: 'Mesaj İçeriği', value: `\`\`\`${message.content.substring(0, 500)}\`\`\`` }
-                                )
-                                .setTimestamp();
-                            logChannel.send({ embeds: [logEmbed] }).catch(() => { });
-                        }
-                    }
+                    // Mod-Log Gönder (YENİ SİSTEM)
+                    await sendModLog({
+                        guildId: message.guild.id,
+                        type: 'protection',
+                        userId: message.author.id,
+                        userTag: message.author.tag,
+                        channelId: message.channel.id,
+                        channelName: message.channel.name,
+                        content: message.content,
+                        reason: 'Reklam/Discord davet filtresi'
+                    }, settings, client);
 
                     return message.channel.send({
                         embeds: [
@@ -421,22 +412,17 @@ module.exports = {
                 if (settings.protections?.antiUrl && isGeneralUrl) {
                     await message.delete().catch(() => { });
 
-                    // Mod-Log Gönder
-                    if (settings.logs?.moderation) {
-                        const logChannel = message.guild.channels.cache.get(settings.logs.moderation);
-                        if (logChannel) {
-                            const logEmbed = new EmbedBuilder()
-                                .setColor('#FF0000')
-                                .setTitle('🌐 URL Filtresi')
-                                .addFields(
-                                    { name: 'Kullanıcı', value: `${message.author.tag} (${message.author.id})`, inline: true },
-                                    { name: 'Kanal', value: `<#${message.channel.id}>`, inline: true },
-                                    { name: 'Mesaj İçeriği', value: `\`\`\`${message.content.substring(0, 500)}\`\`\`` }
-                                )
-                                .setTimestamp();
-                            logChannel.send({ embeds: [logEmbed] }).catch(() => { });
-                        }
-                    }
+                    // Mod-Log Gönder (YENİ SİSTEM)
+                    await sendModLog({
+                        guildId: message.guild.id,
+                        type: 'protection',
+                        userId: message.author.id,
+                        userTag: message.author.tag,
+                        channelId: message.channel.id,
+                        channelName: message.channel.name,
+                        content: message.content,
+                        reason: 'URL/Link filtresi'
+                    }, settings, client);
 
                     return message.channel.send({
                         embeds: [
@@ -499,28 +485,57 @@ module.exports = {
                 if (emojiCount > 5) { // 5'ten fazla emoji varsa
                     await message.delete().catch(() => { });
 
-                    // Mod-Log Gönder
-                    if (settings.logs?.moderation) {
-                        const logChannel = message.guild.channels.cache.get(settings.logs.moderation) || await message.guild.channels.fetch(settings.logs.moderation).catch(() => null);
-                        if (logChannel) {
-                            const logEmbed = new EmbedBuilder()
-                                .setColor('#FF0000')
-                                .setTitle('😀 Emoji Filtresi')
-                                .addFields(
-                                    { name: 'Kullanıcı', value: `${message.author.tag} (${message.author.id})`, inline: true },
-                                    { name: 'Kanal', value: `<#${message.channel.id}>`, inline: true },
-                                    { name: 'Emoji Sayısı', value: `${emojiCount}`, inline: true }
-                                )
-                                .setTimestamp();
-                            logChannel.send({ embeds: [logEmbed] }).catch(() => { });
-                        }
-                    }
+                    // Mod-Log Gönder (YENİ SİSTEM)
+                    await sendModLog({
+                        guildId: message.guild.id,
+                        type: 'protection',
+                        userId: message.author.id,
+                        userTag: message.author.tag,
+                        channelId: message.channel.id,
+                        channelName: message.channel.name,
+                        content: message.content,
+                        reason: 'Emoji filtresi'
+                    }, settings, client);
 
                     return message.channel.send({
                         embeds: [
                             new EmbedBuilder()
                                 .setColor('#FF0000')
                                 .setDescription(`⚠️ <@${message.author.id}>, lütfen aşırı emoji kullanma! (Maks: 5)`)
+                        ]
+                    }).then(msg => setTimeout(() => msg.delete().catch(() => { }), 5000));
+                }
+            }
+
+            // 6. Yasaklı Kelimeler Engeli
+            if (settings.protections?.bannedTags && settings.protections.bannedTags.length > 0) {
+                const contentLower = message.content.toLowerCase();
+                const bannedWord = settings.protections.bannedTags.find(word => {
+                    const cleanWord = word.toLowerCase().trim();
+                    const regex = new RegExp(`(\\b|\\W)${cleanWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\b|\\W)`, 'i');
+                    return regex.test(contentLower) || contentLower.includes(cleanWord);
+                });
+
+                if (bannedWord) {
+                    await message.delete().catch(() => { });
+
+                    // Mod-Log Gönder (YENİ SİSTEM)
+                    await sendModLog({
+                        guildId: message.guild.id,
+                        type: 'protection',
+                        userId: message.author.id,
+                        userTag: message.author.tag,
+                        channelId: message.channel.id,
+                        channelName: message.channel.name,
+                        content: message.content,
+                        reason: `Yasaklı kelime: ${bannedWord}`
+                    }, settings, client);
+
+                    return message.channel.send({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setColor('#FF0000')
+                                .setDescription(`⚠️ <@${message.author.id}>, yasaklı kelime içeren mesaj gönderemediin!`)
                         ]
                     }).then(msg => setTimeout(() => msg.delete().catch(() => { }), 5000));
                 }
@@ -566,8 +581,8 @@ module.exports = {
         }
 
         try {
-            await command.execute(message, args, client, addActivity);
-            
+            await command.execute(message, args, client, botOwnerIds, settings, addActivity);
+
             // Komut kullanımını kaydet
             await CommandUsage.create({
                 commandName: command.name,

@@ -1,4 +1,5 @@
-const Log = require('../models/Log');
+const { sendModLog } = require('../utils/modlog');
+const Guild = require('../models/Guild');
 
 module.exports = {
     name: 'messageUpdate',
@@ -6,20 +7,19 @@ module.exports = {
         if (!oldMessage.guild || !oldMessage.author || oldMessage.author.bot) return;
         if (oldMessage.content === newMessage.content) return; // Sadece içerik değişikliği
 
-        try {
-            await Log.create({
-                guildId: oldMessage.guild.id,
-                type: 'messageUpdate',
-                userId: oldMessage.author.id,
-                userTag: oldMessage.author.tag,
-                oldContent: oldMessage.content || 'İçerik yok',
-                newContent: newMessage.content || 'İçerik yok',
-                channelId: oldMessage.channel.id,
-                channelName: oldMessage.channel.name,
-                timestamp: Date.now()
-            });
-        } catch (e) {
-            console.error("Log kaydı oluşturulamadı:", e);
-        }
+        const settings = await Guild.findOne({ guildId: oldMessage.guild.id });
+        if (!settings) return;
+
+        // Mod-Log gönder (yeni sistem)
+        await sendModLog({
+            guildId: oldMessage.guild.id,
+            type: 'messageUpdate',
+            userId: oldMessage.author.id,
+            userTag: oldMessage.author.tag,
+            channelId: oldMessage.channel.id,
+            channelName: oldMessage.channel.name,
+            oldContent: oldMessage.content || 'İçerik yok',
+            newContent: newMessage.content || 'İçerik yok'
+        }, settings, client);
     }
 };

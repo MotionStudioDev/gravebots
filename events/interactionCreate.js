@@ -1,12 +1,56 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField, ChannelType } = require('discord.js');
 const Guild = require('../models/Guild');
+const Survey = require('../models/Survey');
 
 module.exports = {
     name: 'interactionCreate',
     async execute(interaction, client, botOwnerIds, addActivity) {
         if (!interaction.isButton()) return;
 
-        const { customId, guild, user, channel } = interaction;
+        const { customId, guild, user, channel, message } = interaction;
+        
+        // --- ANKET SİSTEMİ ---
+        if (customId.startsWith('survey_')) {
+            await interaction.deferUpdate();
+            
+            const surveyIndex = parseInt(customId.split('_')[1]);
+            const surveyData = await Survey.findOne({ messageId: message.id });
+            
+            if (!surveyData || surveyData.closed) return;
+
+            // Kullanıcı daha önce oy vermiş mi?
+            let alreadyVotedIndex = -1;
+            surveyData.options.forEach((opt, idx) => {
+                if (opt.votes.includes(user.id)) alreadyVotedIndex = idx;
+            });
+
+            if (alreadyVotedIndex === surveyIndex) {
+                // Aynı şıkka tekrar basarsa oyunu geri çeksin
+                surveyData.options[surveyIndex].votes = surveyData.options[surveyIndex].votes.filter(id => id !== user.id);
+            } else {
+                // Farklı şıkka basarsa eskisini sil, yenisini ekle
+                if (alreadyVotedIndex !== -1) {
+                    surveyData.options[alreadyVotedIndex].votes = surveyData.options[alreadyVotedIndex].votes.filter(id => id !== user.id);
+                }
+                surveyData.options[surveyIndex].votes.push(user.id);
+            }
+
+            await surveyData.save();
+
+            // Embed'i güncelle
+            const totalVotes = surveyData.options.reduce((acc, opt) => acc + opt.votes.length, 0);
+            
+            const updatedEmbed = EmbedBuilder.from(message.embeds[0])
+                .setDescription(`**${surveyData.question}**\n\n` + surveyData.options.map((opt, i) => {
+                    const percentage = totalVotes > 0 ? Math.round((opt.votes.length / totalVotes) * 100) : 0;
+                    const progressBar = '🟦'.repeat(Math.round(percentage / 10)) + '⬜'.repeat(10 - Math.round(percentage / 10));
+                    return `${i + 1}️⃣ ${opt.label} (${opt.votes.length} oy - %${percentage})\n${progressBar}`;
+                }).join('\n\n'));
+
+            await message.edit({ embeds: [updatedEmbed] });
+            return;
+        }
+
         const settings = await Guild.findOne({ guildId: guild.id });
 
         if (customId === 'ticket_open') {

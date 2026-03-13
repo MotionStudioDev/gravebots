@@ -1,11 +1,12 @@
 const Log = require('../models/Log');
 const Guild = require('../models/Guild');
+const { sendModLog } = require('../utils/modlog');
 const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const { createWelcomeCard } = require('./guildMemberAdd');
 
 module.exports = {
     name: 'guildMemberRemove',
-    async execute(member) {
+    async execute(member, client) {
         const guild = member.guild;
 
         // Ayarları çek
@@ -32,15 +33,14 @@ module.exports = {
             }
         }
 
-        // Log Ayrılma
+        // Log Ayrılma (YENİ SİSTEM)
         try {
-            await Log.create({
+            await sendModLog({
                 guildId: guild.id,
                 type: 'memberLeave',
                 userId: member.id,
-                userTag: member.user.tag,
-                timestamp: Date.now()
-            });
+                userTag: member.user.tag
+            }, settings, client);
         } catch (e) {
             console.error("Leave log hatası:", e);
         }

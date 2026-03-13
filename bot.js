@@ -18,6 +18,7 @@ const Infraction = require('./models/Infraction');
 const Log = require('./models/Log');
 const Giveaway = require('./models/Giveaway');
 const Blacklist = require('./models/Blacklist');
+const Survey = require('./models/Survey');
 const ServerHistory = require('./models/ServerHistory');
 const CommandUsage = require('./models/CommandUsage');
 const Flood = require('./models/Flood');
@@ -998,6 +999,82 @@ app.delete('/api/server/:id/giveaway/:gaId', checkAuth, async (req, res) => {
 
         // Veritabanından çekilişi sil
         await Giveaway.findByIdAndDelete(req.params.gaId);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Anketleri Al
+app.get('/api/server/:id/surveys', checkAuth, async (req, res) => {
+    try {
+        const surveys = await Survey.find({ guildId: req.params.id }).sort({ createdAt: -1 });
+        res.json(surveys);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Yeni Anket Oluştur
+app.post('/api/server/:id/surveys', checkAuth, async (req, res) => {
+    try {
+        const { channelId, question, options } = req.body;
+        const guild = client.guilds.cache.get(req.params.id);
+        if (!guild) return res.status(404).json({ error: 'Sunucu bulunamadı.' });
+
+        const channel = guild.channels.cache.get(channelId);
+        if (!channel) return res.status(404).json({ error: 'Kanal bulunamadı.' });
+
+        const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+
+        const embed = new EmbedBuilder()
+            .setTitle('📊 Yeni Anket!')
+            .setDescription(`**${question}**\n\n` + options.map((opt, i) => `${i + 1}️⃣ ${opt} (0 oy)`).join('\n'))
+            .setColor('Blue')
+            .setFooter({ text: `${req.user.username} tarafından panel üzerinden başlatıldı.`, iconURL: `https://cdn.discordapp.com/avatars/${req.user.id}/${req.user.avatar}.png` })
+            .setTimestamp();
+
+        const row = new ActionRowBuilder();
+        options.forEach((opt, i) => {
+            row.addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`survey_${i}`)
+                    .setLabel(opt)
+                    .setStyle(ButtonStyle.Primary)
+            );
+        });
+
+        const surveyMsg = await channel.send({ embeds: [embed], components: [row] });
+
+        const newSurvey = new Survey({
+            guildId: req.params.id,
+            channelId: channelId,
+            messageId: surveyMsg.id,
+            question: question,
+            options: options.map(opt => ({ label: opt, votes: [] })),
+            creatorId: req.user.id
+        });
+
+        await newSurvey.save();
+        res.json({ success: true, surveyId: newSurvey._id });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API: Anket Sil
+app.delete('/api/server/:id/surveys/:surveyId', checkAuth, async (req, res) => {
+    try {
+        const survey = await Survey.findById(req.params.surveyId);
+        if (!survey) return res.status(404).json({ error: 'Anket bulunamadı.' });
+
+        const channel = client.channels.cache.get(survey.channelId);
+        if (channel) {
+            const message = await channel.messages.fetch(survey.messageId).catch(() => null);
+            if (message) await message.delete();
+        }
+
+        await Survey.findByIdAndDelete(req.params.surveyId);
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: error.message });
