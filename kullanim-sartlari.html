@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanım Şartları - GraveBOT</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%F0%9F%A4%96</text></svg>">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="loader" id="loader">
+        <div class="loader-content"><div class="loader-ring"></div><span class="loader-text">Grave<span class="accent">BOT</span></span></div>
+    </div>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <button class="back-to-top" id="backToTop" aria-label="Yukarı dön"><i class="fas fa-chevron-up"></i></button>
+    <canvas id="particles"></canvas>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><span>Grave<span class="accent">BOT</span></span></a>
+            <ul class="nav-links">
+                <li><a href="index.html#home">Ana Sayfa</a></li>
+                <li><a href="index.html#features">Özellikler</a></li>
+                <li><a href="index.html#commands">Komutlar</a></li>
+                <li><a href="index.html#stats">İstatistikler</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Tema değiştir"><i class="fas fa-moon"></i></button>
+                <button class="lang-toggle" id="langToggle" aria-label="Dil değiştir"><span>TR</span></button>
+                <a href="#" class="btn-nav">Discord'a Ekle</a>
+            </div>
+            <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <section class="page-content">
+        <div class="container">
+            <h1 class="section-title" data-tr="Kullanım Şartları" data-en="Terms of Service">Kullanım Şartları</h1>
+            <p class="section-subtitle">Son güncelleme: 2026</p>
+            <div class="policy-content">
+                <h2>1. <span data-tr="Genel Koşullar" data-en="General Conditions">Genel Koşullar</span></h2>
+                <p data-tr="GraveBOT'u kullanarak aşağıdaki şartları kabul etmiş sayılırsınız. Bu şartları kabul etmiyorsanız botu kullanmayınız." data-en="By using GraveBOT, you agree to the following terms. If you do not accept these terms, do not use the bot.">GraveBOT'u kullanarak aşağıdaki şartları kabul etmiş sayılırsınız. Bu şartları kabul etmiyorsanız botu kullanmayınız.</p>
+
+                <h2>2. <span data-tr="Hizmet Tanımı" data-en="Service Description">Hizmet Tanımı</span></h2>
+                <p data-tr="GraveBOT, Discord sunucuları için moderasyon, eğlence, müzik ve yönetim araçları sağlayan bir bot hizmetidir." data-en="GraveBOT is a bot service that provides moderation, fun, music and management tools for Discord servers.">GraveBOT, Discord sunucuları için moderasyon, eğlence, müzik ve yönetim araçları sağlayan bir bot hizmetidir.</p>
+
+                <h2>3. <span data-tr="Kullanım Kuralları" data-en="Usage Rules">Kullanım Kuralları</span></h2>
+                <ul>
+                    <li data-tr="Botu kötüye kullanmak yasaktır" data-en="Abusing the bot is prohibited">Botu kötüye kullanmak yasaktır</li>
+                    <li data-tr="Botu spam amaçlı kullanmak yasaktır" data-en="Using the bot for spam is prohibited">Botu spam amaçlı kullanmak yasaktır</li>
+                    <li data-tr="Botu yasadışı faaliyetler için kullanmak yasaktır" data-en="Using the bot for illegal activities is prohibited">Botu yasadışı faaliyetler için kullanmak yasaktır</li>
+                    <li data-tr="Botun kaynak kodlarını tersine mühendislik yapmak yasaktır" data-en="Reverse engineering the bot's source code is prohibited">Botun kaynak kodlarını tersine mühendislik yapmak yasaktır</li>
+                    <li data-tr="Diğer kullanıcıları rahatsız etmek yasaktır" data-en="Harassing other users is prohibited">Diğer kullanıcıları rahatsız etmek yasaktır</li>
+                </ul>
+
+                <h2>4. <span data-tr="Hizmet Değişiklikleri" data-en="Service Changes">Hizmet Değişiklikleri</span></h2>
+                <p data-tr="GraveBOT ekibi, haber vermeksizin hizmette değişiklik yapma, yeni özellikler ekleme veya mevcut özellikleri kaldırma hakkını saklı tutar." data-en="The GraveBOT team reserves the right to make changes to the service, add new features or remove existing features without notice.">GraveBOT ekibi, haber vermeksizin hizmette değişiklik yapma, yeni özellikler ekleme veya mevcut özellikleri kaldırma hakkını saklı tutar.</p>
+
+                <h2>5. <span data-tr="Sorumluluk Reddi" data-en="Disclaimer">Sorumluluk Reddi</span></h2>
+                <p data-tr="GraveBOT \"olduğu gibi\" sunulmaktadır. Hizmetin kesintisiz veya hatasız olacağı garanti edilmez." data-en="GraveBOT is provided \"as is\". No guarantee is made that the service will be uninterrupted or error-free.">GraveBOT "olduğu gibi" sunulmaktadır. Hizmetin kesintisiz veya hatasız olacağı garanti edilmez.</p>
+
+                <h2>6. <span data-tr="Yasaklama Hakkı" data-en="Right to Ban">Yasaklama Hakkı</span></h2>
+                <p data-tr="Kullanım şartlarını ihlal eden kullanıcıların bota erişimi engellenebilir." data-en="Users who violate the terms of service may be blocked from accessing the bot.">Kullanım şartlarını ihlal eden kullanıcıların bota erişimi engellenebilir.</p>
+
+                <h2>7. <span data-tr="Değişiklikler" data-en="Changes">Değişiklikler</span></h2>
+                <p data-tr="Bu kullanım şartları gerektiğinde güncellenebilir. Güncellemeler bu sayfada yayınlanacaktır." data-en="These terms of service may be updated as needed. Updates will be published on this page.">Bu kullanım şartları gerektiğinde güncellenebilir. Güncellemeler bu sayfada yayınlanacaktır.</p>
+
+                <h2>8. <span data-tr="İletişim" data-en="Contact">İletişim</span></h2>
+                <p data-tr="Kullanım şartları hakkında sorularınız için Discord sunucumuzdan bizimle iletişime geçebilirsiniz." data-en="For questions about the terms of service, you can contact us through our Discord server.">Kullanım şartları hakkında sorularınız için Discord sunucumuzdan bizimle iletişime geçebilirsiniz.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 GraveBOT. <span data-tr="Tüm hakları saklıdır." data-en="All rights reserved.">Tüm hakları saklıdır.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
