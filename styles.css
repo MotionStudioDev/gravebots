@@ -62,8 +62,9 @@ code{background:#EEF0FF;border:1px solid #D9DEFF;color:#4048c0;padding:1px 8px;b
 .bot-avatar{background:var(--yellow);border:2px solid var(--border);width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center}
 .bot-head b{font-size:1.02rem}
 .bot-tag{background:var(--blue);color:#fff;font-size:.62rem;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:middle}
-.bot-head small{display:block;color:var(--muted);font-size:.78rem;font-weight:600}
-.online{position:absolute;right:0;top:6px;width:14px;height:14px;border-radius:50%;background:#23A55A;border:3px solid #fff;box-shadow:0 0 0 2px #23A55A}
+.bot-head .status{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.78rem;font-weight:600;margin-top:2px}
+.verified{width:18px;height:18px;margin-left:6px;vertical-align:-3px;flex-shrink:0}
+.online{position:relative;width:10px;height:10px;border-radius:50%;background:#23A55A;flex-shrink:0}
 .mini-card{border:2px solid var(--border);border-radius:16px;padding:13px 16px;margin-bottom:10px;box-shadow:3px 3px 0 var(--border)}
 .mini-card b{font-size:.9rem}.mini-card p{font-size:.82rem;color:var(--muted);font-weight:600}
 .mc-green{background:#E9FBF0}.mc-blue{background:#E9ECFF}.mc-pink{background:#FDEAF4}
