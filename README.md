@@ -1,2 +1,0 @@
-# gravebots
-GraveBOT WebSite
