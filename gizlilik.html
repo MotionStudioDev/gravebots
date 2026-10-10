@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="lh1">Gizlilik Politikası — GraveBOT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="gravelogo.png">
+<style>
+.legal-head{text-align:center;padding:64px 0 8px}
+.legal-head h1{font-size:clamp(2rem,5.5vw,3rem);font-weight:900;letter-spacing:-1px;margin:18px 0 10px}
+.legal-head .updated{color:var(--muted);font-weight:600;font-size:.9rem}
+.legal-list{max-width:760px;margin:0 auto;padding:32px 20px 20px;display:grid;gap:14px}
+.legal-card{background:#fff;border:2.5px solid var(--border);border-radius:20px;padding:26px;box-shadow:5px 5px 0 var(--border);display:flex;gap:18px;align-items:flex-start}
+.legal-card h2{font-size:1.08rem;margin-bottom:8px;text-align:left}
+.legal-card p,.legal-card li{color:var(--muted);font-size:.92rem;font-weight:500}
+.legal-card ul{margin:10px 0 0 18px;display:grid;gap:6px}
+.legal-card a{color:var(--blue);font-weight:700}
+.legal-card .num{margin:0;flex-shrink:0}
+[data-theme="dark"] .legal-card{background:#1A1F30;box-shadow:5px 5px 0 rgba(0,0,0,.5)}
+.back-row{text-align:center;padding:26px 0 70px}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-badge logo-img">G<img src="gravelogo.png" alt="" onerror="this.remove()"></span>
+      GraveBOT
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html#ozellikler" data-i18n="navFeat">Özellikler</a>
+      <a href="index.html#komutlar" data-i18n="navCmd">Komutlar</a>
+      <a href="index.html#sss" data-i18n="navFaq">S.S.S</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="https://discord.gg/HMYDcAjWmX" target="_blank" class="btn btn-white btn-sm" data-i18n="navSup">Destek</a>
+      <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" class="btn btn-dark btn-sm" data-i18n="navAdd">Discord'a Ekle</a>
+    </div>
+    <div class="lang-wrap">
+      <button class="lang-btn" id="langBtn" aria-label="Dil">TR</button>
+      <div class="lang-menu" id="langMenu">
+        <button data-lang="tr" class="active">Türkçe</button>
+        <button data-lang="en">English</button>
+        <button data-lang="ar">العربية</button>
+        <button data-lang="ru">Русский</button>
+        <button data-lang="de">Deutsch</button>
+      </div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Karanlık mod">
+      <svg class="ic-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="ic-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+    </button>
+    <button class="hamburger" id="hamburger" aria-label="Menü">☰</button>
+  </div>
+</header>
+
+<div class="container legal-head">
+  <div class="pill" data-i18n="lpill">GİZLİLİK</div>
+  <h1 data-i18n="lh1">Gizlilik Politikası</h1>
+  <p class="updated" data-i18n="lupd">Son güncelleme: 10 Ekim 2026</p>
+</div>
+
+<div class="legal-list">
+  <div class="legal-card reveal"><div class="num n1">1</div><div><h2 data-i18n="lc1h">Topladığımız veriler</h2><div data-i18n="lc1p"><p>GraveBOT yalnızca hizmet için gerekli verileri işler:</p><ul><li>Sunucu ve kullanıcı kimlikleri (ID)</li><li>Komut kullanımları ve bot ayarları</li><li>Ekonomi / seviye verileri (bakiye, XP)</li></ul></div></div></div>
+  <div class="legal-card reveal"><div class="num n2">2</div><div><h2 data-i18n="lc2h">Verilerin kullanımı</h2><div data-i18n="lc2p"><p>Veriler yalnızca komutları çalıştırmak, ayarları hatırlamak ve kötüye kullanımı engellemek için kullanılır. Mesaj içerikleri okunmaz, veriler satılmaz ve reklam için kullanılmaz.</p></div></div></div>
+  <div class="legal-card reveal"><div class="num n3">3</div><div><h2 data-i18n="lc3h">Tarayıcı depolama</h2><div data-i18n="lc3p"><p>Bu site; tema ve dil tercihinizi hatırlamak için yalnızca cihazınızda <code>localStorage</code> kullanır. Takip çerezi yoktur.</p></div></div></div>
+  <div class="legal-card reveal"><div class="num n1">4</div><div><h2 data-i18n="lc4h">Üçüncü taraflar</h2><div data-i18n="lc4p"><p>Bot Discord altyapısında çalışır; Discord'un <a href="https://discord.com/privacy" target="_blank" rel="noopener">Gizlilik Politikası</a> da geçerlidir.</p></div></div></div>
+  <div class="legal-card reveal"><div class="num n2">5</div><div><h2 data-i18n="lc5h">Silme ve iletişim</h2><div data-i18n="lc5p"><p>Botu sunucunuzdan çıkarmak saklanan sunucu verilerinin silinmesini başlatır. Diğer talepler için destek sunucumuz: <a href="https://discord.gg/HMYDcAjWmX" target="_blank" rel="noopener">discord.gg/HMYDcAjWmX</a></p></div></div></div>
+</div>
+
+<div class="back-row"><a class="btn btn-yellow btn-lg" href="index.html" data-i18n="lback">← Ana Sayfaya Dön</a></div>
+
+<footer>
+  <div class="container foot-inner">
+    <a href="index.html" class="logo logo-light">
+      <span class="logo-badge logo-img">G<img src="gravelogo.png" alt="" onerror="this.remove()"></span>
+      GraveBOT
+    </a>
+    <p data-i18n="ftRights">© 2026 GraveBOT — Discord Inc. ile bağlantısı yoktur.</p>
+    <div class="foot-links">
+      <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" data-i18n="ftInv">Davet Et</a>
+      <a href="https://discord.gg/HMYDcAjWmX" target="_blank" data-i18n="ftSup">Destek Sunucusu</a>
+      <a href="https://top.gg/bot/1066016782827130960/vote" target="_blank" data-i18n="ftVote">Oy Ver</a>
+      <a href="gizlilik.html" data-i18n="ftPr">Gizlilik</a>
+      <a href="kvkk.html" data-i18n="ftKvkk">KVKK</a>
+      <a href="dmca.html" data-i18n="ftTe">DMCA</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  try { var t = localStorage.getItem('grave-theme'); if (t) root.setAttribute('data-theme', t); } catch (e) {}
+  function setTheme(t) { root.setAttribute('data-theme', t); try { localStorage.setItem('grave-theme', t); } catch (e) {} }
+  document.getElementById('themeToggle').addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    if (document.startViewTransition) document.startViewTransition(function () { setTheme(next); });
+    else setTheme(next);
+  });
+  document.getElementById('hamburger').addEventListener('click', function () {
+    document.getElementById('navLinks').classList.toggle('mobile');
+    document.querySelector('.nav-actions').classList.toggle('mobile');
+  });
+  var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: .12 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+  var I18N = {
+    tr: { navFeat:"Özellikler", navCmd:"Komutlar", navFaq:"S.S.S", navSup:"Destek", navAdd:"Discord'a Ekle", lpill:"GİZLİLİK", lh1:"Gizlilik Politikası", lupd:"Son güncelleme: 10 Ekim 2026", lc1h:"Topladığımız veriler", lc1p:"<p>GraveBOT yalnızca hizmet için gerekli verileri işler:</p><ul><li>Sunucu ve kullanıcı kimlikleri (ID)</li><li>Komut kullanımları ve bot ayarları</li><li>Ekonomi / seviye verileri (bakiye, XP)</li></ul>", lc2h:"Verilerin kullanımı", lc2p:"<p>Veriler yalnızca komutları çalıştırmak, ayarları hatırlamak ve kötüye kullanımı engellemek için kullanılır. Mesaj içerikleri okunmaz, veriler satılmaz ve reklam için kullanılmaz.</p>", lc3h:"Tarayıcı depolama", lc3p:"<p>Bu site; tema ve dil tercihinizi hatırlamak için yalnızca cihazınızda <code>localStorage</code> kullanır. Takip çerezi yoktur.</p>", lc4h:"Üçüncü taraflar", lc4p:"<p>Bot Discord altyapısında çalışır; Discord'un <a href=\"https://discord.com/privacy\" target=\"_blank\" rel=\"noopener\">Gizlilik Politikası</a> da geçerlidir.</p>", lc5h:"Silme ve iletişim", lc5p:"<p>Botu sunucunuzdan çıkarmak saklanan sunucu verilerinin silinmesini başlatır. Diğer talepler için destek sunucumuz: <a href=\"https://discord.gg/HMYDcAjWmX\" target=\"_blank\" rel=\"noopener\">discord.gg/HMYDcAjWmX</a></p>", lback:"← Ana Sayfaya Dön", ftRights:"© 2026 GraveBOT — Discord Inc. ile bağlantısı yoktur.", ftInv:"Davet Et", ftSup:"Destek Sunucusu", ftVote:"Oy Ver", ftPr:"Gizlilik", ftKvkk:"KVKK", ftTe:"DMCA" },
+    en: { navFeat:"Features", navCmd:"Commands", navFaq:"FAQ", navSup:"Support", navAdd:"Add to Discord", lpill:"PRIVACY", lh1:"Privacy Policy", lupd:"Last updated: October 10, 2026", lc1h:"Data we collect", lc1p:"<p>GraveBOT only processes data necessary for the service:</p><ul><li>Server and user IDs</li><li>Command usage and bot settings</li><li>Economy / level data (balance, XP)</li></ul>", lc2h:"How data is used", lc2p:"<p>Data is used only to run commands, remember settings and prevent abuse. Message contents are not read, data is never sold or used for ads.</p>", lc3h:"Browser storage", lc3p:"<p>This site only uses on-device <code>localStorage</code> to remember your theme and language. No tracking cookies.</p>", lc4h:"Third parties", lc4p:"<p>The bot runs on Discord infrastructure; Discord's <a href=\"https://discord.com/privacy\" target=\"_blank\" rel=\"noopener\">Privacy Policy</a> also applies.</p>", lc5h:"Deletion and contact", lc5p:"<p>Removing the bot from your server starts deletion of stored server data. For other requests: <a href=\"https://discord.gg/HMYDcAjWmX\" target=\"_blank\" rel=\"noopener\">discord.gg/HMYDcAjWmX</a></p>", lback:"← Back to Home", ftRights:"© 2026 GraveBOT — Not affiliated with Discord Inc.", ftInv:"Invite", ftSup:"Support", ftVote:"Vote", ftPr:"Privacy", ftKvkk:"KVKK", ftTe:"DMCA" },
+    ar: { navFeat:"المميزات", navCmd:"الأوامر", navFaq:"الأسئلة الشائعة", navSup:"الدعم", navAdd:"أضف إلى ديسكورد", lpill:"الخصوصية", lh1:"سياسة الخصوصية", lupd:"آخر تحديث: 10 أكتوبر 2026", lc1h:"البيانات التي نجمعها", lc1p:"<p>يعالج GraveBOT فقط البيانات الضرورية للخدمة:</p><ul><li>معرفات الخوادم والمستخدمين</li><li>استخدام الأوامر وإعدادات البوت</li><li>بيانات الاقتصاد والمستويات (الرصيد، XP)</li></ul>", lc2h:"استخدام البيانات", lc2p:"<p>تُستخدم البيانات فقط لتشغيل الأوامر وتذكّر الإعدادات ومنع إساءة الاستخدام. لا تُقرأ محادثاتكم ولا تُباع البيانات ولا تُستخدم للإعلانات.</p>", lc3h:"تخزين المتصفح", lc3p:"<p>يستخدم هذا الموقع <code>localStorage</code> على جهازك فقط لتذكّر المظهر واللغة. لا توجد ملفات تتبّع.</p>", lc4h:"أطراف ثالثة", lc4p:"<p>يعمل البوت على بنية ديسكورد التحتية؛ تنطبق أيضًا <a href=\"https://discord.com/privacy\" target=\"_blank\" rel=\"noopener\">سياسة خصوصية ديسكورد</a>.</p>", lc5h:"الحذف والتواصل", lc5p:"<p>إزالة البوت من خادمك تبدأ حذف بيانات الخادم المخزنة. للطلبات الأخرى: <a href=\"https://discord.gg/HMYDcAjWmX\" target=\"_blank\" rel=\"noopener\">discord.gg/HMYDcAjWmX</a></p>", lback:"← العودة للرئيسية", ftRights:"© 2026 GraveBOT — غير تابع لـ Discord Inc.", ftInv:"دعوة", ftSup:"الدعم", ftVote:"صوّت", ftPr:"الخصوصية", ftKvkk:"KVKK", ftTe:"DMCA" },
+    ru: { navFeat:"Функции", navCmd:"Команды", navFaq:"FAQ", navSup:"Поддержка", navAdd:"Добавить в Discord", lpill:"КОНФИДЕНЦИАЛЬНОСТЬ", lh1:"Политика конфиденциальности", lupd:"Обновлено: 10 октября 2026 г.", lc1h:"Собираемые данные", lc1p:"<p>GraveBOT обрабатывает только данные, необходимые для сервиса:</p><ul><li>ID серверов и пользователей</li><li>Использование команд и настройки бота</li><li>Данные экономики / уровней (баланс, XP)</li></ul>", lc2h:"Использование данных", lc2p:"<p>Данные используются только для выполнения команд, запоминания настроек и борьбы со злоупотреблениями. Сообщения не читаются, данные не продаются и не используются для рекламы.</p>", lc3h:"Хранилище браузера", lc3p:"<p>Сайт использует только <code>localStorage</code> на вашем устройстве для темы и языка. Трекинговых cookie нет.</p>", lc4h:"Третьи стороны", lc4p:"<p>Бот работает на инфраструктуре Discord; также действует <a href=\"https://discord.com/privacy\" target=\"_blank\" rel=\"noopener\">политика конфиденциальности Discord</a>.</p>", lc5h:"Удаление и связь", lc5p:"<p>Удаление бота с сервера запускает удаление данных сервера. Другие запросы: <a href=\"https://discord.gg/HMYDcAjWmX\" target=\"_blank\" rel=\"noopener\">discord.gg/HMYDcAjWmX</a></p>", lback:"← На главную", ftRights:"© 2026 GraveBOT — не связан с Discord Inc.", ftInv:"Пригласить", ftSup:"Поддержка", ftVote:"Голосовать", ftPr:"Конфиденциальность", ftKvkk:"KVKK", ftTe:"DMCA" },
+    de: { navFeat:"Funktionen", navCmd:"Befehle", navFaq:"FAQ", navSup:"Support", navAdd:"Zu Discord hinzufügen", lpill:"DATENSCHUTZ", lh1:"Datenschutzerklärung", lupd:"Zuletzt aktualisiert: 10. Oktober 2026", lc1h:"Erhobene Daten", lc1p:"<p>GraveBOT verarbeitet nur dienstnotwendige Daten:</p><ul><li>Server- und Nutzer-IDs</li><li>Befehlsnutzung und Bot-Einstellungen</li><li>Wirtschafts-/Leveldaten (Guthaben, XP)</li></ul>", lc2h:"Datenverwendung", lc2p:"<p>Daten dienen nur zur Ausführung von Befehlen, Speicherung von Einstellungen und Missbrauchsprävention. Nachrichten werden nicht gelesen, Daten weder verkauft noch für Werbung genutzt.</p>", lc3h:"Browser-Speicher", lc3p:"<p>Diese Seite nutzt nur <code>localStorage</code> auf deinem Gerät für Theme und Sprache. Keine Tracking-Cookies.</p>", lc4h:"Dritte", lc4p:"<p>Der Bot läuft auf Discord-Infrastruktur; es gilt auch die <a href=\"https://discord.com/privacy\" target=\"_blank\" rel=\"noopener\">Datenschutzerklärung von Discord</a>.</p>", lc5h:"Löschung und Kontakt", lc5p:"<p>Das Entfernen des Bots startet die Löschung gespeicherter Serverdaten. Sonstige Anfragen: <a href=\"https://discord.gg/HMYDcAjWmX\" target=\"_blank\" rel=\"noopener\">discord.gg/HMYDcAjWmX</a></p>", lback:"← Zurück zur Startseite", ftRights:"© 2026 GraveBOT — Nicht mit Discord Inc. verbunden.", ftInv:"Einladen", ftSup:"Support", ftVote:"Abstimmen", ftPr:"Datenschutz", ftKvkk:"KVKK", ftTe:"DMCA" }
+  };
+
+  function applyLang(l) {
+    if (!I18N[l]) l = 'tr';
+    var d = I18N[l];
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n');
+      if (d[k] != null) el.innerHTML = d[k];
+    });
+    document.documentElement.setAttribute('lang', l);
+    document.documentElement.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
+    document.getElementById('langBtn').textContent = l.toUpperCase();
+    document.querySelectorAll('#langMenu button').forEach(function (b) { b.classList.toggle('active', b.dataset.lang === l); });
+    try { localStorage.setItem('grave-lang', l); } catch (e) {}
+  }
+  var saved = null;
+  try { saved = localStorage.getItem('grave-lang'); } catch (e) {}
+  applyLang(saved || 'tr');
+  document.getElementById('langBtn').addEventListener('click', function (e) {
+    e.stopPropagation();
+    document.getElementById('langMenu').classList.toggle('show');
+  });
+  document.querySelectorAll('#langMenu button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var btn = document.getElementById('langBtn');
+      btn.classList.remove('pulse'); void btn.offsetWidth; btn.classList.add('pulse');
+      if (document.startViewTransition) document.startViewTransition(function () { applyLang(b.dataset.lang); });
+      else applyLang(b.dataset.lang);
+      document.getElementById('langMenu').classList.remove('show');
+    });
+  });
+  document.addEventListener('click', function () { document.getElementById('langMenu').classList.remove('show'); });
+})();
+</script>
+</body>
+</html>

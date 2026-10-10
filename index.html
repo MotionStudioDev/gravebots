@@ -1,843 +1,304 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GraveBOT — Discord Sunucunuz İçin Güvenlik, Ses ve Ekonomi</title>
-  <meta name="description" content="GraveBOT ile sunucunuzu anti-raid kalkanı, 320kbps kayıpsız ses ve zengin ekonomi modülleriyle büyütün. 30 saniyede kurulum, %99.99 çalışma süresi.">
-  <meta name="theme-color" content="#07070d">
-  <meta property="og:title" content="GraveBOT — Discord Sunucunuz İçin Güvenlik, Ses ve Ekonomi">
-  <meta property="og:description" content="Anti-raid kalkanı, 320kbps ses motoru, ekonomi ve seviye sistemleri. Tek bot, tek komut.">
-  <meta property="og:type" content="website">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
-  <script>document.documentElement.classList.add('js');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="title">GraveBOT — Sunucunu Büyütmenin En Eğlenceli Yolu</title>
+<meta name="description" content="GraveBOT: moderasyon, müzik, ekonomi ve kayıt. Ücretsiz, 30 saniyede kurulum.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<noscript><style>.hero-left>*,.bot-card,.mini-card{opacity:1 !important;transform:none !important}</style></noscript>
+<link rel="icon" href="gravelogo.png">
 </head>
 <body>
 
-  <!-- İLERLEME ÇUBUĞU -->
-  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-
-  <!-- YUKARI ÇIK -->
-  <button class="back-to-top" id="backToTop" aria-label="Sayfanın başına dön">
-    <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
-  </button>
-
-  <!-- ARKA PLAN: AURORA, IŞIK HATLARI, IZGARA -->
-  <div class="bg-scene" aria-hidden="true">
-    <div class="aurora aurora-1"></div>
-    <div class="aurora aurora-2"></div>
-    <div class="aurora aurora-3"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-vignette"></div>
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <span class="loader-logo"><img src="gravelogo.png" alt="GraveBOT" onerror="this.remove()"></span>
   </div>
+</div>
 
-  <!-- SPONSOR BİLDİRİM PİLİLİ (TEK SEFER GÖRÜNÜR) -->
-  <div class="toast" id="sponsorToast" role="status" aria-live="polite">
-    <span class="toast-icon">
-      <img src="unnamed.png" alt="">
-    </span>
-    <span class="toast-body">
-      <span class="toast-meta">ALTYAPI DESTEKÇİSİ</span>
-      <span class="toast-text">GraveBOT, <strong>ayhost.com.tr</strong> sunucularında barındırılıyor.</span>
-    </span>
-    <a class="toast-action" href="https://ayhost.com.tr" target="_blank" rel="noopener">
-      İncele <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+<!-- ÜST BANT -->
+<div class="topbar"><span data-i18n="topbar">Sponsor: </span><a href="https://ayhost.net" target="_blank" rel="noopener" data-i18n="topbarLink">ayhost.net</a></div>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="container nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-badge logo-img">G<img src="gravelogo.png" alt="" onerror="this.remove()"></span>
+      GraveBOT
     </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#ozellikler" data-i18n="navFeat">Özellikler</a>
+      <a href="#vitrin" data-i18n="navShow">Neler Yapıyor?</a>
+      <a href="#komutlar" data-i18n="navCmd">Komutlar</a>
+      <a href="#oyver" data-i18n="navVote">Oy Ver</a>
+      <a href="#sss" data-i18n="navFaq">S.S.S</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="https://discord.gg/HMYDcAjWmX" target="_blank" class="btn btn-white btn-sm" data-i18n="navSup">Destek</a>
+      <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" class="btn btn-dark btn-sm" data-i18n="navAdd">Discord'a Ekle</a>
+    </div>
+    <div class="lang-wrap">
+      <button class="lang-btn" id="langBtn" aria-label="Dil">TR</button>
+      <div class="lang-menu" id="langMenu">
+        <button data-lang="tr" class="active">Türkçe</button>
+        <button data-lang="en">English</button>
+        <button data-lang="ar">العربية</button>
+        <button data-lang="ru">Русский</button>
+        <button data-lang="de">Deutsch</button>
+      </div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Karanlık mod">
+      <svg class="ic-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="ic-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+    </button>
+    <button class="hamburger" id="hamburger" aria-label="Menü">☰</button>
   </div>
+</header>
 
-  <!-- ÜST MENÜ -->
-  <header class="site-header" id="siteHeader">
-    <div class="container nav-wrap">
-      <a href="#top" class="brand" aria-label="GraveBOT ana sayfa">
-        <span class="brand-mark">
-          <img src="content.png" alt="">
-        </span>
-        <span class="brand-word">Grave<em>BOT</em></span>
-      </a>
-
-      <nav class="nav-links" id="navLinks" aria-label="Ana menü">
-        <a href="#stats">İstatistik</a>
-        <a href="#features">Özellikler</a>
-        <a href="#protection">Koruma</a>
-        <a href="#music">Müzik</a>
-        <a href="#commands">Komutlar</a>
-        <a href="#sponsor">Sponsor</a>
-      </nav>
-
-      <div class="nav-actions">
-        <a class="btn btn-ghost" href="https://discord.gg/CVZ4zEkJws" target="_blank" rel="noopener">Destek Sunucusu</a>
-        <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener">
-          <i class="fa-brands fa-discord" aria-hidden="true"></i> Sunucuna Ekle
-        </a>
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-left">
+      <div class="pill" data-i18n="pill">12.500+ sunucunun favori botu</div>
+      <h1><span data-i18n="hA">Sunucunu büyütmenin</span> <span class="hl-yellow" data-i18n="hHl">en eğlenceli</span> <span data-i18n="hB">yolu.</span></h1>
+      <p class="sub" data-i18n="sub">Moderasyon, müzik, seviye ve ekonomi — hepsi tek botta. Kurulum 30 saniye, kullanımı çocuk oyuncağı.</p>
+      <div class="hero-btns">
+        <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" class="btn btn-yellow btn-lg" data-i18n="heroAdd">Discord'a Ekle — Ücretsiz</a>
+        <a href="#vitrin" class="btn btn-white btn-lg" data-i18n="heroWhat">Neler Yapıyor?</a>
       </div>
-
-      <button class="nav-toggle" id="navToggle" aria-label="Menüyü aç" aria-expanded="false" aria-controls="mobileMenu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-
-    <div class="mobile-menu" id="mobileMenu">
-      <nav class="container" aria-label="Mobil menü">
-        <a href="#stats">İstatistik</a>
-        <a href="#features">Özellikler</a>
-        <a href="#protection">Koruma</a>
-        <a href="#music">Müzik</a>
-        <a href="#commands">Komutlar</a>
-        <a href="#sponsor">Sponsor</a>
-        <div class="mobile-cta">
-          <a class="btn btn-ghost" href="https://discord.gg/CVZ4zEkJws" target="_blank" rel="noopener">Destek Sunucusu</a>
-          <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener">
-            <i class="fa-brands fa-discord" aria-hidden="true"></i> Sunucuna Ekle
-          </a>
+      <div class="hero-proof">
+        <div class="stars-row">
+          <svg class="stars" width="110" height="20" viewBox="0 0 110 20"><g fill="#FFB800"><path d="M10 1l2.6 5.6 6 .7-4.5 4.1 1.2 5.9L10 14.4 4.7 17.3l1.2-5.9L1.4 7.3l6-.7z"/><path d="M32 1l2.6 5.6 6 .7-4.5 4.1 1.2 5.9-5.3-2.9-5.3 2.9 1.2-5.9-4.5-4.1 6-.7z"/><path d="M54 1l2.6 5.6 6 .7-4.5 4.1 1.2 5.9-5.3-2.9-5.3 2.9 1.2-5.9-4.5-4.1 6-.7z"/><path d="M76 1l2.6 5.6 6 .7-4.5 4.1 1.2 5.9-5.3-2.9-5.3 2.9 1.2-5.9-4.5-4.1 6-.7z"/><path d="M98 1l2.6 5.6 6 .7-4.5 4.1 1.2 5.9-5.3-2.9-5.3 2.9 1.2-5.9-4.5-4.1 6-.7z"/></g></svg>
+          <b>4.9/5</b>
         </div>
-      </nav>
-    </div>
-  </header>
-
-  <main id="top">
-
-    <!-- ================= HERO ================= -->
-    <section class="hero">
-      <div class="container">
-        <div class="hero-copy">
-          <span class="eyebrow" data-reveal>
-            <span class="pulse-dot"></span>
-            v3.0 Nesil Altyapı · <strong>ayhost.com.tr</strong> üzerinde 7/24 aktif
-          </span>
-
-          <h1 class="hero-title" data-reveal data-delay="1">
-            Sunucunuzu büyütün,<br>
-            gerisini <span class="grad-text">GraveBOT</span> halletsin
-          </h1>
-
-          <p class="hero-lead" data-reveal data-delay="2">
-            Anti-raid kalkanı, 320kbps kayıpsız ses motoru ve zengin ekonomi modülleri
-            tek çatı altında. Kurulum 30 saniye, karmaşık panel yok — komutu yazın, bot gerisini yapsın.
-          </p>
-
-          <div class="hero-actions" data-reveal data-delay="3">
-            <a class="btn btn-primary btn-lg" href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener">
-              <i class="fa-brands fa-discord" aria-hidden="true"></i> Hemen Botu Ekle
-            </a>
-            <a class="btn btn-glass btn-lg" href="https://discord.gg/CVZ4zEkJws" target="_blank" rel="noopener">
-              <i class="fa-solid fa-users" aria-hidden="true"></i> Topluluğa Katıl
-            </a>
-          </div>
-
-          <ul class="hero-trust" data-reveal data-delay="4">
-            <li><i class="fa-solid fa-check" aria-hidden="true"></i> Ücretsiz ve sınırsız</li>
-            <li><i class="fa-solid fa-check" aria-hidden="true"></i> g! prefix + slash komutlar</li>
-            <li><i class="fa-solid fa-check" aria-hidden="true"></i> Türkçe destek</li>
-          </ul>
-        </div>
-
-        <!-- CANLI KONSOL PANELİ -->
-        <div class="console-card" data-reveal data-delay="5" aria-label="GraveBOT canlı durum paneli">
-          <div class="console-bar">
-            <span class="dots"><i></i><i></i><i></i></span>
-            <span class="console-name"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> GraveBOT Control Panel</span>
-            <span class="live-tag"><span class="pulse-dot"></span> ÇEVRİMİÇİ</span>
-          </div>
-
-          <div class="console-metrics">
-            <div class="metric">
-              <span class="metric-icon tone-green"><i class="fa-solid fa-signal" aria-hidden="true"></i></span>
-              <span class="metric-info">
-                <span class="metric-label">Gecikme</span>
-                <span class="metric-value" id="livePing" data-stat="pingMs">12 ms</span>
-              </span>
-            </div>
-            <div class="metric">
-              <span class="metric-icon tone-violet"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i></span>
-              <span class="metric-info">
-                <span class="metric-label">Çalışma Süresi</span>
-                <span class="metric-value" data-stat="uptimePercent">%99.99</span>
-              </span>
-            </div>
-            <div class="metric">
-              <span class="metric-icon tone-cyan"><i class="fa-solid fa-shield-cat" aria-hidden="true"></i></span>
-              <span class="metric-info">
-                <span class="metric-label">Engellenen Tehdit</span>
-                <span class="metric-value" data-stat="threatsBlocked" data-suffix="+">148.290+</span>
-              </span>
-            </div>
-            <div class="metric">
-              <span class="metric-icon tone-blue"><i class="fa-solid fa-server" aria-hidden="true"></i></span>
-              <span class="metric-info">
-                <span class="metric-label">Altyapı</span>
-                <a class="metric-link" href="https://ayhost.com.tr" target="_blank" rel="noopener">ayhost.com.tr <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
-              </span>
-            </div>
-          </div>
-
-          <div class="console-feed">
-            <div class="feed-head">
-              <span><i class="fa-solid fa-terminal" aria-hidden="true"></i> canlı_akis.log</span>
-              <span class="feed-live"><span class="pulse-dot"></span> CANLI</span>
-            </div>
-            <div class="feed-body" id="feedBody" aria-live="off">
-              <p><span class="t">[12:53:01]</span> <b class="c-sys">SİSTEM</b> Bot motoru ayhost NVMe düğümünde başlatıldı.</p>
-              <p><span class="t">[12:53:14]</span> <b class="c-sec">KORUMA</b> Anti-raid kalkanı devrede — 0 sahte hesap/dk.</p>
-              <p><span class="t">[12:53:28]</span> <b class="c-aud">SES</b> 320kbps HD sürücüsü 1.420 ses kanalında aktif.</p>
-              <p><span class="t">[12:53:45]</span> <b class="c-ok">DURUM</b> 70 sunucu ve 175.000 kullanıcı ile senkronize.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= İSTATİSTİK ================= -->
-    <section class="stats" id="stats">
-      <div class="container">
-        <div class="stats-bar" data-reveal>
-          <div class="stat">
-            <span class="stat-num"><span class="counter" data-target="70" data-stat="servers">0</span>+</span>
-            <span class="stat-label">Aktif Sunucu</span>
-            <span class="stat-sub">GraveBOT'a güvenen topluluk</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num"><span class="counter" data-target="175000" data-stat="users">0</span>+</span>
-            <span class="stat-label">Kullanıcı Erişimi</span>
-            <span class="stat-sub">Düzenli komut kullanan üye</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num"><span class="counter" data-target="40000" data-stat="requests">0</span>+</span>
-            <span class="stat-label">İşlenen İstek</span>
-            <span class="stat-sub">Anlık yanıt, sırada bekleme yok</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num grad-text" data-stat="uptimePercent">%99.99</span>
-            <span class="stat-label">Uptime Garantisi</span>
-            <span class="stat-sub">ayhost.com.tr altyapısıyla</span>
-          </div>
-        </div>
-
-        <p class="stats-source" id="statsSource"><span class="src-dot"></span> Veriler yükleniyor…</p>
-      </div>
-    </section>
-
-    <!-- ================= ÖZELLİKLER ================= -->
-    <section class="features" id="features">
-      <div class="container">
-        <div class="section-head" data-reveal>
-          <span class="section-badge"><i class="fa-solid fa-sparkles" aria-hidden="true"></i> GRAVEBOT GÜCÜ</span>
-          <h2>Topluluğunuzu zirveye taşıyacak <span class="grad-text">her şey</span></h2>
-          <p>Karmaşık paneller yerine sade, hızlı ve tam otomatik Discord araçları.</p>
-        </div>
-
-        <div class="feature-grid">
-          <!-- GÜVENLİK -->
-          <article class="feature-card tone-violet" data-reveal>
-            <div class="card-top">
-              <span class="card-icon tone-violet"><i class="fa-solid fa-shield-virus" aria-hidden="true"></i></span>
-              <span class="card-pill pill-green"><span class="pulse-dot"></span> %100 Korumalı</span>
-            </div>
-            <h3>Yapay Zeka Koruması</h3>
-            <p>Raid girişimleri, sahte hesap akınları ve yetkisiz rol değişiklikleri milisaniyeler içinde tespit edilip durdurulur.</p>
-
-            <div class="mini-panel">
-              <div class="mini-row">
-                <span class="mini-label"><i class="fa-solid fa-shield" aria-hidden="true"></i> Anti-Raid Kalkanı</span>
-                <span class="mini-badge badge-red">Engellendi</span>
-              </div>
-              <div class="mini-track"><span class="mini-fill fill-violet"></span></div>
-            </div>
-
-            <ul class="tag-row">
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Anti-Raid</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Spam Filtresi</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Kanal Koruma</li>
-            </ul>
-          </article>
-
-          <!-- SES -->
-          <article class="feature-card tone-cyan" data-reveal data-delay="1">
-            <div class="card-top">
-              <span class="card-icon tone-cyan"><i class="fa-solid fa-headphones" aria-hidden="true"></i></span>
-              <span class="card-pill pill-cyan"><i class="fa-solid fa-wave-square" aria-hidden="true"></i> 320kbps HD</span>
-            </div>
-            <h3>320kbps Kayıpsız Ses</h3>
-            <p>Spotify, YouTube ve SoundCloud'dan stüdyo kalitesinde çalma; donma yok, gecikme yok, kesinti yok.</p>
-
-            <div class="mini-panel">
-              <div class="eq" aria-hidden="true">
-                <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-              </div>
-              <div class="mini-row mini-row-tight">
-                <span class="mini-label"><i class="fa-brands fa-spotify" aria-hidden="true"></i> Grave Audio</span>
-                <span class="mini-badge badge-cyan">24/7 çalıyor</span>
-              </div>
-            </div>
-
-            <ul class="tag-row">
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> 7/24 Kesintisiz</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Bassboost</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Filtreler</li>
-            </ul>
-          </article>
-
-          <!-- EKONOMİ -->
-          <article class="feature-card tone-pink" data-reveal data-delay="2">
-            <div class="card-top">
-              <span class="card-icon tone-pink"><i class="fa-solid fa-coins" aria-hidden="true"></i></span>
-              <span class="card-pill pill-pink"><i class="fa-solid fa-trophy" aria-hidden="true"></i> Sıralama &amp; XP</span>
-            </div>
-            <h3>Ekonomi &amp; Seviye</h3>
-            <p>Özelleştirilebilir para birimi, sunucu marketi ve seviye rozetleriyle sohbeti canlı tutun.</p>
-
-            <div class="mini-panel">
-              <div class="rank-row">
-                <span class="rank-pos">#1</span>
-                <span class="rank-name">Efe</span>
-                <span class="rank-xp">14.250 XP 👑</span>
-              </div>
-              <div class="rank-row rank-dim">
-                <span class="rank-pos">#2</span>
-                <span class="rank-name">Mert</span>
-                <span class="rank-xp">11.870 XP</span>
-              </div>
-            </div>
-
-            <ul class="tag-row">
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Sunucu Marketi</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Kumar &amp; Slot</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Günlük Maaş</li>
-            </ul>
-          </article>
-
-          <!-- LOG -->
-          <article class="feature-card tone-amber" data-reveal data-delay="3">
-            <div class="card-top">
-              <span class="card-icon tone-amber"><i class="fa-solid fa-scroll" aria-hidden="true"></i></span>
-              <span class="card-pill pill-amber"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Canlı Webhook</span>
-            </div>
-            <h3>Detaylı Olay Günlüğü</h3>
-            <p>Silinen mesajlar, ses odası geçişleri ve rol değişiklikleri saniyesi saniyesine kayıt altına alınır.</p>
-
-            <div class="mini-panel">
-              <div class="log-row"><span class="log-time">12:49</span><span class="log-txt">#genel kanalında mesaj silindi</span></div>
-              <div class="log-row"><span class="log-time">12:51</span><span class="log-txt">#sohbet ses odasından ayrıldı</span></div>
-            </div>
-
-            <ul class="tag-row">
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Mesaj Takibi</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Ses Logu</li>
-              <li><i class="fa-solid fa-check" aria-hidden="true"></i> Rol Geçmişi</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= KORUMA SİSTEMLERİ ================= -->
-    <section class="protection" id="protection">
-      <div class="container">
-        <div class="section-head" data-reveal>
-          <span class="section-badge"><i class="fa-solid fa-shield-virus" aria-hidden="true"></i> GÜVENLİK ÇEKİRDEĞİ</span>
-          <h2>Koruma <span class="grad-text">sistemlerimiz</span></h2>
-          <p>Sunucunuza dokunan her hareket güvenlik çekirdeğinden geçer; şüpheli olan işlem anında durdurulur ve mod-log'a düşer.</p>
-        </div>
-
-        <div class="prot-grid">
-          <!-- CANLI KALKAN PANELİ -->
-          <aside class="shield-panel" data-reveal aria-label="Koruma kalkanı durumu">
-            <div class="shield-ring" aria-hidden="true">
-              <span class="shield-ring-inner"><i class="fa-solid fa-shield-halved"></i></span>
-            </div>
-
-            <p class="shield-title">Koruma Kalkanı <span class="shield-live">AKTİF</span></p>
-
-            <div class="shield-stats">
-              <div><strong id="protBlocked" data-stat="threatsBlocked">1.482</strong><span>Bugün engellenen</span></div>
-              <div><strong>24</strong><span>Aktif modül</span></div>
-              <div><strong>0,4 sn</strong><span>Tepki süresi</span></div>
-            </div>
-
-            <div class="shield-log" id="shieldLog">
-              <p><span class="t">[14:02]</span><span class="p-log-badge badge-block">ENGELLENDİ</span> 12 toplu hesap girişi</p>
-              <p><span class="t">[14:07]</span><span class="p-log-badge badge-block">ENGELLENDİ</span> #genel kanalına davet linki</p>
-              <p><span class="t">[14:11]</span><span class="p-log-badge badge-ok">TEMİZ</span> son 5 dakikada tehdit yok</p>
-            </div>
-          </aside>
-
-          <!-- KORUMA MODÜLLERİ -->
-          <div class="prot-cards">
-            <article class="prot-card" data-reveal data-delay="1">
-              <div class="prot-top">
-                <span class="prot-icon tone-violet"><i class="fa-solid fa-robot" aria-hidden="true"></i></span>
-                <span class="prot-state"><span class="pulse-dot"></span> DEVREDE</span>
-              </div>
-              <h3>Anti-Raid Kalkanı</h3>
-              <p>Toplu girişleri, taze hesapları ve davranış skoru düşük üyeleri saniyeler içinde tespit edip girişleri kilitler.</p>
-            </article>
-
-            <article class="prot-card" data-reveal data-delay="2">
-              <div class="prot-top">
-                <span class="prot-icon tone-cyan"><i class="fa-solid fa-bomb" aria-hidden="true"></i></span>
-                <span class="prot-state"><span class="pulse-dot"></span> DEVREDE</span>
-              </div>
-              <h3>Anti-Nuke</h3>
-              <p>Kanal/rol silme ve toplu yetki değişimini yakalar, işlemi geri alır ve sorumluyu anında uzaklaştırır.</p>
-            </article>
-
-            <article class="prot-card" data-reveal>
-              <div class="prot-top">
-                <span class="prot-icon tone-amber"><i class="fa-solid fa-burst" aria-hidden="true"></i></span>
-                <span class="prot-state"><span class="pulse-dot"></span> DEVREDE</span>
-              </div>
-              <h3>Spam &amp; Flood Filtresi</h3>
-              <p>Mesaj hızı, tekrar eden içerik ve zincirleme mesajlar sınırlandırılır; kullanıcı timeout'a alınır.</p>
-            </article>
-
-            <article class="prot-card" data-reveal data-delay="1">
-              <div class="prot-top">
-                <span class="prot-icon tone-pink"><i class="fa-solid fa-ban" aria-hidden="true"></i></span>
-                <span class="prot-state"><span class="pulse-dot"></span> DEVREDE</span>
-              </div>
-              <h3>Reklam &amp; Davet Engelleme</h3>
-              <p>Harici davet bağlantıları, kısaltılmış linkler ve zararlı siteler otomatik silinir, kullanıcı işaretlenir.</p>
-            </article>
-
-            <article class="prot-card" data-reveal data-delay="2">
-              <div class="prot-top">
-                <span class="prot-icon tone-blue"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i></span>
-                <span class="prot-state"><span class="pulse-dot"></span> DEVREDE</span>
-              </div>
-              <h3>Kanal &amp; Rol Koruması</h3>
-              <p>Silinen kanal, kategori veya rol yedekten saniyeler içinde geri yüklenir; isim ve izin değişiklikleri geri alınır.</p>
-            </article>
-
-            <article class="prot-card" data-reveal data-delay="3">
-              <div class="prot-top">
-                <span class="prot-icon tone-green"><i class="fa-solid fa-user-shield" aria-hidden="true"></i></span>
-                <span class="prot-state"><span class="pulse-dot"></span> DEVREDE</span>
-              </div>
-              <h3>Yetki Takibi</h3>
-              <p>Verilen ve geri alınan her yetki mod-log'a yazılır; şüpheli yükselmeler yöneticiye anında bildirilir.</p>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= DURUM KANALLI MÜZİK SİSTEMİ ================= -->
-    <section class="music" id="music">
-      <div class="container">
-        <div class="section-head" data-reveal>
-          <span class="section-badge"><i class="fa-solid fa-headphones" aria-hidden="true"></i> MÜZİK MOTORU</span>
-          <h2>Durum kanallı <span class="grad-text">müzik sistemi</span></h2>
-          <p>Çalan parça, kuyruk ve ses odası bilgisi ayrı bir kanala otomatik yazılır — kimse "şu an ne çalıyor?" diye sormaz.</p>
-        </div>
-
-        <div class="music-grid">
-          <div class="music-points">
-            <article class="point" data-reveal>
-              <span class="point-icon tone-cyan"><i class="fa-solid fa-satellite-dish" aria-hidden="true"></i></span>
-              <div>
-                <h3>Otomatik "Şimdi Çalıyor" kanalı</h3>
-                <p>Parça değiştikçe mesaj silinmeden kendini günceller; başlık, sanatçı ve süre her zaman güncel kalır.</p>
-              </div>
-            </article>
-
-            <article class="point" data-reveal data-delay="1">
-              <span class="point-icon tone-violet"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></span>
-              <div>
-                <h3>Kuyruk &amp; sıra kartları</h3>
-                <p>Sıradaki parçalar, döngü ve rastgele mod göstergeleri durum kanalında canlı olarak listelenir.</p>
-              </div>
-            </article>
-
-            <article class="point" data-reveal data-delay="2">
-              <span class="point-icon tone-green"><i class="fa-solid fa-microphone-lines" aria-hidden="true"></i></span>
-              <div>
-                <h3>Ses odası canlı bilgisi</h3>
-                <p>Hangi kanalda, kaç kişiyle ve hangi bitrate ile çalındığı; 24/7 mod durumu tek bakışta görünür.</p>
-              </div>
-            </article>
-
-            <article class="point" data-reveal data-delay="3">
-              <span class="point-icon tone-pink"><i class="fa-solid fa-tag" aria-hidden="true"></i></span>
-              <div>
-                <h3>Kaynak etiketi &amp; 320kbps</h3>
-                <p>Spotify, YouTube ve SoundCloud rozeti ile HD kalite etiketi durum mesajında otomatik yer alır.</p>
-              </div>
-            </article>
-          </div>
-
-          <!-- DURUM KANALI DEMOSU -->
-          <div class="demo" data-reveal data-delay="2" aria-label="Durum kanalı önizlemesi">
-            <div class="demo-side">
-              <span class="side-label">METİN KANALLARI</span>
-              <span class="ch"><i class="fa-solid fa-hashtag" aria-hidden="true"></i> genel</span>
-              <span class="ch is-active">
-                <i class="fa-solid fa-hashtag" aria-hidden="true"></i> şimdi-çalıyor
-                <span class="ch-live" aria-hidden="true"></span>
-              </span>
-              <span class="ch"><i class="fa-solid fa-hashtag" aria-hidden="true"></i> kuyruk</span>
-
-              <span class="side-label">SES KANALI</span>
-              <span class="ch"><i class="fa-solid fa-volume-high" aria-hidden="true"></i> Müzik Odası</span>
-              <div class="voice-users">
-                <span class="vu"><i class="fa-solid fa-user" aria-hidden="true"></i> Efe</span>
-                <span class="vu"><i class="fa-solid fa-robot" aria-hidden="true"></i> GraveBOT</span>
-              </div>
-
-              <span class="side-label">DURUM KANALI</span>
-              <span class="ch is-status"><i class="fa-solid fa-signal" aria-hidden="true"></i> bot-durum</span>
-            </div>
-
-            <div class="demo-main">
-              <div class="demo-top">
-                <span class="demo-hash"><i class="fa-solid fa-hashtag" aria-hidden="true"></i> şimdi-çalıyor</span>
-                <span class="demo-live"><span class="pulse-dot"></span> OTOMATİK</span>
-              </div>
-
-              <div class="np-card">
-                <span class="np-art"><i class="fa-solid fa-music" aria-hidden="true"></i></span>
-                <div class="np-info">
-                  <span class="np-label"><i class="fa-solid fa-satellite-dish" aria-hidden="true"></i> ŞİMDİ ÇALIYOR</span>
-                  <p class="np-title" id="npTitle">Gece Yolculuğu</p>
-                  <p class="np-artist" id="npArtist">Grave Audio</p>
-                  <div class="np-chips">
-                    <span class="np-chip chip-spotify" id="npSource"><i class="fa-brands fa-spotify" aria-hidden="true"></i> Spotify</span>
-                    <span class="np-chip chip-hd">320kbps HD</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="np-progress">
-                <div class="np-track"><span class="np-fill" id="npFill"></span></div>
-                <div class="np-times"><span id="npElapsed">0:00</span><span id="npTotal">3:05</span></div>
-              </div>
-
-              <div class="np-actions">
-                <span><i class="fa-solid fa-repeat" aria-hidden="true"></i> Döngü açık</span>
-                <span><i class="fa-solid fa-shuffle" aria-hidden="true"></i> Rastgele</span>
-                <span class="np-vol"><i class="fa-solid fa-volume-high" aria-hidden="true"></i>
-                  <span class="np-vol-bar"><span></span></span>
-                </span>
-              </div>
-
-              <div class="queue">
-                <div class="queue-head"><span>SIRADAKİ KUYRUKTA</span><span>4 parça</span></div>
-                <div class="q-row">
-                  <span class="q-idx">1</span>
-                  <span class="q-name">Karanlıkta Işık — Neon Duo</span>
-                  <span class="q-time">4:12</span>
-                </div>
-                <div class="q-row">
-                  <span class="q-idx">2</span>
-                  <span class="q-name">Yüksek Gerilim — Bassline TR</span>
-                  <span class="q-time">2:58</span>
-                </div>
-                <div class="q-row">
-                  <span class="q-idx">3</span>
-                  <span class="q-name">Son Tren — Grave Sessions</span>
-                  <span class="q-time">3:47</span>
-                </div>
-              </div>
-
-              <p class="demo-typing">
-                <span class="typing-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-                GraveBOT <b>#bot-durum</b> kanalını güncelliyor…
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= KOMUTLAR ================= -->
-    <section class="commands" id="commands">
-      <div class="container">
-        <div class="section-head" data-reveal>
-          <span class="section-badge"><i class="fa-solid fa-terminal" aria-hidden="true"></i> KOMUT VİTRİNİ</span>
-          <h2>Tek komutla <span class="grad-text">kontrol sizde</span></h2>
-          <p>Bir karta tıklayın, komut panoya kopyalansın. Kategoriye göre filtreleyin.</p>
-          <div class="prefix-chip">
-            <span>VARSAYILAN PREFİKS</span>
-            <code>g!</code>
-            <span class="sep">veya slash (/) komutları</span>
-          </div>
-        </div>
-
-        <div class="filter-tabs" role="tablist" aria-label="Komut kategorileri" data-reveal>
-          <button class="tab-btn is-active" data-filter="all" role="tab" aria-selected="true"><i class="fa-solid fa-list" aria-hidden="true"></i> Tümü</button>
-          <button class="tab-btn" data-filter="moderation" role="tab" aria-selected="false"><i class="fa-solid fa-gavel" aria-hidden="true"></i> Moderasyon</button>
-          <button class="tab-btn" data-filter="security" role="tab" aria-selected="false"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Güvenlik</button>
-          <button class="tab-btn" data-filter="music" role="tab" aria-selected="false"><i class="fa-solid fa-music" aria-hidden="true"></i> Müzik</button>
-          <button class="tab-btn" data-filter="fun" role="tab" aria-selected="false"><i class="fa-solid fa-gamepad" aria-hidden="true"></i> Eğlence</button>
-        </div>
-
-        <div class="command-grid" id="commandGrid">
-          <article class="cmd-card" data-category="moderation" data-clipboard="g!ban" tabindex="0" data-reveal>
-            <span class="cmd-icon tone-violet"><i class="fa-solid fa-user-slash" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!ban <span>[kullanıcı] [sebep]</span></code>
-                <span class="cmd-tag tag-mod">Moderasyon</span>
-              </div>
-              <p>Kullanıcıyı sunucudan uzaklaştırır ve mod-log kanalına anında işler.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="moderation" data-clipboard="g!mute" tabindex="0" data-reveal data-delay="1">
-            <span class="cmd-icon tone-violet"><i class="fa-solid fa-comment-slash" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!mute <span>[kullanıcı] [süre]</span></code>
-                <span class="cmd-tag tag-mod">Moderasyon</span>
-              </div>
-              <p>Geçici susturma (timeout) uygular; süre dolunca otomatik kaldırılır.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="security" data-clipboard="g!antiraid" tabindex="0" data-reveal>
-            <span class="cmd-icon tone-cyan"><i class="fa-solid fa-shield-virus" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!antiraid <span>[aç/kapat]</span></code>
-                <span class="cmd-tag tag-sec">Güvenlik</span>
-              </div>
-              <p>Şüpheli toplu hesap akınlarında sunucu girişlerini anında dondurur.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="security" data-clipboard="g!reklam-engel" tabindex="0" data-reveal data-delay="1">
-            <span class="cmd-icon tone-cyan"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!reklam-engel <span>[seviye]</span></code>
-                <span class="cmd-tag tag-sec">Güvenlik</span>
-              </div>
-              <p>Davet bağlantılarını ve zararlı harici siteleri otomatik temizler.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="security" data-clipboard="g!antinuke" tabindex="0" data-reveal>
-            <span class="cmd-icon tone-cyan"><i class="fa-solid fa-bomb" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!antinuke <span>[aç/kapat]</span></code>
-                <span class="cmd-tag tag-sec">Güvenlik</span>
-              </div>
-              <p>Kanal/rol silme ve toplu yetki değişimini yakalar, işlemi otomatik geri alır.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="security" data-clipboard="g!koruma" tabindex="0" data-reveal data-delay="1">
-            <span class="cmd-icon tone-cyan"><i class="fa-solid fa-user-shield" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!koruma <span>[liste/aç/kapat]</span></code>
-                <span class="cmd-tag tag-sec">Güvenlik</span>
-              </div>
-              <p>Tüm koruma modüllerini listeler veya tek komutla açıp kapatmanı sağlar.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="music" data-clipboard="g!play" tabindex="0" data-reveal>
-            <span class="cmd-icon tone-pink"><i class="fa-solid fa-circle-play" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!play <span>[parça/link]</span></code>
-                <span class="cmd-tag tag-mus">Müzik</span>
-              </div>
-              <p>İstenen parçayı beklemeden sıraya alır ve 320kbps kalitede çalar.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="music" data-clipboard="g!bassboost" tabindex="0" data-reveal data-delay="1">
-            <span class="cmd-icon tone-pink"><i class="fa-solid fa-sliders" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!bassboost <span>[düşük/orta/yüksek]</span></code>
-                <span class="cmd-tag tag-mus">Müzik</span>
-              </div>
-              <p>Frekansı derinleştirerek güçlü bir bas deneyimi sunar.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="music" data-clipboard="g!np" tabindex="0" data-reveal>
-            <span class="cmd-icon tone-pink"><i class="fa-solid fa-circle-play" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!np</code>
-                <span class="cmd-tag tag-mus">Müzik</span>
-              </div>
-              <p>Çalan parçayı, geçmişi ve durum kanalındaki son güncellemeyi gösterir.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="music" data-clipboard="g!durum-kanal" tabindex="0" data-reveal>
-            <span class="cmd-icon tone-pink"><i class="fa-solid fa-satellite-dish" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!durum-kanal <span>[#kanal]</span></code>
-                <span class="cmd-tag tag-mus">Müzik</span>
-              </div>
-              <p>Çalan parçanın otomatik yazıldığı durum kanalını ayarlar veya kaldırır.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="fun" data-clipboard="g!gunluk" tabindex="0" data-reveal>
-            <span class="cmd-icon tone-amber"><i class="fa-solid fa-gift" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!gunluk</code>
-                <span class="cmd-tag tag-fun">Eğlence</span>
-              </div>
-              <p>24 saatte bir ücretsiz sunucu parasını ve ödül kutunu al.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-
-          <article class="cmd-card" data-category="fun" data-clipboard="g!slot" tabindex="0" data-reveal data-delay="1">
-            <span class="cmd-icon tone-amber"><i class="fa-solid fa-dice" aria-hidden="true"></i></span>
-            <div class="cmd-body">
-              <div class="cmd-head">
-                <code class="cmd-code">g!slot <span>[miktar]</span></code>
-                <span class="cmd-tag tag-fun">Eğlence</span>
-              </div>
-              <p>Şansını dene, eşleşen sembollerle büyük ödülü hanene yazdır.</p>
-            </div>
-            <button class="cmd-copy" type="button" aria-label="Komutu kopyala"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= SPONSOR ================= -->
-    <section class="sponsor" id="sponsor">
-      <div class="container">
-        <div class="sponsor-panel" data-reveal>
-          <span class="orb orb-a" aria-hidden="true"></span>
-          <span class="orb orb-b" aria-hidden="true"></span>
-
-          <div class="sponsor-head">
-            <span class="sponsor-badge">
-              <img src="unnamed.png" alt="">
-              Resmî altyapı &amp; barındırma destekçisi
-            </span>
-            <h2>
-              Desteklerinden ötürü<br>
-              <span class="ayhost-word">ayhost.com.tr</span>'ye teşekkürler
-            </h2>
-            <p>
-              GraveBOT'un kesintisiz, düşük gecikmeli ve yüksek performanslı çalışabilmesi;
-              <strong>ayhost.com.tr</strong> tarafından sağlanan AMD Ryzen NVMe bulut sunucu altyapısıyla mümkün olur.
-            </p>
-          </div>
-
-          <div class="sponsor-grid">
-            <div class="sp-card">
-              <span class="sp-icon tone-blue"><i class="fa-solid fa-bolt-lightning" aria-hidden="true"></i></span>
-              <div>
-                <h3>Ultra Düşük Ping</h3>
-                <p>Türkiye lokasyonu / Tier III veri merkezi</p>
-              </div>
-            </div>
-            <div class="sp-card">
-              <span class="sp-icon tone-violet"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
-              <div>
-                <h3>Gelişmiş Anti-DDoS</h3>
-                <p>Voxility &amp; özel oyun koruması</p>
-              </div>
-            </div>
-            <div class="sp-card">
-              <span class="sp-icon tone-green"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i></span>
-              <div>
-                <h3>%99.99 Uptime</h3>
-                <p>Yedekli hatlar &amp; 7/24 kesintisiz hizmet</p>
-              </div>
-            </div>
-          </div>
-
-          <a class="btn btn-glass btn-lg sponsor-cta" href="https://ayhost.com.tr" target="_blank" rel="noopener">
-            ayhost.com.tr'yi keşfet <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- ================= FOOTER ================= -->
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-cta" data-reveal>
-        <div>
-          <h2>GraveBOT'u <span class="grad-text">30 saniyede</span> sunucunuza ekleyin</h2>
-          <p>Ücretsiz, kurulumu basit, Türkçe destekli.</p>
-        </div>
-        <div class="footer-cta-actions">
-          <a class="btn btn-primary btn-lg" href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener">
-            <i class="fa-brands fa-discord" aria-hidden="true"></i> Sunucuna Ekle
-          </a>
-          <a class="btn btn-glass btn-lg" href="https://discord.gg/CVZ4zEkJws" target="_blank" rel="noopener">Destek Sunucusu</a>
-        </div>
-      </div>
-
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <a href="#top" class="brand">
-            <span class="brand-mark"><img src="content.png" alt=""></span>
-            <span class="brand-word">Grave<em>BOT</em></span>
-          </a>
-          <p>Yeni nesil, güvenilir ve yüksek performanslı Discord botu.</p>
-          <span class="footer-status"><span class="pulse-dot"></span> Tüm sistemler çalışıyor</span>
-        </div>
-
-        <nav class="footer-col" aria-label="Ürün">
-          <h4>Ürün</h4>
-          <a href="#features">Özellikler</a>
-          <a href="#protection">Koruma Sistemleri</a>
-          <a href="#music">Müzik Sistemi</a>
-          <a href="#commands">Komutlar</a>
-          <a href="#stats">İstatistikler</a>
-        </nav>
-
-        <nav class="footer-col" aria-label="Topluluk">
-          <h4>Topluluk</h4>
-          <a href="https://discord.gg/CVZ4zEkJws" target="_blank" rel="noopener">Destek Sunucusu</a>
-          <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener">Botu Ekle</a>
-          <a href="#sponsor">Sponsorlar</a>
-        </nav>
-
-        <nav class="footer-col" aria-label="Altyapı">
-          <h4>Altyapı</h4>
-          <a href="https://ayhost.com.tr" target="_blank" rel="noopener">ayhost.com.tr</a>
-          <a href="https://ayhost.com.tr" target="_blank" rel="noopener">Sunucu Paketleri</a>
-          <a href="https://ayhost.com.tr" target="_blank" rel="noopener">Destek Merkezi</a>
-        </nav>
-      </div>
-
-      <div class="footer-bottom">
-        <p>© <span id="year">2026</span> GraveBOT. Tüm hakları saklıdır.</p>
-        <p>Altyapı sponsorumuz: <a href="https://ayhost.com.tr" target="_blank" rel="noopener">ayhost.com.tr</a></p>
+        <small data-i18n="proof">2.300+ sunucu sahibinin puanıyla</small>
       </div>
     </div>
-  </footer>
-
-  <!-- KOPYALAMA BİLDİRİMİ -->
-  <div class="snackbar" id="snackbar" role="status" aria-live="polite">
-    <i class="fa-solid fa-check" aria-hidden="true"></i> Komut panoya kopyalandı
+    <div class="hero-right">
+      <div class="bot-card">
+        <div class="bot-head">
+          <span class="bot-avatar logo-img">G<img src="gravelogo.png" alt="" onerror="this.remove()"></span>
+          <div><b>GraveBOT</b><span class="bot-tag">BOT</span><small data-i18n="onl">çevrimiçi</small></div>
+          <span class="online"></span>
+        </div>
+        <div class="mini-card mc-green"><b data-i18n="lvlT">Seviye atladın!</b><p data-i18n="lvlP">Zeynep 15. seviyeye ulaştı</p><div class="xp"><div></div></div></div>
+        <div class="mini-card mc-blue"><b data-i18n="nowT">Şimdi çalıyor</b><p data-i18n="nowP">Gece LoFi — 03:42 • 14 dinleyici</p><div class="eq"><span></span><span></span><span></span><span></span></div></div>
+        <div class="mini-card mc-pink"><b data-i18n="givT">Çekiliş bitti!</b><p data-i18n="givP">3 kazanan belirlendi, tebrikler</p></div>
+        <div class="typing"><span></span><span></span><span></span></div>
+      </div>
+    </div>
   </div>
+  <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none"><path d="M0,40 C240,80 480,0 720,30 C960,60 1200,20 1440,40 L1440,70 L0,70 Z" fill="#fff"/></svg>
+</section>
 
-  <script src="script.js"></script>
+<!-- GÜVEN ŞERİDİ -->
+<div class="strip"><div class="container strip-inner">
+  <span class="server-pill"><i class="s-dot d1"></i> Mezarlık RP — 8.2k</span>
+  <span class="server-pill"><i class="s-dot d2"></i> LoFi Mezarlığı — 15k</span>
+  <span class="server-pill"><i class="s-dot d3"></i> Gece Vardiyası — 5.6k</span>
+  <span class="server-pill"><i class="s-dot d4"></i> Karanlık Krallık — 8.2k</span>
+  <span class="server-pill hide-m"><i class="s-dot d5"></i> <span data-i18n="moreSrv">+12.400 sunucu daha</span></span>
+</div></div>
+
+<!-- KAYAN ŞERİT -->
+<div class="ticker"><div class="ticker-track">
+  <div class="ticker-group"><span data-i18n="tick1">Moderasyon</span><i>✦</i><span data-i18n="tick2">Müzik</span><i>✦</i><span data-i18n="tick3">Seviye</span><i>✦</i><span data-i18n="tick4">Ekonomi</span><i>✦</i><span data-i18n="tick5">Kayıt</span><i>✦</i><span data-i18n="tick6">Çekiliş</span><i>✦</i><span data-i18n="tick7">24/7</span><i>✦</i><span data-i18n="tick8">Otomasyon</span><i>✦</i></div>
+  <div class="ticker-group" aria-hidden="true"><span data-i18n="tick1">Moderasyon</span><i>✦</i><span data-i18n="tick2">Müzik</span><i>✦</i><span data-i18n="tick3">Seviye</span><i>✦</i><span data-i18n="tick4">Ekonomi</span><i>✦</i><span data-i18n="tick5">Kayıt</span><i>✦</i><span data-i18n="tick6">Çekiliş</span><i>✦</i><span data-i18n="tick7">24/7</span><i>✦</i><span data-i18n="tick8">Otomasyon</span><i>✦</i></div>
+</div></div>
+
+<!-- ÖZELLİKLER -->
+<section class="section container" id="ozellikler">
+  <p class="kicker" data-i18n="fKick">ÖZELLİKLER</p>
+  <h2><span data-i18n="fH">Tek bot,</span> <span class="hl" data-i18n="fHl">sınırsız eğlence.</span></h2>
+  <p class="sec-sub" data-i18n="fSub">Her sunucunun ihtiyacı olan her şey kutudan çıkıyor.</p>
+  <div class="grid">
+    <div class="feat f-blue"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3 data-i18n="f1h">Moderasyon</h3><p data-i18n="f1p">Spam, küfür ve raid koruması. Uyarı, susturma ve yasaklama tek tıkla.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
+    <div class="feat f-green"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><h3 data-i18n="f2h">Müzik</h3><p data-i18n="f2p">YouTube + Spotify, sıra ve 24/7 modu. Partin hiç bitmesin.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
+    <div class="feat f-yellow"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1E2442" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></div><h3 data-i18n="f3h">Seviye & XP</h3><p data-i18n="f3p">Mesajlaştıkça seviye atla, ödüller kazan, liderlik tablosuna çık.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
+    <div class="feat f-pink"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M14.5 9.5c-.8-.8-1.6-1-2.5-1-1.5 0-2.5.8-2.5 2 0 2.5 5 1.2 5 3.7 0 1.2-1 2-2.5 2-1 0-1.7-.3-2.5-1"/></svg></div><h3 data-i18n="f4h">Ekonomi</h3><p data-i18n="f4p">Günlük ödül, çalışma, market. Sunucu paranı yönet.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
+    <div class="feat f-purple"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="4"/><path d="M2 21v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/><path d="M19 8v6M22 11h-6"/></svg></div><h3 data-i18n="f5h">Kayıt</h3><p data-i18n="f5p">Butonlu kayıt formu, otomatik rol. Yetkililer rahat nefes alsın.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
+    <div class="feat f-orange"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></div><h3 data-i18n="f6h">Çekiliş</h3><p data-i18n="f6p">Bir komutla çekiliş başlat, kazananlar otomatik seçilsin.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
+  </div>
+</section>
+
+<!-- VİTRİN -->
+<section class="showcase" id="vitrin">
+  <div class="container">
+    <p class="kicker" data-i18n="shKick">NELER YAPIYOR?</p>
+    <h2 data-i18n="shH">Sunucunu otopilota al.</h2>
+
+    <div class="show-row">
+      <div class="show-text"><span class="show-tag t-blue" data-i18n="s1t">MODERASYON</span><h3 data-i18n="s1h">Trolleri sen uyanmadan yakala.</h3><p data-i18n="s1p">Otomatik koruma spam, reklam ve küfürü anında siler. Sen sadece keyfine bak.</p><ul><li data-i18n="s1a">Otomatik spam ve link engelleme</li><li data-i18n="s1b">Uyarı → susturma → yasak merdiveni</li><li data-i18n="s1c">Her işlem log kanalına kaydolur</li></ul></div>
+      <div class="show-mock mock-mod">
+        <div class="mock-head"><span></span><span></span><span></span></div>
+        <div class="mock-line red" data-i18n="m1"><b>Silindi:</b> 12 spam mesaj — @spamcı susturuldu (10 dk)</div>
+        <div class="mock-line" data-i18n="m2"><b>Uyarı:</b> @yeni-üye — reklam linki (1/3)</div>
+        <div class="mock-line green" data-i18n="m3"><b>Temiz:</b> son 24 saatte 96 tehdit engellendi</div>
+      </div>
+    </div>
+
+    <div class="show-row reverse">
+      <div class="show-text"><span class="show-tag t-green" data-i18n="s2t">MÜZİK</span><h3 data-i18n="s2h">Parti modu: hep açık.</h3><p data-i18n="s2p">YouTube ve Spotify'dan kesintisiz müzik. Sıra, döngü ve 24/7 modu dahil.</p><ul><li data-i18n="s2a">Yüksek kalite ses, sıfır gecikme</li><li data-i18n="s2b">g!sıra ile kuyruğu yönet</li><li data-i18n="s2c">Oy vererek şarkı atlatma</li></ul></div>
+      <div class="show-mock mock-music">
+        <div class="player-top"><span class="p-cover"></span><div><b>Gece LoFi Mix</b><small>320kbps • 14 dinleyici</small></div><span class="p-play"></span></div>
+        <div class="p-bar"><div></div></div>
+        <div class="p-queue"><span>1. Gece LoFi (çalıyor)</span><span>2. Mezarlık Synthwave</span><span>3. Loş Işıklar Caz</span></div>
+      </div>
+    </div>
+
+    <div class="show-row">
+      <div class="show-text"><span class="show-tag t-yellow" data-i18n="s3t">EKONOMİ</span><h3 data-i18n="s3h">Üyeler her gün geri gelsin.</h3><p data-i18n="s3p">Günlük ödül, çalışma ve market ile sunucun yaşayan bir ekonomiye dönüşsün.</p><ul><li data-i18n="s3a">g!günlük ile her gün coin</li><li data-i18n="s3b">Mağazadan rol ve avantaj satın al</li><li data-i18n="s3c">Haftalık liderlik tablosu</li></ul></div>
+      <div class="show-mock mock-eco">
+        <div class="eco-title" data-i18n="ecoT">Haftalık Liderlik</div>
+        <div class="eco-row gold"><b>1</b> Zeynep <span>12.450</span></div>
+        <div class="eco-row silver"><b>2</b> Mert <span>11.020</span></div>
+        <div class="eco-row bronze"><b>3</b> <span data-i18n="you">Sen</span> <span>9.870</span></div>
+        <div class="eco-row"><b>4</b> Emir <span>7.300</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KOMUTLAR -->
+<section class="section container" id="komutlar">
+  <p class="kicker" data-i18n="cKick">KOMUTLAR</p>
+  <h2><span data-i18n="cHA">Hepsi</span> <span class="hl">g! ile</span> <span data-i18n="cHB">başlıyor.</span></h2>
+  <div class="cmd-controls">
+    <input type="text" id="cmdSearch" placeholder="Komut ara... (örn: ban)" data-i18n-ph="searchPh">
+    <div class="tabs" id="cmdTabs">
+      <button class="active" data-cat="all" data-i18n="tAll">Tümü</button>
+      <button data-cat="mod" data-i18n="tMod">Moderasyon</button>
+      <button data-cat="muzik" data-i18n="tMus">Müzik</button>
+      <button data-cat="eko" data-i18n="tEco">Ekonomi</button>
+      <button data-cat="genel" data-i18n="tGen">Genel</button>
+    </div>
+  </div>
+  <div class="cmd-table" id="cmdList">
+    <div class="cmd-row" data-cat="mod"><code>g!ban</code><div><b data-i18n="c_ban">Kullanıcıyı yasakla</b><p data-i18n="c_ban_p">Sebep ve süre belirterek uzaklaştırır.</p></div></div>
+    <div class="cmd-row" data-cat="mod"><code>g!kick</code><div><b data-i18n="c_kick">Kullanıcıyı at</b><p data-i18n="c_kick_p">Sunucudan çıkarır, tekrar katılabilir.</p></div></div>
+    <div class="cmd-row" data-cat="mod"><code>g!mute</code><div><b data-i18n="c_mute">Sustur</b><p data-i18n="c_mute_p">Süreli susturma uygular, loga kaydeder.</p></div></div>
+    <div class="cmd-row" data-cat="mod"><code>g!temizle</code><div><b data-i18n="c_temizle">Mesaj sil</b><p data-i18n="c_temizle_p">1–100 mesajı tek seferde siler.</p></div></div>
+    <div class="cmd-row" data-cat="mod"><code>g!kurulum</code><div><b data-i18n="c_kurulum">Hızlı kurulum</b><p data-i18n="c_kurulum_p">Her şeyi 30 saniyede kurar.</p></div></div>
+    <div class="cmd-row" data-cat="muzik"><code>g!oynat</code><div><b data-i18n="c_oynat">Şarkı çal</b><p data-i18n="c_oynat_p">İsim veya link ile çalar.</p></div></div>
+    <div class="cmd-row" data-cat="muzik"><code>g!sıra</code><div><b data-i18n="c_sira">Kuyruk</b><p data-i18n="c_sira_p">Sıradaki şarkıları listeler.</p></div></div>
+    <div class="cmd-row" data-cat="eko"><code>g!bakiye</code><div><b data-i18n="c_bakiye">Bakiye</b><p data-i18n="c_bakiye_p">Cüzdan ve sıralamanı gösterir.</p></div></div>
+    <div class="cmd-row" data-cat="eko"><code>g!günlük</code><div><b data-i18n="c_gunluk">Günlük ödül</b><p data-i18n="c_gunluk_p">Her 24 saatte bir coin.</p></div></div>
+    <div class="cmd-row" data-cat="genel"><code>g!çekiliş</code><div><b data-i18n="c_cekilis">Çekiliş başlat</b><p data-i18n="c_cekilis_p">Süre ve ödül belirlersin.</p></div></div>
+    <div class="cmd-row" data-cat="genel"><code>g!yardım</code><div><b data-i18n="c_yardim">Yardım</b><p data-i18n="c_yardim_p">Tüm komutları listeler.</p></div></div>
+  </div>
+  <p class="cmd-empty" id="cmdEmpty" hidden data-i18n="cmdEmpty">Aramanla eşleşen komut bulunamadı.</p>
+</section>
+
+<!-- STAT BANDI -->
+<div class="statband" id="nasil">
+  <div class="container statband-inner">
+    <div><b data-count="110">0</b><span data-i18n="st1">sunucu</span></div>
+    <div><b data-count="400000">0</b><span data-i18n="st2">kullanıcı</span></div>
+    <div><b data-count="100">0</b><span data-i18n="st3">Komut</span></div>
+    <div><b data-count="99">0</b><span data-i18n="st4">% uptime</span></div>
+  </div>
+</div>
+
+<!-- KURULUM -->
+<section class="section container">
+  <p class="kicker" data-i18n="suKick">KURULUM</p>
+  <h2 data-i18n="suH">30 saniyede hazır.</h2>
+  <div class="steps">
+    <div class="step"><div class="num n1">1</div><h3 data-i18n="s1h_">Davet et</h3><p data-i18n="s1p_">Butona bas, sunucunu seç, onayla.</p></div>
+    <div class="step"><div class="num n2">2</div><h3 data-i18n="s2h_">g!kurulum yaz</h3><p data-i18n="s2p_">Her şey otomatik ayarlansın.</p></div>
+    <div class="step"><div class="num n3">3</div><h3 data-i18n="s3h_">Eğlenmene bak</h3><p data-i18n="s3p_">Bot çalışsın, sen topluluğunla ilgilen.</p></div>
+  </div>
+  <div class="center"><a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" class="btn btn-yellow btn-lg" data-i18n="suBtn">Hemen Başla — Ücretsiz</a></div>
+</section>
+
+<!-- YORUMLAR -->
+<section class="section reviews-sec">
+  <div class="container">
+    <p class="kicker" data-i18n="rvKick">SUNUCULAR ANLATIYOR</p>
+    <h2 data-i18n="rvH">Binlerce mutlu topluluk.</h2>
+    <div class="reviews">
+      <div class="review"><div class="r-stars">★★★★★</div><p data-i18n="rv1">"Üç botu silip GraveBOT'a geçtik. Seviye sistemi üyeleri bağımlı etti."</p><div class="r-who"><span class="r-av a1">K</span><div><b>Karanlık Krallık</b><small data-i18n="rv1m">8.200 üye</small></div></div></div>
+      <div class="review"><div class="r-stars">★★★★★</div><p data-i18n="rv2">"g!kurulum yazdım, yarım dakikada her şey hazırdı. İnanılmaz kolay."</p><div class="r-who"><span class="r-av a2">L</span><div><b>LoFi Mezarlığı</b><small data-i18n="rv2m">15.000 üye</small></div></div></div>
+      <div class="review"><div class="r-stars">★★★★★</div><p data-i18n="rv3">"Müzik için geldik, ekonomi ve çekilişlerle kaldık. Herkese öneririm."</p><div class="r-who"><span class="r-av a3">G</span><div><b>Gece Vardiyası</b><small data-i18n="rv3m">5.600 üye</small></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- OY VER -->
+<section class="section container" id="oyver">
+  <div class="vote-card">
+    <div class="vote-left">
+      <p class="kicker" data-i18n="voteKick">OY VER</p>
+      <h2 data-i18n="voteH">Botu seviyor musun?</h2>
+      <p class="vote-sub" data-i18n="voteP">top.gg'de oy ver, GraveBOT'u listelerde yükselt.</p>
+      <a href="https://top.gg/bot/1066016782827130960/vote" target="_blank" class="btn btn-yellow btn-lg" data-i18n="voteBtn">top.gg'de Oy Ver</a>
+      <small data-i18n="voteNote">Her 12 saatte bir oy verebilirsin</small>
+    </div>
+    <div class="vote-right">
+      <span class="vote-live"><i></i><b data-i18n="voteLive">CANLI</b></span>
+      <div class="vote-ticket">
+        <div class="vt-left"><img src="gravelogo.png" alt="GraveBOT" onerror="this.remove()"><b>GraveBOT</b><span>top.gg</span></div>
+        <div class="vt-right">
+          <div class="vt-nums">
+            <div><b>110</b><span data-i18n="voteS1">sunucu</span></div>
+            <div><b>56</b><span data-i18n="voteS2">oy</span></div>
+          </div>
+          <a class="btn btn-dark btn-sm" href="https://top.gg/bot/1066016782827130960/vote" target="_blank" data-i18n="ftVote">Oy Ver</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SSS -->
+<section class="section container narrow" id="sss">
+  <div class="faq-banner">
+    <p class="kicker" data-i18n="fqKick">S.S.S</p>
+    <h2 data-i18n="fqH">Aklında kalanlar.</h2>
+    <p class="faq-banner-sub"><span data-i18n="fqSub">Cevabını bulamadın mı?</span> <a href="https://discord.gg/HMYDcAjWmX" target="_blank" class="btn btn-yellow btn-sm" data-i18n="fqBtn">Destek'e Sor</a></p>
+  </div>
+  <div class="faq" id="faq">
+    <div class="faq-item"><button><span data-i18n="q1">Ücretsiz mi?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a1">Evet, tüm temel özellikler ücretsiz ve sınırsız sunucuda kullanılabilir.</div></div>
+    <div class="faq-item"><button><span data-i18n="q2">Nasıl eklerim?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a2">"Discord'a Ekle" butonuna tıkla, sunucunu seç ve onayla. Sonra kanala <code>g!kurulum</code> yaz.</div></div>
+    <div class="faq-item"><button><span data-i18n="q3">Hangi yetkiler gerekli?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a3">İlk kurulumda Yönetici yetkisi önerilir, sonra kısıtlayabilirsin.</div></div>
+    <div class="faq-item"><button><span data-i18n="q4">Türkçe mi?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a4">Evet, komutlar ve destek tamamen Türkçe.</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="container">
+  <div class="cta">
+    <h2 data-i18n="ctaH">Partiye katılmaya hazır mısın?</h2>
+    <p data-i18n="ctaP">12.500+ sunucu zaten GraveBOT kullanıyor. 30 saniyede sen de başla.</p>
+    <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" class="btn btn-dark btn-lg" data-i18n="ctaBtn">GraveBOT'u Ekle — Ücretsiz</a>
+    <small data-i18n="ctaSm">Kredi kartı gerekmez</small>
+  </div>
+</section>
+
+<footer>
+  <div class="container foot-inner">
+    <a href="#" class="logo logo-light">
+      <span class="logo-badge logo-img">G<img src="gravelogo.png" alt="" onerror="this.remove()"></span>
+      GraveBOT
+    </a>
+    <p data-i18n="ftRights">© 2026 GraveBOT — Discord Inc. ile bağlantısı yoktur.</p>
+    <div class="foot-links">
+      <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" data-i18n="ftInv">Davet Et</a>
+      <a href="https://discord.gg/HMYDcAjWmX" target="_blank" data-i18n="ftSup">Destek Sunucusu</a>
+      <a href="https://top.gg/bot/1066016782827130960/vote" target="_blank" data-i18n="ftVote">Oy Ver</a>
+      <a href="gizlilik.html" data-i18n="ftPr">Gizlilik</a>
+      <a href="kvkk.html" data-i18n="ftKvkk">KVKK</a>
+      <a href="dmca.html" data-i18n="ftTe">DMCA</a>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Yukarı çık">↑</button>
+
+<script src="script.js"></script>
 </body>
 </html>
