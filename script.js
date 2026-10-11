@@ -77,6 +77,32 @@ document.querySelectorAll('.faq-item').forEach(item => {
   });
 });
 
+// ---------- CANLI top.gg VERİSİ ----------
+const TOPGG_BOT_ID = '1066016782827130960';
+const TOPGG_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfdCI6Ijg5NzAyOTE1OTMzNTIxNTEwNCIsImlkIjoiNTM5NzU2MzExOTU3ODc2NzM2IiwiaWF0IjoxNzkxNzA1MjE3fQ.HHnClHARYqcvLznFHvkg3rfMHr7PasfFsK6J5QYK2G8';
+function fmtLive(n) { return (n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n.toLocaleString('tr-TR')) + '+'; }
+async function refreshLiveStats() {
+  try {
+    const r = await fetch('https://top.gg/api/bots/' + TOPGG_BOT_ID, { headers: { Authorization: TOPGG_TOKEN } });
+    if (!r.ok) return;
+    const j = await r.json();
+    if (j.server_count != null) {
+      document.querySelectorAll('.statband-inner > div:first-child b').forEach(b => {
+        b.dataset.count = j.server_count;
+        if (b.dataset.done) b.textContent = fmtLive(j.server_count);
+      });
+      const vs = document.querySelector('.vt-nums div:first-child b');
+      if (vs) vs.textContent = j.server_count.toLocaleString('tr-TR');
+    }
+    if (j.monthlyPoints != null) {
+      const vv = document.querySelector('.vt-nums div:last-child b');
+      if (vv) vv.textContent = j.monthlyPoints.toLocaleString('tr-TR');
+    }
+  } catch (e) { /* sessizce sabit sayılarda kal */ }
+}
+refreshLiveStats();
+setInterval(refreshLiveStats, 10 * 60 * 1000);
+
 // Sayaç
 function count(el) {
   const t = +el.dataset.count, t0 = performance.now(), dur = 1400;
@@ -85,6 +111,7 @@ function count(el) {
     const v = Math.floor(t * (1 - Math.pow(1 - p, 3)));
     el.textContent = (v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : v.toLocaleString('tr-TR')) + '+';
     if (p < 1) requestAnimationFrame(tick);
+    else el.dataset.done = '1';
   })(t0);
 }
 const io = new IntersectionObserver(es => es.forEach(e => {
