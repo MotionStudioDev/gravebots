@@ -106,6 +106,20 @@
     document.getElementById('navLinks').classList.toggle('mobile');
     document.querySelector('.nav-actions').classList.toggle('mobile');
   });
+  window.oncontextmenu = function () { return false; };
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); e.stopPropagation(); }, true);
+  document.addEventListener('keydown', function (e) {
+    var k = e.key.toUpperCase();
+    var mod = e.ctrlKey || e.metaKey;
+    if (e.key === 'F12') { e.preventDefault(); location.href = '404.html'; return; }
+    if ((mod && e.shiftKey && ['I', 'J', 'C', 'K', 'E', 'S'].indexOf(k) > -1) ||
+        (mod && !e.shiftKey && ['U', 'S', 'P'].indexOf(k) > -1)) e.preventDefault();
+  });
+  setInterval(function () {
+    var t0 = performance.now();
+    debugger;
+    if (performance.now() - t0 > 120) location.href = '404.html';
+  }, 1500);
   var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: .12 });
   document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 

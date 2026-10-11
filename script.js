@@ -94,7 +94,7 @@ async function refreshLiveServers() {
 }
 function fmtNum(n) { return (n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n.toLocaleString('tr-TR')) + '+'; }
 refreshLiveServers();
-setInterval(refreshLiveServers, 10 * 60 * 1000);
+setInterval(refreshLiveServers, 30 * 1000);
 
 // Sayaç (not: sunucu sayısı Vercel functions üzerinden canlı gelir, bkz. api/stats.js)
 function count(el) {
@@ -239,7 +239,7 @@ if (matchMedia('(hover:hover)').matches) {
 }
 
 // Mıknatıs butonlar + sarılarda konfeti
-if (matchMedia('(hover:hover)').matches && !reduceMotion) {
+if (matchMedia('(hover:hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.querySelectorAll('.btn-yellow,.btn-dark').forEach(b => {
     b.addEventListener('mousemove', e => {
       const r = b.getBoundingClientRect();
@@ -320,3 +320,21 @@ function burst(x, y) {
     setTimeout(() => c.remove(), 900);
   }
 }
+
+// Sağ tık / inceleme caydırıcı (tam koruma sağlamaz, sadece acemiyi oyalar)
+window.oncontextmenu = () => false;
+document.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); }, true);
+document.addEventListener('keydown', e => {
+  const k = e.key.toUpperCase();
+  const mod = e.ctrlKey || e.metaKey;
+  if (e.key === 'F12') { e.preventDefault(); location.href = '404.html'; return; }
+  if ((mod && e.shiftKey && ['I', 'J', 'C', 'K', 'E', 'S'].includes(k)) ||
+      (mod && !e.shiftKey && ['U', 'S', 'P'].includes(k))) e.preventDefault();
+});
+
+// DevTools açılırsa 404'e at (F12 JS ile engellenemez, bu en sert caydırıcıdır)
+setInterval(() => {
+  const t0 = performance.now();
+  debugger;
+  if (performance.now() - t0 > 120) location.href = '404.html';
+}, 1500);

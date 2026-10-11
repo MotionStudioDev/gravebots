@@ -475,6 +475,33 @@ input,textarea{cursor:text}
 @keyframes conf{to{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
 .logo:hover .logo-badge{animation:logoSwing .6s ease}
 @keyframes logoSwing{25%{transform:rotate(-12deg) scale(1.08)}60%{transform:rotate(8deg)}}
+@keyframes blink{50%{opacity:.3}}
+@keyframes tb{50%{transform:translateY(-4px);opacity:1}}
+/* yükselen parçacıklar */
+.particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.particles span{position:absolute;bottom:-14px;border-radius:50%;background:var(--yellow);opacity:0;animation:floatUp 8s linear infinite}
+.particles span:nth-child(1){left:8%;width:7px;height:7px;animation-delay:0s}
+.particles span:nth-child(2){left:22%;width:5px;height:5px;background:var(--blue);animation-delay:1.4s;animation-duration:9.5s}
+.particles span:nth-child(3){left:38%;width:9px;height:9px;animation-delay:3s}
+.particles span:nth-child(4){left:52%;width:5px;height:5px;background:var(--pink);animation-delay:.8s;animation-duration:7s}
+.particles span:nth-child(5){left:66%;width:7px;height:7px;animation-delay:2.2s;animation-duration:10s}
+.particles span:nth-child(6){left:78%;width:5px;height:5px;background:var(--green);animation-delay:4.1s}
+.particles span:nth-child(7){left:90%;width:8px;height:8px;animation-delay:1s;animation-duration:8.6s}
+.particles span:nth-child(8){left:14%;width:6px;height:6px;background:var(--purple);animation-delay:5.2s}
+@keyframes floatUp{0%{transform:translateY(0);opacity:0}12%{opacity:.55}90%{opacity:.4}100%{transform:translateY(-105vh);opacity:0}}
+/* başlık altı ışık barı */
+.section h2,.showcase h2{position:relative;padding-bottom:22px}
+.section h2::after,.showcase h2::after{content:'';position:absolute;left:50%;bottom:0;width:78px;height:7px;transform:translateX(-50%);background:linear-gradient(90deg,var(--yellow) 30%,#fff 50%,var(--yellow) 70%);background-size:200% 100%;border:2px solid var(--border);border-radius:99px;animation:barSlide 2.8s linear infinite}
+@keyframes barSlide{to{background-position:-200% 0}}
+/* nav altı çizgi */
+.nav-links a{position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--yellow);border-radius:99px;transform:scaleX(0);transform-origin:left;transition:transform .25s}
+.nav-links a:hover::after{transform:scaleX(1)}
+[dir="rtl"] .nav-links a::after{transform-origin:right}
+/* ters şerit */
+.ticker-rev{border-top:2px solid var(--border)}
+.ticker-rev .ticker-track{animation-direction:reverse}
+@media(prefers-reduced-motion:reduce){.particles{display:none}.section h2::after,.showcase h2::after{animation:none}}
 /* başlık parıltısı */
 .hl-yellow{position:relative}
 .hl-yellow::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.65) 50%,transparent 70%);background-size:250% 100%;animation:hlShine 3.8s ease-in-out infinite;pointer-events:none}

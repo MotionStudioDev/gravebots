@@ -65,6 +65,15 @@
   var root = document.documentElement;
   try { var t = localStorage.getItem('grave-theme'); if (t) root.setAttribute('data-theme', t); } catch (e) {}
   function setTheme(t) { root.setAttribute('data-theme', t); try { localStorage.setItem('grave-theme', t); } catch (e) {} }
+  window.oncontextmenu = () => false;
+  document.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); }, true);
+  document.addEventListener('keydown', e => {
+    const k = e.key.toUpperCase();
+    const mod = e.ctrlKey || e.metaKey;
+    if (e.key === 'F12') { e.preventDefault(); return; }
+    if ((mod && e.shiftKey && ['I', 'J', 'C', 'K', 'E', 'S'].includes(k)) ||
+        (mod && !e.shiftKey && ['U', 'S', 'P'].includes(k))) e.preventDefault();
+  });
   document.getElementById('themeToggle').addEventListener('click', function () {
     var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     if (document.startViewTransition) document.startViewTransition(function () { setTheme(next); });
