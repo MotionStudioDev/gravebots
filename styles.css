@@ -558,8 +558,8 @@ input,textarea{cursor:text}
 
 /* ---- DAHA FAZLA HAREKET 3 ---- */
 /* akan başlık gradyanı */
-.hl{background:linear-gradient(90deg,#5865F2,#9B59F2,#5865F2);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hlShift 4s linear infinite}
-@keyframes hlShift{to{background-position:200% center}}
+.hl{background:linear-gradient(90deg,#ff004c,#ff8a00,#ffee00,#00e676,#00b0ff,#9B59F2,#ff004c);background-size:300% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:hlShift 6s linear infinite}
+@keyframes hlShift{to{background-position:300% center}}
 /* rozet nabzı */
 .pill{animation:pillPulse 3s ease-in-out infinite}
 @keyframes pillPulse{50%{box-shadow:2px 2px 0 var(--border),0 0 24px rgba(255,200,0,.55)}}
@@ -575,3 +575,210 @@ input,textarea{cursor:text}
 [data-theme="dark"] .feat,[data-theme="dark"] .review,[data-theme="dark"] .step,
 [data-theme="dark"] .show-mock,[data-theme="dark"] .cmd-table,[data-theme="dark"] .faq-item{box-shadow:5px 5px 0 rgba(0,0,0,.5)}
 [data-theme="dark"] .bot-card{box-shadow:8px 8px 0 rgba(0,0,0,.5)}
+
+/* ============ PERF-ENGINE v4: sabit 60fps + daha cok (ucuz) animasyon ============
+   Kural: sonsuz donguler SADECE transform/opacity kullanir (GPU).
+   Agir boya (box-shadow/text-shadow/background-position/blur/left) dusuk cihazda kapali.
+   data-perf="low" JS tarafindan otomatik atanir + FPS izleyici otomatik dusurur.
+*/
+:root{ --ease-spring:cubic-bezier(.2,1.2,.4,1); --ease-out:cubic-bezier(.2,.8,.3,1); }
+/* composited katmanlar */
+.ticker-track,.bot-card,.particles span,.scroll-progress,.vote-ticket,.show-mock,.feat,.review,.step{
+  backface-visibility:hidden; -webkit-backface-visibility:hidden;
+}
+.ticker-track,.particles span,.bot-card{ will-change:transform; }
+.scroll-progress{
+  width:100% !important; transform:scaleX(0); transform-origin:0 50%;
+  will-change:transform;
+}
+[dir="rtl"] .scroll-progress{ transform-origin:100% 50%; }
+/* ekran disi: agir animasyonlari duraklat (JS .is-off ekler) */
+.is-off .ticker-track,.is-off .particles span,.is-off .eq span,.is-off .typing span{ animation-play-state:paused !important; }
+/* alt ekran icerigi: render maliyetini ertele */
+.section,.showcase,.reviews-sec,.statband{ content-visibility:auto; contain-intrinsic-size:auto 600px; }
+.feat,.review,.step,.show-mock,.cmd-table,.faq-item,.vote-card,.cta{ contain:layout paint style; }
+/* ---- pahali 'left' pariltisini transform'a cevir (60fps fix) ---- */
+.btn-yellow::after{
+  left:0 !important; transform:translateX(-260%) skewX(-20deg);
+  animation:shineT 3.4s ease-in-out infinite !important;
+}
+@keyframes shineT{ 0%,55%{ transform:translateX(-260%) skewX(-20deg);} 100%{ transform:translateX(520%) skewX(-20deg);} }
+.feat::after{
+  left:0 !important; transform:translateX(-260%) skewX(-20deg);
+  transition:transform .65s ease !important;
+}
+.feat:hover::after{ transform:translateX(520%) skewX(-20deg); }
+.loader-logo::after{
+  left:0 !important; transform:translateX(-260%) skewX(-20deg);
+  animation:logoShineT 1.6s ease-in-out infinite !important;
+}
+@keyframes logoShineT{ 0%,30%{ transform:translateX(-260%) skewX(-20deg);} 100%{ transform:translateX(520%) skewX(-20deg);} }
+/* eq barlari: alttan buyu (daha dogal + ucuz) */
+.eq span{ transform-origin:50% 100%; }
+/* ---- YENI ucuz animasyonlar (hepsi transform/opacity) ---- */
+/* rozet giris pop */
+@keyframes pillPop{ 0%{ opacity:0; transform:scale(.7) translateY(10px);} 60%{ opacity:1; transform:scale(1.06);} 100%{ opacity:1; transform:scale(1);} }
+body.loaded .pill{ animation:pillPop .55s var(--ease-spring) .1s both, pillPulse 3s ease-in-out 1s infinite; }
+/* hero kart mini kartlar süzülme */
+@keyframes miniFloat{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-4px);} }
+.mc-green{ animation:rise .55s ease .8s both, miniFloat 4s ease-in-out 1.6s infinite; }
+.mc-blue{ animation:rise .55s ease 1s both, miniFloat 4s ease-in-out 1.9s infinite; }
+.mc-pink{ animation:rise .55s ease 1.2s both, miniFloat 4s ease-in-out 2.2s infinite; }
+/* oy bileti süzülme */
+@keyframes ticketFloat{ 0%,100%{ transform:translateY(0) rotate(0);} 50%{ transform:translateY(-6px) rotate(.4deg);} }
+.vote-ticket{ animation:ticketFloat 5s ease-in-out infinite; }
+/* vitrin mock dalgasi */
+@keyframes mockFloat{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-5px);} }
+.mock-music{ animation:mockFloat 6s ease-in-out infinite; }
+.mock-eco{ animation:mockFloat 6s ease-in-out 1s infinite; }
+.mock-mod{ animation:mockFloat 6s ease-in-out 2s infinite; }
+.show-mock:hover{ animation-play-state:paused; }
+/* muzik barinda akan isik (transform) */
+.p-bar{ position:relative; overflow:hidden; }
+.p-bar div{ position:relative; overflow:hidden; }
+.p-bar div::after{
+  content:''; position:absolute; inset:0; width:40%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent);
+  transform:translateX(-120%); animation:pbarSlide 2.4s ease-in-out infinite;
+}
+@keyframes pbarSlide{ 60%,100%{ transform:translateX(280%);} }
+/* xp bar isigi */
+.xp div{ position:relative; overflow:hidden; }
+.xp div::after{
+  content:''; position:absolute; inset:0; width:35%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent);
+  transform:translateX(-130%); animation:pbarSlide 3s ease-in-out infinite;
+}
+/* ikon hover wiggle (transform) */
+.feat:hover .f-icon svg{ animation:iconWiggle .5s ease; }
+@keyframes iconWiggle{ 25%{ transform:rotate(-12deg) scale(1.12);} 55%{ transform:rotate(8deg) scale(1.05);} 100%{ transform:rotate(0);} }
+/* footer link kayma */
+.foot-links a{ position:relative; transition:transform .2s var(--ease-out), color .2s; display:inline-block; }
+.foot-links a:hover{ transform:translateY(-2px); }
+/* yukari buton cikis */
+@keyframes toTopIn{ from{ opacity:0; transform:translateY(20px) scale(.8);} to{ opacity:1; transform:none;} }
+.to-top.show{ animation:toTopIn .35s var(--ease-spring); }
+/* reveal kademesi: --d JS tarafindan atanir */
+.reveal{ transition:opacity .6s ease var(--d,0s), transform .6s var(--ease-out) var(--d,0s), border-color .3s ease; }
+/* baslik alti bar: dusukte statik */
+.section h2::after,.showcase h2::after{ will-change:transform; }
+/* ---- DUSUK CIHAZ: agir boyalari kapat, hizi koru ---- */
+html[data-perf="low"] .hero::before,html[data-perf="low"] .hero::after{
+  animation:none !important; opacity:.18 !important;
+}
+html[data-perf="low"] .btn-yellow::after,
+html[data-perf="low"] .feat::after,
+html[data-perf="low"] .loader-logo::after,
+html[data-perf="low"] .hl-yellow::after,
+html[data-perf="low"] .p-bar div::after,
+html[data-perf="low"] .xp div::after{ display:none !important; }
+html[data-perf="low"] .cta .btn,
+html[data-perf="low"] .pill,
+html[data-perf="low"] .statband b,
+html[data-perf="low"] .loader-logo,
+html[data-perf="low"] .section h2::after,
+html[data-perf="low"] .showcase h2::after,
+html[data-perf="low"] .hl,
+html[data-perf="low"] .num,
+html[data-perf="low"] .f-icon svg,
+html[data-perf="low"] .server-pill,
+html[data-perf="low"] .vote-ticket,
+html[data-perf="low"] .mock-music,html[data-perf="low"] .mock-eco,html[data-perf="low"] .mock-mod,
+html[data-perf="low"] .mc-green,html[data-perf="low"] .mc-blue,html[data-perf="low"] .mc-pink,
+html[data-perf="low"] .cta::after{ animation:none !important; }
+html[data-perf="low"] .particles span:nth-child(n+5){ display:none !important; }
+html[data-perf="low"] .particles span{ animation-duration:12s !important; }
+html[data-perf="low"] .ticker-track{ animation-duration:36s !important; }
+html[data-perf="low"] .bot-card{ animation:cardIn .5s ease .2s forwards !important; }
+html[data-perf="low"] .vote-ticket{ animation:none !important; }
+/* dusukte golge/blur maliyetini kis */
+html[data-perf="low"] .cta::after{ display:none !important; }
+html[data-perf="low"] *{ -webkit-tap-highlight-color:transparent; }
+@media (max-width:700px){
+  .hero::before,.hero::after{ width:220px !important; height:220px !important; filter:blur(50px) !important; }
+  .particles span:nth-child(n+6){ display:none; }
+}
+@media (prefers-reduced-motion:reduce){
+  .vote-ticket,.mock-music,.mock-eco,.mock-mod,.mc-green,.mc-blue,.mc-pink,
+  .p-bar div::after,.xp div::after,.btn-yellow::after{ animation:none !important; }
+  .scroll-progress{ display:none !important; }
+}
+
+/* ============ MOBIL FIX v5: oy karti tasma onarimi ============
+   Not: @media(max-width:900px) blogu dosyanin ustunde, .vote-card tabani
+   altta tanimli. Ayni ozgullukte sonraki kural kazanir; bu yuzden ustteki
+   mobil override etkisizdi ve kart mobilde 2 sutunda sikisip saga tasiyordu.
+   Bu blok en sonda oldugu icin gercekten uygulanir.
+*/
+.vote-left,.vote-right,.vote-ticket,.vt-left,.vt-right,.vote-card{min-width:0}
+img{max-width:100%}
+html,body{overflow-x:clip}
+@supports not (overflow:clip){html,body{overflow-x:hidden}}
+@media(max-width:900px){
+  .vote-card{grid-template-columns:1fr;gap:28px;padding:36px 24px;text-align:center}
+  .vote-card .kicker,.vote-card h2{text-align:center}
+  .vote-left{display:flex;flex-direction:column;align-items:center;min-width:0}
+  .vote-sub{max-width:36ch}
+  .vote-card .btn-lg{width:100%;max-width:320px;white-space:nowrap;text-align:center}
+  .vote-right{width:100%;align-items:center}
+  .vote-ticket{width:100%;max-width:340px;margin:0 auto}
+  .ticker-group{font-size:.85rem}
+  .to-top{width:46px;height:46px;bottom:18px;right:18px}
+  [dir="rtl"] .to-top{right:auto;left:18px}
+}
+@media(max-width:420px){
+  .vote-card{padding:30px 16px;gap:24px;border-radius:20px}
+  .vote-card h2{font-size:1.55rem;text-wrap:balance;overflow-wrap:break-word}
+  .vote-ticket{flex-direction:column;max-width:280px}
+  .vt-left{width:100%;min-width:0;padding:18px 16px}
+  .vt-right{width:100%;padding:18px 16px}
+  .vt-nums{gap:16px}
+  .vt-nums b{font-size:1.7rem}
+  .vote-card .btn-lg{font-size:.95rem;padding:14px 18px}
+}
+
+/* ============ CANLI ROZET + DUYURULAR v6 ============ */
+.live-bar{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.85rem;font-weight:700;color:var(--muted)}
+.live-dot{width:9px;height:9px;border-radius:50%;background:#8B93B5;flex-shrink:0;transition:background .3s}
+.live-dot.on{background:#23A55A;box-shadow:0 0 10px #23A55A;animation:blink 1.5s infinite}
+.news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.news-card{background:#fff;border:2.5px solid var(--border);border-radius:20px;padding:24px;box-shadow:5px 5px 0 var(--border);transition:transform .18s}
+.news-card:hover{transform:translateY(-4px)}
+.news-date{display:inline-block;font-size:.72rem;font-weight:900;letter-spacing:1.5px;background:#FFF4CC;border:2px solid var(--border);border-radius:99px;padding:4px 14px;margin-bottom:12px;font-family:'Nunito',sans-serif}
+.news-card h3{font-size:1.05rem;margin-bottom:6px}
+.news-card p{color:var(--muted);font-size:.9rem;font-weight:500}
+[data-theme="dark"] .news-card{background:#1A1F30;box-shadow:5px 5px 0 rgba(0,0,0,.5)}
+[data-theme="dark"] .news-date{background:rgba(255,200,0,.14);color:#FFD94D}
+@media(max-width:900px){.news-grid{grid-template-columns:1fr}.live-bar{justify-content:center}}
+
+/* ============ NAV v7: 6 link sigdirma + erken hamburger ============ */
+.nav-inner{gap:16px}
+.nav-links{gap:18px}
+.nav-links a{white-space:nowrap;font-size:.9rem}
+.logo,.nav-actions{flex-shrink:0}
+@media(max-width:1100px){
+  .nav-links,.nav-actions{display:none}
+  .hamburger{display:block;margin-left:0}
+  .lang-wrap{margin-left:auto}
+  .nav-inner{flex-wrap:wrap;gap:10px;height:auto;min-height:64px;padding-top:12px;padding-bottom:12px}
+  .nav-links.mobile{display:flex;position:static;flex-direction:column;width:100%;order:5;background:transparent;border:none;border-top:2px solid var(--border);border-radius:0;box-shadow:none;padding:14px 0 0;margin:12px 0 0;gap:16px;z-index:auto}
+  .nav-actions.mobile{display:flex;position:static;width:100%;order:6;background:transparent;border:none;padding:12px 0 4px;z-index:auto}
+  .nav-actions.mobile .btn{flex:1;text-align:center}
+}
+
+/* ============ DIL MENUSU v8: 30 dil kaydirma ============ */
+.lang-menu{max-height:340px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+
+/* ============ HL FIX v9: hl-yellow sheen kutu artefakti ============
+   ::after beyaz sheen (rgba(255,255,255,.65)) dark modda gri kutu gibi
+   görünüyordu. Sheen kaldırıldı; vurgu temiz marker + statik glow kalır.
+*/
+.hl-yellow::after{display:none !important}
+
+/* ============ DC SAYAC v10 ============ */
+.dc-counts{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;color:#C3C9E3}
+.dc-counts[hidden]{display:none}
+.dc-counts i{width:8px;height:8px;border-radius:50%;background:#23A55A;box-shadow:0 0 8px #23A55A;flex-shrink:0}
+.dc-counts b{color:#fff}
+.dc-counts em{font-style:normal;opacity:.5}
+

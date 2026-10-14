@@ -5,9 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>404 — Sayfa Bulunamadı | GraveBOT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="theme-color" content="#FFC800">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="color-scheme" content="light dark">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=11">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GraveBOT">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:title" content="404 — Sayfa Bulunamadı | GraveBOT">
+<meta property="og:description" content="Aradığın sayfa bulunamadı — GraveBOT ana sayfasına dön.">
+<meta name="twitter:card" content="summary">
 <link rel="icon" href="gravelogo.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<script defer data-domain="__DOMAIN__" src="https://plausible.io/js/script.js"></script>
 <style>
 .nf{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 20px;gap:0}
 .nf-logo{width:96px;height:96px;border-radius:26px;background:#000;border:3px solid var(--border);box-shadow:5px 5px 0 var(--border);overflow:hidden;position:relative;margin-bottom:22px}
@@ -16,6 +29,34 @@
 .nf h1{font-size:clamp(1.4rem,4vw,2rem);margin:10px 0 8px}
 .nf p{color:var(--muted);font-weight:500;margin-bottom:26px}
 .nf-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+/* ---- HAYALET OYUNU ---- */
+.game-card{max-width:560px;margin:0 auto 60px;background:#fff;border:2.5px solid var(--border);border-radius:24px;box-shadow:6px 6px 0 var(--border);padding:32px 24px;text-align:center}
+.game-card h2{font-size:1.5rem;margin-bottom:6px}
+.game-sub{color:var(--muted);font-weight:600;font-size:.92rem}
+.g-hud{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.g-pill{background:#F4F6FF;border:2px solid var(--border);border-radius:999px;padding:6px 16px;font-weight:800;font-size:.85rem}
+.g-timebar{height:10px;border:2px solid var(--border);border-radius:99px;overflow:hidden;margin-top:12px;background:#EDF0F7}
+#gTimeFill{height:100%;background:var(--yellow);transform-origin:left}
+.g-arena{position:relative;height:260px;margin-top:14px;border:2.5px solid var(--border);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#232A45 0%,#12141F 70%);touch-action:manipulation}
+.g-arena::before{content:'';position:absolute;top:16px;right:20px;width:42px;height:42px;border-radius:50%;background:#FFE98A;border:2.5px solid var(--border)}
+.g-arena::after{content:'';position:absolute;left:0;right:0;bottom:0;height:40px;background:rgba(35,165,90,.22);border-top:2.5px solid var(--border)}
+.ghost{position:absolute;left:0;top:0;width:56px;height:66px;background:#fff;border:2.5px solid #1E2442;border-radius:28px 28px 14px 14px;padding:0;z-index:2}
+.ghost[hidden]{display:none}
+.g-body{display:block;position:relative;width:100%;height:100%;animation:gfloat 1.6s ease-in-out infinite}
+@keyframes gfloat{50%{transform:translateY(-5px)}}
+.ge{position:absolute;top:20px;width:9px;height:12px;border-radius:50%;background:#1E2442}
+.ge:first-child{left:14px}
+.ge:nth-child(2){right:14px}
+.gm{position:absolute;top:38px;left:50%;transform:translateX(-50%);width:12px;height:14px;border-radius:50%;background:#1E2442}
+.ghost.caught .g-body{animation:gpop .25s ease}
+@keyframes gpop{40%{transform:scale(1.25) rotate(-8deg)}}
+.g-overlay{position:absolute;inset:0;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:rgba(13,16,23,.74);color:#fff;z-index:3}
+.g-overlay[hidden]{display:none}
+.g-overlay p{font-weight:800;font-size:1.1rem}
+[data-theme="dark"] .game-card{background:#1A1F30;box-shadow:6px 6px 0 rgba(0,0,0,.5)}
+[data-theme="dark"] .g-pill{background:#1E2442;color:#F1F3F9}
+[data-theme="dark"] .g-timebar{background:#12141F}
+@media(prefers-reduced-motion:reduce){.g-body,.ghost.caught .g-body{animation:none}}
 </style>
 </head>
 <body>
@@ -23,12 +64,12 @@
 <header class="nav">
   <div class="container nav-inner">
     <a href="index.html" class="logo">
-      <span class="logo-badge logo-img">G<img src="gravelogo.png" alt="" onerror="this.remove()"></span>
+      <span class="logo-badge logo-img">G<img src="gravelogo.png" loading="lazy" decoding="async" alt="" onerror="this.remove()"></span>
       GraveBOT
     </a>
     <div class="nav-actions">
-      <a href="https://discord.gg/HMYDcAjWmX" target="_blank" class="btn btn-white btn-sm">Destek</a>
-      <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" class="btn btn-dark btn-sm">Discord'a Ekle</a>
+      <a href="https://discord.gg/HMYDcAjWmX" target="_blank" rel="noopener" class="btn btn-white btn-sm">Destek</a>
+      <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="btn btn-dark btn-sm">Discord'a Ekle</a>
     </div>
     <button class="theme-toggle" id="themeToggle" aria-label="Karanlık mod">
       <svg class="ic-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -38,14 +79,34 @@
 </header>
 
 <div class="container nf">
-  <span class="nf-logo">G<img src="gravelogo.png" alt="" onerror="this.remove()"></span>
+  <span class="nf-logo">G<img src="gravelogo.png" loading="lazy" decoding="async" alt="" onerror="this.remove()"></span>
   <div class="nf-code">404</div>
   <h1>Mezar boş çıktı.</h1>
   <p>Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.</p>
   <div class="nf-btns">
     <a href="index.html" class="btn btn-yellow btn-lg">← Ana Sayfaya Dön</a>
-    <a href="https://discord.gg/HMYDcAjWmX" target="_blank" class="btn btn-white btn-lg">Destek'e Sor</a>
+    <a href="https://discord.gg/HMYDcAjWmX" target="_blank" rel="noopener" class="btn btn-white btn-lg">Destek'e Sor</a>
   </div>
+</div>
+
+<div class="container">
+  <section class="game-card" aria-label="Hayalet yakalama oyunu">
+    <h2>Hayaleti Yakala</h2>
+    <p class="game-sub">30 saniyede kaç hayalet yakalayabilirsin?</p>
+    <div class="g-hud">
+      <span class="g-pill">Skor: <b id="gScore">0</b></span>
+      <span class="g-pill">Süre: <b id="gTime">30</b>sn</span>
+      <span class="g-pill">Rekor: <b id="gBest">0</b></span>
+    </div>
+    <div class="g-timebar"><div id="gTimeFill"></div></div>
+    <div class="g-arena" id="gArena">
+      <button class="ghost" id="ghost" aria-label="Hayalet! Yakalamak için bas" hidden><span class="g-body"><span class="ge"></span><span class="ge"></span><span class="gm"></span></span></button>
+      <div class="g-overlay" id="gOverlay">
+        <p id="gMsg">Hazır mısın?</p>
+        <button class="btn btn-yellow" id="gStart">Oyuna Başla</button>
+      </div>
+    </div>
+  </section>
 </div>
 
 <footer>
@@ -65,14 +126,19 @@
   var root = document.documentElement;
   try { var t = localStorage.getItem('grave-theme'); if (t) root.setAttribute('data-theme', t); } catch (e) {}
   function setTheme(t) { root.setAttribute('data-theme', t); try { localStorage.setItem('grave-theme', t); } catch (e) {} }
-  window.oncontextmenu = () => false;
-  document.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); }, true);
-  document.addEventListener('keydown', e => {
-    const k = e.key.toUpperCase();
-    const mod = e.ctrlKey || e.metaKey;
-    if (e.key === 'F12') { e.preventDefault(); return; }
-    if ((mod && e.shiftKey && ['I', 'J', 'C', 'K', 'E', 'S'].includes(k)) ||
-        (mod && !e.shiftKey && ['U', 'S', 'P'].includes(k))) e.preventDefault();
+  /* sag tik + F12 engeli */
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); }, true);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'F12' || e.keyCode === 123) {
+      e.preventDefault();
+      try { if (location.pathname.indexOf('404.html') === -1) location.href = '404.html'; } catch (err) {}
+      return;
+    }
+    var k = '';
+    try { k = (e.key || '').toUpperCase(); } catch (err) {}
+    var mod = e.ctrlKey || e.metaKey;
+    if ((mod && e.shiftKey && ['I', 'J', 'C', 'K', 'E', 'S'].indexOf(k) > -1) ||
+        (mod && !e.shiftKey && ['U', 'S', 'P'].indexOf(k) > -1)) e.preventDefault();
   });
   document.getElementById('themeToggle').addEventListener('click', function () {
     var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -81,5 +147,6 @@
   });
 })();
 </script>
+<script src="game.js?v=1"></script>
 </body>
 </html>
