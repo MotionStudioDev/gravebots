@@ -678,7 +678,6 @@ html[data-perf="low"] .statband b,
 html[data-perf="low"] .loader-logo,
 html[data-perf="low"] .section h2::after,
 html[data-perf="low"] .showcase h2::after,
-html[data-perf="low"] .hl,
 html[data-perf="low"] .num,
 html[data-perf="low"] .f-icon svg,
 html[data-perf="low"] .server-pill,
@@ -774,6 +773,10 @@ html,body{overflow-x:clip}
    görünüyordu. Sheen kaldırıldı; vurgu temiz marker + statik glow kalır.
 */
 .hl-yellow::after{display:none !important}
+
+/* ============ NAV FIX v12: hamburger SVG + dark stil ============ */
+.hamburger svg{display:block}
+[data-theme="dark"] .hamburger{background:#1E2442;color:#F1F3F9}
 
 /* ============ DC SAYAC v10 ============ */
 .dc-counts{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;color:#C3C9E3}

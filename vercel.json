@@ -22,7 +22,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://plausible.io 'sha256-AWF4MLgs3G2VpKTvs4699HwM+/o08N9wOKho32wTxuQ=' 'sha256-u5FJJxXyV62TCtjD56MQMVzlJBT7jc0EB6Xlqrm01cA='; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://discord.com https://plausible.io; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+          "value": "default-src 'self'; script-src 'self' https://plausible.io 'sha256-IAUWQFQLY0zNg2siDKEyLQMpLh5Ua4DXPwZBDU6Q3hg=' 'sha256-u5FJJxXyV62TCtjD56MQMVzlJBT7jc0EB6Xlqrm01cA='; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://discord.com https://plausible.io; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
         }
       ]
     },
