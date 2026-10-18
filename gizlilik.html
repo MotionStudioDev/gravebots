@@ -6,11 +6,11 @@
 <title data-i18n="lh1">Gizlilik Politikası — GraveBOT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<meta name="theme-color" content="#FFC800">
+<meta name="theme-color" content="#08070A">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="color-scheme" content="light dark">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=13">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=50">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="GraveBOT">
 <meta property="og:locale" content="tr_TR">
@@ -22,17 +22,17 @@
 <link rel="manifest" href="manifest.webmanifest">
 <script defer data-domain="__DOMAIN__" src="https://plausible.io/js/script.js"></script>
 <style>
-.legal-head{text-align:center;padding:64px 0 8px}
-.legal-head h1{font-size:clamp(2rem,5.5vw,3rem);font-weight:900;letter-spacing:-1px;margin:18px 0 10px}
+.legal-head{text-align:center;padding:70px 0 8px}
+.legal-head h1{font-size:clamp(2rem,5.5vw,3rem);font-weight:900;letter-spacing:-.035em;margin:18px 0 10px}
 .legal-head .updated{color:var(--muted);font-weight:600;font-size:.9rem}
 .legal-list{max-width:760px;margin:0 auto;padding:32px 20px 20px;display:grid;gap:14px}
-.legal-card{background:#fff;border:2.5px solid var(--border);border-radius:20px;padding:26px;box-shadow:5px 5px 0 var(--border);display:flex;gap:18px;align-items:flex-start}
+.legal-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 24px 54px -34px rgba(0,0,0,.9);backdrop-filter:blur(16px);display:flex;gap:18px;align-items:flex-start;transition:transform .35s cubic-bezier(.2,.8,.25,1),border-color .35s}
+.legal-card:hover{transform:translateY(-5px);border-color:rgba(255,200,0,.45)}
 .legal-card h2{font-size:1.08rem;margin-bottom:8px;text-align:left}
 .legal-card p,.legal-card li{color:var(--muted);font-size:.92rem;font-weight:500}
 .legal-card ul{margin:10px 0 0 18px;display:grid;gap:6px}
 .legal-card a{color:var(--blue);font-weight:700}
 .legal-card .num{margin:0;flex-shrink:0}
-[data-theme="dark"] .legal-card{background:#1A1F30;box-shadow:5px 5px 0 rgba(0,0,0,.5)}
 .back-row{text-align:center;padding:26px 0 70px}
 </style>
 </head>
@@ -41,7 +41,7 @@
 <header class="nav">
   <div class="container nav-inner">
     <a href="index.html" class="logo">
-      <span class="logo-badge logo-img">G<img src="gravelogo.png" loading="lazy" decoding="async" alt="" onerror="this.remove()"></span>
+      <span class="logo-badge">G</span>
       GraveBOT
     </a>
     <nav class="nav-links" id="navLinks">
@@ -89,7 +89,7 @@
         <button data-lang="sr">Srpski</button>
         <button data-lang="hr">Hrvatski</button>
         <button data-lang="bs">Bosanski</button>
-        <button data-lang="sk">Slovenčina</button>
+        <button data-lang="sk">Slovencina</button>
         <button data-lang="fi">Suomi</button>
         <button data-lang="da">Dansk</button>
         <button data-lang="no">Norsk</button>
@@ -120,12 +120,12 @@
   <div class="legal-card reveal"><div class="num n2">5</div><div><h2 data-i18n="lc5h">Silme ve iletişim</h2><div data-i18n="lc5p"><p>Botu sunucunuzdan çıkarmak saklanan sunucu verilerinin silinmesini başlatır. Diğer talepler için destek sunucumuz: <a href="https://discord.gg/HMYDcAjWmX" target="_blank" rel="noopener">discord.gg/HMYDcAjWmX</a></p></div></div></div>
 </div>
 
-<div class="back-row"><a class="btn btn-yellow btn-lg" href="index.html" data-i18n="lback">← Ana Sayfaya Dön</a></div>
+<div class="back-row"><a class="btn btn-yellow btn-lg" href="index.html" data-i18n="lback">‹ Ana Sayfaya Dön</a></div>
 
 <footer>
   <div class="container foot-inner">
     <a href="index.html" class="logo logo-light">
-      <span class="logo-badge logo-img">G<img src="gravelogo.png" loading="lazy" decoding="async" alt="" onerror="this.remove()"></span>
+      <span class="logo-badge">G</span>
       GraveBOT
     </a>
     <p data-i18n="ftRights">© 2026 GraveBOT — Discord Inc. ile bağlantısı yoktur.</p>

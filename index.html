@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,12 +17,12 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ücretsiz mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, tüm temel özellikler ücretsiz ve sınırsız sunucuda kullanılabilir."}},{"@type":"Question","name":"Nasıl eklerim?","acceptedAnswer":{"@type":"Answer","text":"\"Discord'a Ekle\" butonuna tıkla, sunucunu seç ve onayla. Sonra kanala g!kurulum yaz."}},{"@type":"Question","name":"Hangi yetkiler gerekli?","acceptedAnswer":{"@type":"Answer","text":"İlk kurulumda Yönetici yetkisi önerilir, sonra kısıtlayabilirsin."}},{"@type":"Question","name":"Türkçe mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, komutlar ve destek tamamen Türkçe."}},{"@type":"Question","name":"Bot çevrimdışı görünüyor, ne yapmalıyım?","acceptedAnswer":{"@type":"Answer","text":"Önce g!yardım yazmayı dene; sürerse destek sunucusuna yaz."}},{"@type":"Question","name":"Premium veya ücretli özellik var mı?","acceptedAnswer":{"@type":"Answer","text":"Hayır, tüm temel özellikler ücretsiz ve sınırsız."}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<meta name="theme-color" content="#FFC800">
+<meta name="theme-color" content="#08070A">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta name="color-scheme" content="light dark">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=13">
-<noscript><style>.hero-left>*,.bot-card,.mini-card{opacity:1 !important;transform:none !important}</style></noscript>
+<meta name="color-scheme" content="dark light">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=50">
+<noscript><style>.reveal{opacity:1 !important;transform:none !important}</style></noscript>
 <link rel="icon" href="gravelogo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -30,11 +30,16 @@
 </head>
 <body>
 
-<!-- LOADER -->
+<!-- YÜKLEYİCİ -->
 <div class="loader" id="loader">
-  <div class="loader-inner">
-    <span class="loader-logo"><img src="gravelogo.png" fetchpriority="high" decoding="async" alt="GraveBOT" onerror="this.remove()"></span>
-  </div>
+  <span class="loader-logo"><img src="gravelogo.png" alt="GraveBOT" fetchpriority="high" decoding="async" onerror="this.remove()"></span>
+</div>
+
+<!-- ARKA PLAN -->
+<div class="bg" aria-hidden="true">
+  <div class="bg-glow"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-slash"></div>
 </div>
 
 <!-- ÜST BANT -->
@@ -44,8 +49,7 @@
 <header class="nav">
   <div class="container nav-inner">
     <a href="#" class="logo">
-      <span class="logo-badge logo-img">G<img src="gravelogo.png" loading="lazy" decoding="async" alt="" onerror="this.remove()"></span>
-      GraveBOT
+      <img class="logo-img" src="logo-grave-saydam.png" width="438" height="272" alt="GraveBOT" decoding="async">
     </a>
     <nav class="nav-links" id="navLinks">
       <a href="#ozellikler" data-i18n="navFeat">Özellikler</a>
@@ -56,8 +60,8 @@
       <a href="#sss" data-i18n="navFaq">S.S.S</a>
     </nav>
     <div class="nav-actions">
-      <a href="https://discord.gg/HMYDcAjWmX" target="_blank" rel="noopener" class="btn btn-white btn-sm" data-i18n="navSup">Destek</a>
-      <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="btn btn-dark btn-sm" data-i18n="navAdd">Discord'a Ekle</a>
+      <a href="https://discord.gg/HMYDcAjWmX" target="_blank" rel="noopener" class="btn btn-line btn-sm" data-i18n="navSup">Destek</a>
+      <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="btn btn-solid btn-sm" data-i18n="navAdd">Discord'a Ekle</a>
     </div>
     <div class="lang-wrap">
       <button class="lang-btn" id="langBtn" aria-label="Dil">TR</button>
@@ -95,7 +99,7 @@
         <button data-lang="sr">Srpski</button>
         <button data-lang="hr">Hrvatski</button>
         <button data-lang="bs">Bosanski</button>
-        <button data-lang="sk">Slovenčina</button>
+        <button data-lang="sk">Slovencina</button>
         <button data-lang="fi">Suomi</button>
         <button data-lang="da">Dansk</button>
         <button data-lang="no">Norsk</button>
@@ -104,90 +108,128 @@
         <button data-lang="sw">Kiswahili</button>
       </div>
     </div>
-    <button class="theme-toggle" id="themeToggle" aria-label="Karanlık mod">
-      <svg class="ic-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-      <svg class="ic-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+    <button class="theme-toggle" id="themeToggle" aria-label="Tema">
+      <svg class="ic-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="ic-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
     </button>
-    <button class="hamburger" id="hamburger" aria-label="Menü"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M2 5h16M2 10h16M2 15h16"/></svg></button>
+    <button class="hamburger" id="hamburger" aria-label="Menü"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
   </div>
 </header>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="particles"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="container hero-grid">
     <div class="hero-left">
-      <div class="pill" data-i18n="pill">112+ sunucunun favori botu</div>
-      <h1><span data-i18n="hA">Sunucunu büyütmenin</span> <span class="hl-yellow" data-i18n="hHl">en eğlenceli</span> <span data-i18n="hB">yolu.</span></h1>
+      <span class="pill"><i></i><span data-i18n="pill">112+ sunucunun favori botu</span></span>
+      <h1><span data-i18n="hA">Sunucunu büyütmenin</span> <span class="hl" data-i18n="hHl">en eğlenceli</span> <span data-i18n="hB">yolu.</span></h1>
       <p class="sub" data-i18n="sub">Moderasyon, müzik, seviye ve ekonomi — hepsi tek botta. Kurulum 30 saniye, kullanımı çocuk oyuncağı.</p>
       <div class="hero-btns">
-        <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="btn btn-yellow btn-lg" data-i18n="heroAdd">Discord'a Ekle — Ücretsiz</a>
-        <a href="#vitrin" class="btn btn-white btn-lg" data-i18n="heroWhat">Neler Yapıyor?</a>
+        <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="btn btn-solid btn-lg" data-i18n="heroAdd">Discord'a Ekle — Ücretsiz</a>
+        <a href="#vitrin" class="btn btn-line btn-lg" data-i18n="heroWhat">Neler Yapıyor?</a>
       </div>
       <div class="hero-proof">
         <div class="stars-row">
-          <svg class="stars" width="110" height="20" viewBox="0 0 110 20"><g fill="#FFB800"><path d="M10 1l2.6 5.6 6 .7-4.5 4.1 1.2 5.9L10 14.4 4.7 17.3l1.2-5.9L1.4 7.3l6-.7z"/><path d="M32 1l2.6 5.6 6 .7-4.5 4.1 1.2 5.9-5.3-2.9-5.3 2.9 1.2-5.9-4.5-4.1 6-.7z"/><path d="M54 1l2.6 5.6 6 .7-4.5 4.1 1.2 5.9-5.3-2.9-5.3 2.9 1.2-5.9-4.5-4.1 6-.7z"/><path d="M76 1l2.6 5.6 6 .7-4.5 4.1 1.2 5.9-5.3-2.9-5.3 2.9 1.2-5.9-4.5-4.1 6-.7z"/><path d="M98 1l2.6 5.6 6 .7-4.5 4.1 1.2 5.9-5.3-2.9-5.3 2.9 1.2-5.9-4.5-4.1 6-.7z"/></g></svg>
-          <b>4.9/5</b>
+          <span class="stars" aria-label="5 yıldız">★★★★★</span>
+          <b>4.9</b>
         </div>
+        <span class="dot-sep" aria-hidden="true"></span>
         <small data-i18n="proof">102 sunucu sahibinin puanıyla</small>
         <div class="live-bar"><span class="live-dot" id="liveDot"></span><span id="liveText">Canlı durum yükleniyor…</span></div>
       </div>
     </div>
+
     <div class="hero-right">
-      <div class="bot-card">
-        <div class="bot-head">
-          <span class="bot-avatar logo-img">G<img src="gravelogo.png" loading="lazy" decoding="async" alt="" onerror="this.remove()"></span>
-          <div><b>GraveBOT</b><span class="bot-tag">✓ BOT</span><small class="status"><i class="online"></i><span data-i18n="onl">çevrimiçi</span></small></div>
-        </div>
-        <div class="mini-card mc-green"><b data-i18n="lvlT">Seviye atladın!</b><p data-i18n="lvlP">Zeynep 15. seviyeye ulaştı</p><div class="xp"><div></div></div></div>
-        <div class="mini-card mc-blue"><b data-i18n="nowT">Şimdi çalıyor</b><p data-i18n="nowP">Gece LoFi — 03:42 • 14 dinleyici</p><div class="eq"><span></span><span></span><span></span><span></span></div></div>
-        <div class="mini-card mc-pink"><b data-i18n="givT">Çekiliş bitti!</b><p data-i18n="givP">3 kazanan belirlendi, tebrikler</p></div>
-        <div class="typing"><span></span><span></span><span></span></div>
+      <figure class="shot">
+        <img src="profil.png" width="692" height="372" alt="GraveBOT g!profil komutu — profil kartı, seviye ve sunucu sıralaması" fetchpriority="high" decoding="async">
+      </figure>
+
+      <div class="act-row" id="actRow">
+        <div class="act act-lvl"><span class="act-ico act-lv">▲</span><div><b data-i18n="lvlT">Seviye atladın!</b><span data-fill="lvlF">Zeynep 15. seviyeye ulaştı</span></div></div>
+        <div class="act act-now"><img class="act-cover" id="actCover" src="cover-1.png" width="176" height="176" alt="" loading="lazy" decoding="async"><div><b data-i18n="nowT">Şimdi çalıyor</b><span data-fill="song">Cem Adrian — Kül</span><small data-i18n="nowOn">Bir sunucuda şu an oynatılıyor</small></div><span class="act-eq" aria-hidden="true"><i></i><i></i><i></i></span></div>
+        <div class="act act-give"><span class="act-ico act-gift">◈</span><div><b data-i18n="givT">Çekiliş bitti!</b><span data-fill="givF">3 kazanan belirlendi, tebrikler</span></div></div>
+        <!-- çeviri şablon kaynakları (görünmez; live.js buradan okur) -->
+        <span hidden><span data-i18n="lvlF"></span><span data-i18n="givF"></span></span>
       </div>
     </div>
   </div>
   <div class="scroll-hint" id="scrollHint" aria-hidden="true"><span></span></div>
-  <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none"><path d="M0,40 C240,80 480,0 720,30 C960,60 1200,20 1440,40 L1440,70 L0,70 Z" fill="#fff"/></svg>
 </section>
 
 <!-- GÜVEN ŞERİDİ -->
 <div class="strip"><div class="container strip-inner">
-  <span class="server-pill"><i class="s-dot d1"></i> Mezarlık RP — 8.2k</span>
-  <span class="server-pill"><i class="s-dot d2"></i> LoFi Mezarlığı — 15k</span>
-  <span class="server-pill"><i class="s-dot d3"></i> Gece Vardiyası — 5.6k</span>
-  <span class="server-pill"><i class="s-dot d4"></i> Karanlık Krallık — 8.2k</span>
-  <span class="server-pill hide-m"><i class="s-dot d5"></i> <span data-i18n="moreSrv">+100 sunucu daha</span></span>
-</div></div>
-
-<!-- KAYAN ŞERİT -->
-<div class="ticker"><div class="ticker-track">
-  <div class="ticker-group"><span data-i18n="tick1">Moderasyon</span><i>✦</i><span data-i18n="tick2">Müzik</span><i>✦</i><span data-i18n="tick3">Seviye</span><i>✦</i><span data-i18n="tick4">Ekonomi</span><i>✦</i><span data-i18n="tick5">Kayıt</span><i>✦</i><span data-i18n="tick6">Çekiliş</span><i>✦</i><span data-i18n="tick7">24/7</span><i>✦</i><span data-i18n="tick8">Otomasyon</span><i>✦</i></div>
-  <div class="ticker-group" aria-hidden="true"><span data-i18n="tick1">Moderasyon</span><i>✦</i><span data-i18n="tick2">Müzik</span><i>✦</i><span data-i18n="tick3">Seviye</span><i>✦</i><span data-i18n="tick4">Ekonomi</span><i>✦</i><span data-i18n="tick5">Kayıt</span><i>✦</i><span data-i18n="tick6">Çekiliş</span><i>✦</i><span data-i18n="tick7">24/7</span><i>✦</i><span data-i18n="tick8">Otomasyon</span><i>✦</i></div>
+  <span class="server-pill"><i class="s-dot"></i> Mezarlık RP — 8.2k</span>
+  <span class="server-pill"><i class="s-dot"></i> LoFi Mezarlığı — 15k</span>
+  <span class="server-pill"><i class="s-dot"></i> Gece Vardiyası — 5.6k</span>
+  <span class="server-pill hide-m"><i class="s-dot"></i> Karanlık Krallık — 8.2k</span>
+  <span class="server-pill hide-m"><i class="s-dot"></i> <span data-i18n="moreSrv">+100 sunucu daha</span></span>
 </div></div>
 
 <!-- ÖZELLİKLER -->
 <section class="section container" id="ozellikler">
-  <p class="kicker" data-i18n="fKick">ÖZELLİKLER</p>
-  <h2><span data-i18n="fH">Tek bot,</span> <span class="hl" data-i18n="fHl">sınırsız eğlence.</span></h2>
-  <p class="sec-sub" data-i18n="fSub">Her sunucunun ihtiyacı olan her şey kutudan çıkıyor.</p>
+  <div class="sec-head">
+    <p class="kicker" data-i18n="fKick">ÖZELLİKLER</p>
+    <h2><span data-i18n="fH">Tek bot,</span> <span class="hl" data-i18n="fHl">sınırsız eğlence.</span></h2>
+    <p class="sec-sub" data-i18n="fSub">Her sunucunun ihtiyacı olan her şey kutudan çıkıyor.</p>
+  </div>
   <div class="grid">
-    <div class="feat f-blue"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3 data-i18n="f1h">Moderasyon</h3><p data-i18n="f1p">Spam, küfür ve raid koruması. Uyarı, susturma ve yasaklama tek tıkla.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
-    <div class="feat f-green"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><h3 data-i18n="f2h">Müzik</h3><p data-i18n="f2p">YouTube + Spotify, sıra ve 24/7 modu. Partin hiç bitmesin.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
-    <div class="feat f-yellow"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1E2442" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></div><h3 data-i18n="f3h">Seviye & XP</h3><p data-i18n="f3p">Mesajlaştıkça seviye atla, ödüller kazan, liderlik tablosuna çık.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
-    <div class="feat f-pink"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M14.5 9.5c-.8-.8-1.6-1-2.5-1-1.5 0-2.5.8-2.5 2 0 2.5 5 1.2 5 3.7 0 1.2-1 2-2.5 2-1 0-1.7-.3-2.5-1"/></svg></div><h3 data-i18n="f4h">Ekonomi</h3><p data-i18n="f4p">Günlük ödül, çalışma, market. Sunucu paranı yönet.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
-    <div class="feat f-purple"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="4"/><path d="M2 21v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/><path d="M19 8v6M22 11h-6"/></svg></div><h3 data-i18n="f5h">Kayıt</h3><p data-i18n="f5p">Butonlu kayıt formu, otomatik rol. Yetkililer rahat nefes alsın.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
-    <div class="feat f-orange"><div class="f-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></div><h3 data-i18n="f6h">Çekiliş</h3><p data-i18n="f6p">Bir komutla çekiliş başlat, kazananlar otomatik seçilsin.</p><a href="#komutlar" data-i18n="fLink">Komutları gör →</a></div>
+    <article class="feat">
+      <div class="f-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <h3 data-i18n="f1h">Moderasyon</h3>
+      <p data-i18n="f1p">Spam, küfür ve raid koruması. Uyarı, susturma ve yasaklama tek tıkla.</p>
+      <a href="#komutlar" data-i18n="fLink">Komutları gör ›</a>
+    </article>
+    <article class="feat">
+      <div class="f-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+      <h3 data-i18n="f2h">Müzik</h3>
+      <p data-i18n="f2p">YouTube + Spotify, sıra ve 24/7 modu. Partin hiç bitmesin.</p>
+      <a href="#komutlar" data-i18n="fLink">Komutları gör ›</a>
+    </article>
+    <article class="feat">
+      <div class="f-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></div>
+      <h3 data-i18n="f3h">Seviye &amp; XP</h3>
+      <p data-i18n="f3p">Mesajlaştıkça seviye atla, ödüller kazan, liderlik tablosuna çık.</p>
+      <a href="#komutlar" data-i18n="fLink">Komutları gör ›</a>
+    </article>
+    <article class="feat">
+      <div class="f-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M14.5 9.5c-.8-.8-1.6-1-2.5-1-1.5 0-2.5.8-2.5 2 0 2.5 5 1.2 5 3.7 0 1.2-1 2-2.5 2-1 0-1.7-.3-2.5-1"/></svg></div>
+      <h3 data-i18n="f4h">Ekonomi</h3>
+      <p data-i18n="f4p">Günlük ödül, çalışma, market. Sunucu paranı yönet.</p>
+      <a href="#komutlar" data-i18n="fLink">Komutları gör ›</a>
+    </article>
+    <article class="feat">
+      <div class="f-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="4"/><path d="M2 21v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/><path d="M19 8v6M22 11h-6"/></svg></div>
+      <h3 data-i18n="f5h">Kayıt</h3>
+      <p data-i18n="f5p">Butonlu kayıt formu, otomatik rol. Yetkililer rahat nefes alsın.</p>
+      <a href="#komutlar" data-i18n="fLink">Komutları gör ›</a>
+    </article>
+    <article class="feat">
+      <div class="f-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></div>
+      <h3 data-i18n="f6h">Çekiliş</h3>
+      <p data-i18n="f6p">Bir komutla çekiliş başlat, kazananlar otomatik seçilsin.</p>
+      <a href="#komutlar" data-i18n="fLink">Komutları gör ›</a>
+    </article>
   </div>
 </section>
 
 <!-- VİTRİN -->
 <section class="showcase" id="vitrin">
   <div class="container">
-    <p class="kicker" data-i18n="shKick">NELER YAPIYOR?</p>
-    <h2 data-i18n="shH">Sunucunu otopilota al.</h2>
+    <div class="sec-head">
+      <p class="kicker" data-i18n="shKick">NELER YAPIYOR?</p>
+      <h2 data-i18n="shH">Sunucunu otopilota al.</h2>
+    </div>
 
     <div class="show-row">
-      <div class="show-text"><span class="show-tag t-blue" data-i18n="s1t">MODERASYON</span><h3 data-i18n="s1h">Trolleri sen uyanmadan yakala.</h3><p data-i18n="s1p">Otomatik koruma spam, reklam ve küfürü anında siler. Sen sadece keyfine bak.</p><ul><li data-i18n="s1a">Otomatik spam ve link engelleme</li><li data-i18n="s1b">Uyarı → susturma → yasak merdiveni</li><li data-i18n="s1c">Her işlem log kanalına kaydolur</li></ul></div>
+      <div class="show-text">
+        <span class="show-tag" data-i18n="s1t">MODERASYON</span>
+        <h3 data-i18n="s1h">Trolleri sen uyanmadan yakala.</h3>
+        <p data-i18n="s1p">Otomatik koruma spam, reklam ve küfürü anında siler. Sen sadece keyfine bak.</p>
+        <ul>
+          <li data-i18n="s1a">Otomatik spam ve link engelleme</li>
+          <li data-i18n="s1b">Uyarı › susturma › yasak merdiveni</li>
+          <li data-i18n="s1c">Her işlem log kanalına kaydolur</li>
+        </ul>
+      </div>
       <div class="show-mock mock-mod">
         <div class="mock-head"><span></span><span></span><span></span></div>
         <div class="mock-line red" data-i18n="m1"><b>Silindi:</b> 12 spam mesaj — @spamcı susturuldu (10 dk)</div>
@@ -197,22 +239,48 @@
     </div>
 
     <div class="show-row reverse">
-      <div class="show-text"><span class="show-tag t-green" data-i18n="s2t">MÜZİK</span><h3 data-i18n="s2h">Parti modu: hep açık.</h3><p data-i18n="s2p">YouTube ve Spotify'dan kesintisiz müzik. Sıra, döngü ve 24/7 modu dahil.</p><ul><li data-i18n="s2a">Yüksek kalite ses, sıfır gecikme</li><li data-i18n="s2b">g!sıra ile kuyruğu yönet</li><li data-i18n="s2c">Oy vererek şarkı atlatma</li></ul></div>
+      <div class="show-text">
+        <span class="show-tag" data-i18n="s2t">MÜZİK</span>
+        <h3 data-i18n="s2h">Parti modu: hep açık.</h3>
+        <p data-i18n="s2p">YouTube ve Spotify'dan kesintisiz müzik. Sıra, döngü ve 24/7 modu dahil.</p>
+        <ul>
+          <li data-i18n="s2a">Yüksek kalite ses, sıfır gecikme</li>
+          <li data-i18n="s2b">g!sıra ile kuyruğu yönet</li>
+          <li data-i18n="s2c">Oy vererek şarkı atlatma</li>
+        </ul>
+      </div>
       <div class="show-mock mock-music">
-        <div class="player-top"><span class="p-cover"></span><div><b>Gece LoFi Mix</b><small>320kbps • 14 dinleyici</small></div><span class="p-play"></span></div>
-        <div class="p-bar"><div></div></div>
-        <div class="p-queue"><span>1. Gece LoFi (çalıyor)</span><span>2. Mezarlık Synthwave</span><span>3. Loş Işıklar Caz</span></div>
+        <div class="player-top">
+          <img class="p-cover" src="cover-1.png" width="176" height="176" alt="" loading="lazy" decoding="async">
+          <div class="p-meta"><b>Cem Adrian — Kül</b><small>320kbps • 14 dinleyici</small></div>
+          <span class="p-play" aria-hidden="true"></span>
+        </div>
+        <div class="p-bar"><i></i></div>
+        <div class="p-queue">
+          <div class="q-row on"><img src="cover-1.png" width="176" height="176" alt="" loading="lazy" decoding="async"><span>Cem Adrian — Kül</span></div>
+          <div class="q-row"><img src="cover-2.png" width="176" height="176" alt="" loading="lazy" decoding="async"><span>LanetKel — Saçı Pembe</span></div>
+          <div class="q-row"><img src="cover-3.png" width="176" height="176" alt="" loading="lazy" decoding="async"><span>Dedublüman — Günü gelir</span></div>
+        </div>
       </div>
     </div>
 
     <div class="show-row">
-      <div class="show-text"><span class="show-tag t-yellow" data-i18n="s3t">EKONOMİ</span><h3 data-i18n="s3h">Üyeler her gün geri gelsin.</h3><p data-i18n="s3p">Günlük ödül, çalışma ve market ile sunucun yaşayan bir ekonomiye dönüşsün.</p><ul><li data-i18n="s3a">g!günlük ile her gün coin</li><li data-i18n="s3b">Mağazadan rol ve avantaj satın al</li><li data-i18n="s3c">Haftalık liderlik tablosu</li></ul></div>
+      <div class="show-text">
+        <span class="show-tag" data-i18n="s3t">EKONOMİ</span>
+        <h3 data-i18n="s3h">Üyeler her gün geri gelsin.</h3>
+        <p data-i18n="s3p">Günlük ödül, çalışma ve market ile sunucun yaşayan bir ekonomiye dönüşsün.</p>
+        <ul>
+          <li data-i18n="s3a">g!günlük ile her gün coin</li>
+          <li data-i18n="s3b">Mağazadan rol ve avantaj satın al</li>
+          <li data-i18n="s3c">Haftalık liderlik tablosu</li>
+        </ul>
+      </div>
       <div class="show-mock mock-eco">
         <div class="eco-title" data-i18n="ecoT">Haftalık Liderlik</div>
-        <div class="eco-row gold"><b>1</b> Zeynep <span>12.450</span></div>
-        <div class="eco-row silver"><b>2</b> Mert <span>11.020</span></div>
-        <div class="eco-row bronze"><b>3</b> <span data-i18n="you">Sen</span> <span>9.870</span></div>
-        <div class="eco-row"><b>4</b> Emir <span>7.300</span></div>
+        <div class="eco-row gold"><b>1</b><span class="eco-name">Zeynep</span><span class="eco-val">12.450</span></div>
+        <div class="eco-row silver"><b>2</b><span class="eco-name">Mert</span><span class="eco-val">11.020</span></div>
+        <div class="eco-row bronze"><b>3</b><span class="eco-name" data-i18n="you">Sen</span><span class="eco-val">9.870</span></div>
+        <div class="eco-row"><b>4</b><span class="eco-name">Emir</span><span class="eco-val">7.300</span></div>
       </div>
     </div>
   </div>
@@ -220,10 +288,15 @@
 
 <!-- KOMUTLAR -->
 <section class="section container" id="komutlar">
-  <p class="kicker" data-i18n="cKick">KOMUTLAR</p>
-  <h2><span data-i18n="cHA">Hepsi</span> <span class="hl">g!</span> <span data-i18n="cHB">başlıyor.</span></h2>
+  <div class="sec-head">
+    <p class="kicker" data-i18n="cKick">KOMUTLAR</p>
+    <h2><span data-i18n="cHA">Hepsi</span> <span class="hl" data-i18n="cHB">g! ile başlıyor.</span></h2>
+  </div>
   <div class="cmd-controls">
-    <input type="text" id="cmdSearch" maxlength="64" autocomplete="off" spellcheck="false" aria-label="Komut ara" maxlength="64" autocomplete="off" spellcheck="false" aria-label="Komut ara" placeholder="Komut ara... (örn: ban)" data-i18n-ph="searchPh">
+    <div class="cmd-search">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="cmdSearch" maxlength="64" autocomplete="off" spellcheck="false" aria-label="Komut ara" placeholder="Komut ara... (örn: ban)" data-i18n-ph="searchPh">
+    </div>
     <div class="tabs" id="cmdTabs">
       <button class="active" data-cat="all" data-i18n="tAll">Tümü</button>
       <button data-cat="mod" data-i18n="tMod">Moderasyon</button>
@@ -248,45 +321,51 @@
   <p class="cmd-empty" id="cmdEmpty" hidden data-i18n="cmdEmpty">Aramanla eşleşen komut bulunamadı.</p>
 </section>
 
-<!-- STAT BANDI -->
+<!-- İSTATİSTİKLER -->
 <div class="statband" id="nasil">
   <div class="container statband-inner">
     <div><b data-count="112">0</b><span data-i18n="st1">sunucu</span></div>
     <div><b data-count="400000">0</b><span data-i18n="st2">kullanıcı</span></div>
-    <div><b data-count="100">0</b><span data-i18n="st3">Komut</span></div>
+    <div><b data-count="100">0</b><span data-i18n="st3">komut</span></div>
     <div><b data-count="99">0</b><span data-i18n="st4">% uptime</span></div>
   </div>
 </div>
 
 <!-- KURULUM -->
 <section class="section container">
-  <p class="kicker" data-i18n="suKick">KURULUM</p>
-  <h2 data-i18n="suH">30 saniyede hazır.</h2>
-  <div class="steps">
-    <div class="step"><div class="num n1">1</div><h3 data-i18n="s1h_">Davet et</h3><p data-i18n="s1p_">Butona bas, sunucunu seç, onayla.</p></div>
-    <div class="step"><div class="num n2">2</div><h3 data-i18n="s2h_">g!kurulum yaz</h3><p data-i18n="s2p_">Her şey otomatik ayarlansın.</p></div>
-    <div class="step"><div class="num n3">3</div><h3 data-i18n="s3h_">Eğlenmene bak</h3><p data-i18n="s3p_">Bot çalışsın, sen topluluğunla ilgilen.</p></div>
+  <div class="sec-head center-head">
+    <p class="kicker" data-i18n="suKick">KURULUM</p>
+    <h2 data-i18n="suH">30 saniyede hazır.</h2>
   </div>
-  <div class="center"><a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="btn btn-yellow btn-lg" data-i18n="suBtn">Hemen Başla — Ücretsiz</a></div>
+  <div class="steps">
+    <div class="step"><span class="num">1</span><h3 data-i18n="s1h_">Davet et</h3><p data-i18n="s1p_">Butona bas, sunucunu seç, onayla.</p></div>
+    <div class="step"><span class="num">2</span><h3 data-i18n="s2h_">g!kurulum yaz</h3><p data-i18n="s2p_">Her şey otomatik ayarlansın.</p></div>
+    <div class="step"><span class="num">3</span><h3 data-i18n="s3h_">Eğlenmene bak</h3><p data-i18n="s3p_">Bot çalışsın, sen topluluğunla ilgilen.</p></div>
+  </div>
+  <div class="center"><a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="btn btn-solid btn-lg" data-i18n="suBtn">Hemen Başla — Ücretsiz</a></div>
 </section>
 
 <!-- YORUMLAR -->
 <section class="section reviews-sec">
   <div class="container">
-    <p class="kicker" data-i18n="rvKick">SUNUCULAR ANLATIYOR</p>
-    <h2 data-i18n="rvH">Binlerce mutlu topluluk.</h2>
+    <div class="sec-head">
+      <p class="kicker" data-i18n="rvKick">SUNUCULAR ANLATIYOR</p>
+      <h2 data-i18n="rvH">Binlerce mutlu topluluk.</h2>
+    </div>
     <div class="reviews">
-      <div class="review"><div class="r-stars">★★★★★</div><p data-i18n="rv1">"Üç botu silip GraveBOT'a geçtik. Seviye sistemi üyeleri bağımlı etti."</p><div class="r-who"><span class="r-av a1">K</span><div><b>Karanlık Krallık</b><small data-i18n="rv1m">8.200 üye</small></div></div></div>
-      <div class="review"><div class="r-stars">★★★★★</div><p data-i18n="rv2">"g!kurulum yazdım, yarım dakikada her şey hazırdı. İnanılmaz kolay."</p><div class="r-who"><span class="r-av a2">L</span><div><b>LoFi Mezarlığı</b><small data-i18n="rv2m">15.000 üye</small></div></div></div>
-      <div class="review"><div class="r-stars">★★★★★</div><p data-i18n="rv3">"Müzik için geldik, ekonomi ve çekilişlerle kaldık. Herkese öneririm."</p><div class="r-who"><span class="r-av a3">G</span><div><b>Gece Vardiyası</b><small data-i18n="rv3m">5.600 üye</small></div></div></div>
+      <div class="review"><div class="r-stars">★★★★★</div><p data-i18n="rv1">"Üç botu silip GraveBOT'a geçtik. Seviye sistemi üyeleri bağımlı etti."</p><div class="r-who"><span class="r-av" style="--av:#F472B6">K</span><div><b>Karanlık Krallık</b><small data-i18n="rv1m">8.200 üye</small></div></div></div>
+      <div class="review"><div class="r-stars">★★★★★</div><p data-i18n="rv2">"g!kurulum yazdım, yarım dakikada her şey hazırdı. İnanılmaz kolay."</p><div class="r-who"><span class="r-av" style="--av:#A78BFA">L</span><div><b>LoFi Mezarlığı</b><small data-i18n="rv2m">15.000 üye</small></div></div></div>
+      <div class="review"><div class="r-stars">★★★★★</div><p data-i18n="rv3">"Müzik için geldik, ekonomi ve çekilişlerle kaldık. Herkese öneririm."</p><div class="r-who"><span class="r-av" style="--av:#3BA55D">G</span><div><b>Gece Vardiyası</b><small data-i18n="rv3m">5.600 üye</small></div></div></div>
     </div>
   </div>
 </section>
 
 <!-- DUYURULAR -->
 <section class="section container" id="duyurular">
-  <p class="kicker" data-i18n="newsKick">GÜNCELLEMELER</p>
-  <h2 data-i18n="newsH">Bot sürekli gelişiyor.</h2>
+  <div class="sec-head">
+    <p class="kicker" data-i18n="newsKick">GÜNCELLEMELER</p>
+    <h2 data-i18n="newsH">Bot sürekli gelişiyor.</h2>
+  </div>
   <div class="news-grid">
     <article class="news-card"><span class="news-date" data-i18n="n1d">Ekim 2026</span><h3 data-i18n="n1h">24/7 Müzik modu</h3><p data-i18n="n1p">Bot kanalda kalır, sıra hiç durmaz.</p></article>
     <article class="news-card"><span class="news-date" data-i18n="n2d">Eylül 2026</span><h3 data-i18n="n2h">Ekonomi mağazası</h3><p data-i18n="n2p">Rol ve avantajlar coin ile alınabiliyor.</p></article>
@@ -301,39 +380,39 @@
       <p class="kicker" data-i18n="voteKick">OY VER</p>
       <h2 data-i18n="voteH">Botu seviyor musun?</h2>
       <p class="vote-sub" data-i18n="voteP">top.gg'de oy ver, GraveBOT'u listelerde yükselt.</p>
-      <a href="https://top.gg/bot/1066016782827130960/vote" target="_blank" rel="noopener" class="btn btn-yellow btn-lg" data-i18n="voteBtn">top.gg'de Oy Ver</a>
+      <a href="https://top.gg/bot/1066016782827130960/vote" target="_blank" rel="noopener" class="btn btn-solid btn-lg" data-i18n="voteBtn">top.gg'de Oy Ver</a>
       <small data-i18n="voteNote">Her 12 saatte bir oy verebilirsin</small>
     </div>
     <div class="vote-right">
       <span class="vote-live"><i></i><b data-i18n="voteLive">CANLI</b></span>
       <div class="vote-ticket">
-        <div class="vt-left"><img src="gravelogo.png" loading="lazy" decoding="async" alt="GraveBOT" onerror="this.remove()"><b>GraveBOT</b><span>top.gg</span></div>
+        <div class="vt-left"><span class="vt-mark">G</span><b>GraveBOT</b><span>top.gg</span></div>
         <div class="vt-right">
           <div class="vt-nums">
             <div><b>112</b><span data-i18n="voteS1">sunucu</span></div>
             <div><b>102</b><span data-i18n="voteS2">oy</span></div>
           </div>
-          <a class="btn btn-dark btn-sm" href="https://top.gg/bot/1066016782827130960/vote" target="_blank" rel="noopener" data-i18n="ftVote">Oy Ver</a>
+          <a class="btn btn-solid btn-sm" href="https://top.gg/bot/1066016782827130960/vote" target="_blank" rel="noopener" data-i18n="ftVote">Oy Ver</a>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- SSS -->
+<!-- S.S.S -->
 <section class="section container narrow" id="sss">
   <div class="faq-banner">
     <p class="kicker" data-i18n="fqKick">S.S.S</p>
     <h2 data-i18n="fqH">Aklında kalanlar.</h2>
-    <p class="faq-banner-sub"><span data-i18n="fqSub">Cevabını bulamadın mı?</span> <a href="https://discord.gg/HMYDcAjWmX" target="_blank" rel="noopener" class="btn btn-yellow btn-sm" data-i18n="fqBtn">Destek'e Sor</a> <span class="dc-counts" id="dcCounts" hidden><i></i><b id="dcOnlineNum">–</b><span data-i18n="dcOnline">çevrimiçi</span><em>•</em><b id="dcMembersNum">–</b><span data-i18n="dcMembers">üye</span></span></p>
+    <p class="faq-banner-sub"><span data-i18n="fqSub">Cevabını bulamadın mı?</span> <a href="https://discord.gg/HMYDcAjWmX" target="_blank" rel="noopener" class="btn btn-solid btn-sm" data-i18n="fqBtn">Destek'e Sor</a> <span class="dc-counts" id="dcCounts" hidden><i></i><b id="dcOnlineNum">–</b><span data-i18n="dcOnline">çevrimiçi</span><em>•</em><b id="dcMembersNum">–</b><span data-i18n="dcMembers">üye</span></span></p>
   </div>
   <div class="faq" id="faq">
-    <div class="faq-item"><button><span data-i18n="q1">Ücretsiz mi?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a1">Evet, tüm temel özellikler ücretsiz ve sınırsız sunucuda kullanılabilir.</div></div>
-    <div class="faq-item"><button><span data-i18n="q2">Nasıl eklerim?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a2">"Discord'a Ekle" butonuna tıkla, sunucunu seç ve onayla. Sonra kanala <code>g!kurulum</code> yaz.</div></div>
-    <div class="faq-item"><button><span data-i18n="q3">Hangi yetkiler gerekli?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a3">İlk kurulumda Yönetici yetkisi önerilir, sonra kısıtlayabilirsin.</div></div>
-    <div class="faq-item"><button><span data-i18n="q4">Türkçe mi?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a4">Evet, komutlar ve destek tamamen Türkçe.</div></div>
-    <div class="faq-item"><button><span data-i18n="q5">Bot çevrimdışı görünüyor, ne yapmalıyım?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a5">Önce g!yardım yazmayı dene; sürerse destek sunucusuna yaz.</div></div>
-    <div class="faq-item"><button><span data-i18n="q6">Premium veya ücretli özellik var mı?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a6">Hayır, tüm temel özellikler ücretsiz ve sınırsız.</div></div>
+    <div class="faq-item"><button type="button"><span data-i18n="q1">Ücretsiz mi?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a1">Evet, tüm temel özellikler ücretsiz ve sınırsız sunucuda kullanılabilir.</div></div>
+    <div class="faq-item"><button type="button"><span data-i18n="q2">Nasıl eklerim?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a2">"Discord'a Ekle" butonuna tıkla, sunucunu seç ve onayla. Sonra kanala <code>g!kurulum</code> yaz.</div></div>
+    <div class="faq-item"><button type="button"><span data-i18n="q3">Hangi yetkiler gerekli?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a3">İlk kurulumda Yönetici yetkisi önerilir, sonra kısıtlayabilirsin.</div></div>
+    <div class="faq-item"><button type="button"><span data-i18n="q4">Türkçe mi?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a4">Evet, komutlar ve destek tamamen Türkçe.</div></div>
+    <div class="faq-item"><button type="button"><span data-i18n="q5">Bot çevrimdışı görünüyor, ne yapmalıyım?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a5">Önce g!yardım yazmayı dene; sürerse destek sunucusuna yaz.</div></div>
+    <div class="faq-item"><button type="button"><span data-i18n="q6">Premium veya ücretli özellik var mı?</span><span class="plus">+</span></button><div class="faq-a" data-i18n="a6">Hayır, tüm temel özellikler ücretsiz ve sınırsız.</div></div>
   </div>
 </section>
 
@@ -342,37 +421,31 @@
   <div class="cta">
     <h2 data-i18n="ctaH">Partiye katılmaya hazır mısın?</h2>
     <p data-i18n="ctaP">112+ sunucu zaten GraveBOT kullanıyor. 30 saniyede sen de başla.</p>
-    <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="btn btn-dark btn-lg" data-i18n="ctaBtn">GraveBOT'u Ekle — Ücretsiz</a>
+    <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="btn btn-light btn-lg" data-i18n="ctaBtn">GraveBOT'u Ekle — Ücretsiz</a>
     <small data-i18n="ctaSm">Kredi kartı gerekmez</small>
   </div>
 </section>
 
-<!-- ALT ŞERİT -->
-<div class="ticker ticker-rev"><div class="ticker-track">
-  <div class="ticker-group"><span data-i18n="tick1">Moderasyon</span><i>✦</i><span data-i18n="tick2">Müzik</span><i>✦</i><span data-i18n="tick3">Seviye</span><i>✦</i><span data-i18n="tick4">Ekonomi</span><i>✦</i><span data-i18n="tick5">Kayıt</span><i>✦</i><span data-i18n="tick6">Çekiliş</span><i>✦</i><span data-i18n="tick7">24/7</span><i>✦</i><span data-i18n="tick8">Otomasyon</span><i>✦</i></div>
-  <div class="ticker-group" aria-hidden="true"><span data-i18n="tick1">Moderasyon</span><i>✦</i><span data-i18n="tick2">Müzik</span><i>✦</i><span data-i18n="tick3">Seviye</span><i>✦</i><span data-i18n="tick4">Ekonomi</span><i>✦</i><span data-i18n="tick5">Kayıt</span><i>✦</i><span data-i18n="tick6">Çekiliş</span><i>✦</i><span data-i18n="tick7">24/7</span><i>✦</i><span data-i18n="tick8">Otomasyon</span><i>✦</i></div>
-</div></div>
-
 <footer>
   <div class="container foot-inner">
     <a href="#" class="logo logo-light">
-      <span class="logo-badge logo-img">G<img src="gravelogo.png" loading="lazy" decoding="async" alt="" onerror="this.remove()"></span>
-      GraveBOT
+      <img class="logo-img" src="logo-grave-saydam.png" width="438" height="272" alt="GraveBOT" loading="lazy" decoding="async">
     </a>
     <p data-i18n="ftRights">© 2026 GraveBOT — Discord Inc. ile bağlantısı yoktur.</p>
-    <div class="foot-links">
+    <nav class="foot-links">
       <a href="https://discord.com/oauth2/authorize?client_id=1066016782827130960&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" data-i18n="ftInv">Davet Et</a>
       <a href="https://discord.gg/HMYDcAjWmX" target="_blank" rel="noopener" data-i18n="ftSup">Destek Sunucusu</a>
       <a href="https://top.gg/bot/1066016782827130960/vote" target="_blank" rel="noopener" data-i18n="ftVote">Oy Ver</a>
       <a href="gizlilik.html" data-i18n="ftPr">Gizlilik</a>
       <a href="kvkk.html" data-i18n="ftKvkk">KVKK</a>
       <a href="dmca.html" data-i18n="ftTe">DMCA</a>
-    </div>
+    </nav>
   </div>
 </footer>
 
 <button class="to-top" id="toTop" aria-label="Yukarı çık">↑</button>
 
-<script src="script.js?v=11"></script>
+<script src="script.js?v=14"></script>
+<script src="live.js?v=1"></script>
 </body>
 </html>

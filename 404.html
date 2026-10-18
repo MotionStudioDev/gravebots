@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -6,11 +6,11 @@
 <title>404 — Sayfa Bulunamadı | GraveBOT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<meta name="theme-color" content="#FFC800">
+<meta name="theme-color" content="#08070A">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="color-scheme" content="light dark">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=13">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=50">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="GraveBOT">
 <meta property="og:locale" content="tr_TR">
@@ -23,24 +23,24 @@
 <script defer data-domain="__DOMAIN__" src="https://plausible.io/js/script.js"></script>
 <style>
 .nf{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 20px;gap:0}
-.nf-logo{width:96px;height:96px;border-radius:26px;background:#000;border:3px solid var(--border);box-shadow:5px 5px 0 var(--border);overflow:hidden;position:relative;margin-bottom:22px}
+.nf-logo{width:96px;height:96px;border-radius:26px;background:linear-gradient(135deg,var(--violet),var(--cyan));border:0;box-shadow:0 0 44px -8px rgba(255,176,0,.5);overflow:hidden;position:relative;margin-bottom:22px}
 .nf-logo img{width:100%;height:100%;object-fit:contain;position:absolute;inset:0}
-.nf-code{font-family:'Nunito';font-weight:900;font-size:clamp(5rem,18vw,9rem);letter-spacing:-4px;line-height:1;background:linear-gradient(135deg,var(--yellow),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nf-code{font-family:'Anton';font-weight:900;font-size:clamp(5rem,18vw,9rem);letter-spacing:-4px;line-height:1;background:linear-gradient(135deg,var(--violet-l),var(--cyan) 55%,var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 34px rgba(255,176,0,.45))}
 .nf h1{font-size:clamp(1.4rem,4vw,2rem);margin:10px 0 8px}
 .nf p{color:var(--muted);font-weight:500;margin-bottom:26px}
 .nf-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 /* ---- HAYALET OYUNU ---- */
-.game-card{max-width:560px;margin:0 auto 60px;background:#fff;border:2.5px solid var(--border);border-radius:24px;box-shadow:6px 6px 0 var(--border);padding:32px 24px;text-align:center}
+.game-card{max-width:560px;margin:0 auto 60px;background:var(--panel);border:1px solid var(--line);border-radius:24px;box-shadow:0 30px 66px -38px rgba(0,0,0,.95);backdrop-filter:blur(16px);padding:32px 24px;text-align:center}
 .game-card h2{font-size:1.5rem;margin-bottom:6px}
 .game-sub{color:var(--muted);font-weight:600;font-size:.92rem}
 .g-hud{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
-.g-pill{background:#F4F6FF;border:2px solid var(--border);border-radius:999px;padding:6px 16px;font-weight:800;font-size:.85rem}
-.g-timebar{height:10px;border:2px solid var(--border);border-radius:99px;overflow:hidden;margin-top:12px;background:#EDF0F7}
-#gTimeFill{height:100%;background:var(--yellow);transform-origin:left}
-.g-arena{position:relative;height:260px;margin-top:14px;border:2.5px solid var(--border);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#232A45 0%,#12141F 70%);touch-action:manipulation}
-.g-arena::before{content:'';position:absolute;top:16px;right:20px;width:42px;height:42px;border-radius:50%;background:#FFE98A;border:2.5px solid var(--border)}
-.g-arena::after{content:'';position:absolute;left:0;right:0;bottom:0;height:40px;background:rgba(35,165,90,.22);border-top:2.5px solid var(--border)}
-.ghost{position:absolute;left:0;top:0;width:56px;height:66px;background:#fff;border:2.5px solid #1E2442;border-radius:28px 28px 14px 14px;padding:0;z-index:2}
+.g-pill{background:var(--panel-2);border:1px solid var(--line-2);border-radius:999px;padding:6px 16px;font-weight:800;font-size:.85rem}
+.g-timebar{height:10px;border:1px solid var(--line-2);border-radius:99px;overflow:hidden;margin-top:12px;background:rgba(255,255,255,.06)}
+#gTimeFill{height:100%;background:var(--grad);box-shadow:0 0 16px var(--cyan);transform-origin:left}
+.g-arena{position:relative;height:260px;margin-top:14px;border:1px solid var(--line-2);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#1C1608 0%,#08070A 70%);touch-action:manipulation}
+.g-arena::before{content:'';position:absolute;top:16px;right:20px;width:42px;height:42px;border-radius:50%;background:#FFE98A;box-shadow:0 0 26px rgba(255,233,138,.85);border:0}
+.g-arena::after{content:'';position:absolute;left:0;right:0;bottom:0;height:40px;background:rgba(35,165,90,.22);border-top:1px solid rgba(163,230,53,.5)}
+.ghost{position:absolute;left:0;top:0;width:56px;height:66px;background:#fff;border:2.5px solid #0B0917;border-radius:28px 28px 14px 14px;padding:0;z-index:2}
 .ghost[hidden]{display:none}
 .g-body{display:block;position:relative;width:100%;height:100%;animation:gfloat 1.6s ease-in-out infinite}
 @keyframes gfloat{50%{transform:translateY(-5px)}}
@@ -50,12 +50,9 @@
 .gm{position:absolute;top:38px;left:50%;transform:translateX(-50%);width:12px;height:14px;border-radius:50%;background:#1E2442}
 .ghost.caught .g-body{animation:gpop .25s ease}
 @keyframes gpop{40%{transform:scale(1.25) rotate(-8deg)}}
-.g-overlay{position:absolute;inset:0;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:rgba(13,16,23,.74);color:#fff;z-index:3}
+.g-overlay{position:absolute;inset:0;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;background:rgba(7,6,15,.78);color:#fff;z-index:3;backdrop-filter:blur(6px)}
 .g-overlay[hidden]{display:none}
 .g-overlay p{font-weight:800;font-size:1.1rem}
-[data-theme="dark"] .game-card{background:#1A1F30;box-shadow:6px 6px 0 rgba(0,0,0,.5)}
-[data-theme="dark"] .g-pill{background:#1E2442;color:#F1F3F9}
-[data-theme="dark"] .g-timebar{background:#12141F}
 @media(prefers-reduced-motion:reduce){.g-body,.ghost.caught .g-body{animation:none}}
 </style>
 </head>
@@ -64,8 +61,7 @@
 <header class="nav">
   <div class="container nav-inner">
     <a href="index.html" class="logo">
-      <span class="logo-badge logo-img">G<img src="gravelogo.png" loading="lazy" decoding="async" alt="" onerror="this.remove()"></span>
-      GraveBOT
+      <img class="logo-img" src="logo-grave-saydam.png" width="438" height="272" alt="GraveBOT" decoding="async">
     </a>
     <div class="nav-actions">
       <a href="https://discord.gg/HMYDcAjWmX" target="_blank" rel="noopener" class="btn btn-white btn-sm">Destek</a>
