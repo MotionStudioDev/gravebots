@@ -212,7 +212,7 @@ async function refreshLiveServers(){
       if (b.dataset.done) b.textContent = fmtNum(n);
     });
     var vs = $('.vt-nums div:first-child b');
-    if (vs) vs.textContent = n.toLocaleString('tr-TR');
+    if (vs) { vs.textContent = n.toLocaleString('tr-TR'); try{ vs.classList.remove('num-pop'); void vs.offsetWidth; vs.classList.add('num-pop'); }catch(e){} }
     lastServers = n; updateLiveBadge();
   } catch(e){}
 }
@@ -231,7 +231,7 @@ function count(el){
     var v = Math.floor(t * e);
     el.textContent = (v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v.toLocaleString('tr-TR')) + '+';
     if (p < 1) requestAnimationFrame(tick);
-    else el.dataset.done = '1';
+    else { el.dataset.done = '1'; try{ el.classList.add('count-pop'); }catch(e){} }
   }
   requestAnimationFrame(tick);
 }
@@ -598,6 +598,24 @@ function burst(x, y, n){
   }
 }
 
+/* ---------- nav gizleme + scroll ipucu ---------- */
+(function(){
+  var navEl = document.querySelector('.nav'), hint = document.getElementById('scrollHint'), prev = 0, run = false;
+  function frame(){
+    run = false;
+    var y = window.scrollY || document.documentElement.scrollTop || 0;
+    if (hint) hint.classList.toggle('hide', y > 60);
+    if (navEl && !reduceMotion) {
+      var open = document.getElementById('navLinks');
+      if (open && open.classList.contains('mobile')) navEl.classList.remove('nav-hide');
+      else if (y > prev + 4 && y > 220) navEl.classList.add('nav-hide');
+      else if (y < prev - 4) navEl.classList.remove('nav-hide');
+    }
+    prev = y;
+  }
+  addEventListener('scroll', function(){ if(!run){ run = true; requestAnimationFrame(frame); } }, { passive:true });
+})();
+
 /* ---------- sag tik + F12 engeli ---------- */
 document.addEventListener('contextmenu', function(e){ e.preventDefault(); }, true);
 document.addEventListener('keydown', function(e){
@@ -635,7 +653,7 @@ async function refreshDiscordCounts(){
     var a = document.getElementById('dcOnlineNum'), b = document.getElementById('dcMembersNum'), w = document.getElementById('dcCounts');
     if (a) a.textContent = on.toLocaleString('tr-TR');
     if (b) b.textContent = all.toLocaleString('tr-TR');
-    if (w) w.hidden = false;
+    if (w) { w.hidden = false; try{ w.classList.remove('num-pop'); void w.offsetWidth; w.classList.add('num-pop'); }catch(e){} }
   } catch(e){}
 }
 refreshDiscordCounts();
