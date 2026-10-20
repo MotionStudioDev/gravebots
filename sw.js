@@ -1,6 +1,6 @@
 ﻿/* GraveBOT service worker v1 — cevirimdisi destegi */
 var CACHE = 'grave-v2';
-var CORE = ['index.html', '404.html', 'offline.html', 'styles.css?v=50', 'script.js?v=14', 'live.js?v=1', 'game.js?v=1', 'page-404.js?v=1', 'page-gizlilik.js?v=1', 'page-kvkk.js?v=1', 'page-dmca.js?v=1', 'gravelogo.png', 'logo-grave-saydam.png', 'profil.png', 'cover-1.png', 'cover-2.png', 'cover-3.png', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
+var CORE = ['index.html', '404.html', 'offline.html', 'styles.css?v=55', 'script.js?v=16', 'live.js?v=1', 'game.js?v=1', 'page-404.js?v=1', 'page-gizlilik.js?v=1', 'page-kvkk.js?v=1', 'page-dmca.js?v=1', 'gravelogo.png', 'logo-grave-saydam.png', 'profil.png', 'cover-1.png', 'cover-2.png', 'cover-3.png', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(CORE); }).then(function () { return self.skipWaiting(); }).catch(function () {}));
 });

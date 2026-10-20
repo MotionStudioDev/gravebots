@@ -96,7 +96,9 @@ ul{list-style:none}
 ::selection{background:var(--accent);color:#141200}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
 
-.container{max-width:1160px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+/* 1280: nav'da 3 buton + 6 baglanti var; en uzun ceviriler (rusca 1210px)
+   de ancak bu genislikte sigiyor. */
+.container{max-width:1280px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
 section[id]{scroll-margin-top:84px}
 .narrow{max-width:820px}
 
@@ -186,7 +188,7 @@ code{
 .nav.scrolled{border-bottom-color:var(--line)}
 .nav.nav-hide{transform:translateY(-100%)}
 
-.nav-inner{display:flex;align-items:center;gap:20px;height:66px}
+.nav-inner{display:flex;align-items:center;gap:14px;height:66px}
 
 .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.02rem;letter-spacing:-.01em;flex-shrink:0}
 /* gercek kelime logosu (saydam arka planli — cam zeminde siyah kutu olmaz) */
@@ -204,7 +206,8 @@ code{
 
 .nav-links{display:flex;align-items:center;gap:2px}
 .nav-links a{
-  padding:8px 12px;border-radius:8px;
+  /* yatay dolgu 12->10: 5 link x 4px = 20px yer kazandi, nav container'a siyor */
+  padding:8px 10px;border-radius:8px;
   font-size:.875rem;font-weight:500;color:var(--muted);
   transition:color .18s,background .18s;
 }
@@ -916,9 +919,10 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);background:v
   .hero-right{max-width:520px;margin:0 auto;width:100%}
   .sub{max-width:none}
 }
-@media (max-width:880px){
-  /* dikey bosluk .nav'a konur: .nav-inner ayni zamanda .container ve
-     640px blogundaki .container padding'i bunu ezerdi */
+/* Nav'da 3 buton + 5 link + dil + tema ayni satirda sigmaz; bu esik de
+   hamburger menusune gecilir. (Dikey bosluk .nav'a konur: .nav-inner ayni
+   zamanda .container ve 640px blogundaki padding bunu ezerdi.) */
+@media (max-width:1080px){
   .nav{padding:12px 0}
   .nav-inner{gap:12px;height:auto;flex-wrap:wrap}
   .logo{order:1}
@@ -938,12 +942,19 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);background:v
     padding-top:8px;display:none;
   }
   .nav-actions.mobile{display:flex}
-  .nav-actions .btn{flex:1}
+  .nav-actions .btn{flex:1;min-width:0}
+}
+@media (max-width:880px){
   .show-row{grid-template-columns:1fr;gap:32px;padding:40px 0}
   .show-row.reverse .show-text{order:0}
   .vote-card{grid-template-columns:1fr;gap:28px;padding:32px 24px}
   .statband-inner{grid-template-columns:repeat(2,1fr);gap:28px 18px}
   .cmd-row{grid-template-columns:1fr;gap:10px;padding:14px 16px}
+}
+/* Dar ekranda 3 buton yan yana sigmaz — alt alta dizilir */
+@media (max-width:520px){
+  .nav-actions{flex-wrap:wrap}
+  .nav-actions .btn{flex:1 1 100%}
 }
 @media (max-width:640px){
   .container{padding:0 18px}
